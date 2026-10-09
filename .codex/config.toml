@@ -1,0 +1,4 @@
+[mcp_servers.supabase]
+enabled = true
+url = "https://mcp.supabase.com/mcp?project_ref=auicerytbhnqeakmkscs&features=docs%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+default_tools_approval_mode = "writes"

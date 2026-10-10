@@ -1,8 +1,9 @@
 import 'dart:async';
 
 import 'package:agent_uncle/features/auth/domain/auth_repository.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
 class AgentUncleApp extends StatefulWidget {
   const AgentUncleApp({required this.authRepository, super.key});
@@ -36,16 +37,19 @@ class _AgentUncleAppState extends State<AgentUncleApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return WidgetsApp(
       debugShowCheckedModeBanner: false,
       title: 'Agent Uncle',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
-      ),
+      color: TdsPalette.background,
+      builder: (context, child) => TdsMobileAITProvider(child: child!),
       home: _user == null
           ? SignInPage(authRepository: widget.authRepository)
           : SignedInPage(authRepository: widget.authRepository, user: _user!),
+      pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+        settings: settings,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            builder(context),
+      ),
     );
   }
 }
@@ -61,13 +65,16 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   String? _loadingProvider;
+  String? _error;
 
   Future<void> _signIn({
     required String providerName,
     required Future<bool> Function() authenticate,
   }) async {
-    setState(() => _loadingProvider = providerName);
-    final messenger = ScaffoldMessenger.of(context);
+    setState(() {
+      _loadingProvider = providerName;
+      _error = null;
+    });
 
     try {
       final launched = await authenticate();
@@ -75,9 +82,9 @@ class _SignInPageState extends State<SignInPage> {
         throw StateError('$providerName 로그인 페이지를 열 수 없습니다.');
       }
     } on AuthException catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.message)));
+      if (mounted) setState(() => _error = error.message);
     } on Object catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text('로그인 실패: $error')));
+      if (mounted) setState(() => _error = '로그인 실패: $error');
     } finally {
       if (mounted) {
         setState(() => _loadingProvider = null);
@@ -87,66 +94,60 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Icon(Icons.account_circle, size: 72),
-                const SizedBox(height: 20),
-                Text(
-                  'Agent Uncle',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Supabase Google 로그인 테스트 화면',
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                FilledButton.icon(
-                  onPressed: _loadingProvider == null
-                      ? () => _signIn(
-                          providerName: 'Google',
-                          authenticate: widget.authRepository.signInWithGoogle,
-                        )
-                      : null,
-                  icon: _loadingProvider == 'Google'
-                      ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.login),
-                  label: const Text('Google로 로그인'),
-                ),
-                // TODO(auth): Re-enable after Kakao Biz App registration.
-                // const SizedBox(height: 12),
-                // FilledButton.icon(
-                //   style: FilledButton.styleFrom(
-                //     backgroundColor: const Color(0xFFFEE500),
-                //     foregroundColor: const Color(0xFF191919),
-                //   ),
-                //   onPressed: _loadingProvider == null
-                //       ? () => _signIn(
-                //           providerName: 'Kakao',
-                //           authenticate: widget.authRepository.signInWithKakao,
-                //         )
-                //       : null,
-                //   icon: _loadingProvider == 'Kakao'
-                //       ? const SizedBox.square(
-                //           dimension: 18,
-                //           child: CircularProgressIndicator(strokeWidth: 2),
-                //         )
-                //       : const Icon(Icons.chat_bubble),
-                //   label: const Text('카카오로 로그인'),
-                // ),
-              ],
+    return ColoredBox(
+      color: TdsPalette.background,
+      child: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const TdsTop(
+                    title: TdsTopTitleParagraph('Agent Uncle', size: 28),
+                    subtitleBottom: TdsTopSubtitleParagraph('Google 계정으로 시작해요'),
+                  ),
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: TdsText(_error!, color: TdsPalette.red600),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: TdsButton(
+                      display: TdsButtonDisplay.block,
+                      disabled: _loadingProvider != null,
+                      loading: _loadingProvider == 'Google',
+                      onPressed: _loadingProvider == null
+                          ? () => _signIn(
+                              providerName: 'Google',
+                              authenticate:
+                                  widget.authRepository.signInWithGoogle,
+                            )
+                          : null,
+                      child: const Text('Google로 로그인'),
+                    ),
+                  ),
+                  const TdsSpacing(24),
+                  // TODO(auth): Re-enable after Kakao Biz App registration.
+                  // const SizedBox(height: 12),
+                  // TdsButton(
+                  //   onPressed: _loadingProvider == null
+                  //       ? () => _signIn(
+                  //           providerName: 'Kakao',
+                  //           authenticate: widget.authRepository.signInWithKakao,
+                  //         )
+                  //       : null,
+                  //   loading: _loadingProvider == 'Kakao',
+                  //   child: const Text('카카오로 로그인'),
+                  // ),
+                ],
+              ),
             ),
           ),
         ),
@@ -171,15 +172,21 @@ class SignedInPage extends StatefulWidget {
 
 class _SignedInPageState extends State<SignedInPage> {
   bool _isLoading = false;
+  String? _error;
 
   Future<void> _signOut() async {
-    setState(() => _isLoading = true);
-    final messenger = ScaffoldMessenger.of(context);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
 
     try {
       await widget.authRepository.signOut();
     } on AuthException catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text(error.message)));
+      if (mounted) setState(() => _error = error.message);
+    } on Object catch (error) {
+      if (mounted) setState(() => _error = '로그아웃 실패: $error');
+    } finally {
       if (mounted) {
         setState(() => _isLoading = false);
       }
@@ -194,25 +201,48 @@ class _SignedInPageState extends State<SignedInPage> {
         metadata?['name'] as String? ??
         '사용자';
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('로그인 완료')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.verified_user, size: 72),
-              const SizedBox(height: 20),
-              Text(displayName, style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(widget.user.email ?? widget.user.id),
-              const SizedBox(height: 32),
-              OutlinedButton(
-                onPressed: _isLoading ? null : _signOut,
-                child: const Text('로그아웃'),
+    return ColoredBox(
+      color: TdsPalette.background,
+      child: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TdsTop(
+                    title: TdsTopTitleParagraph(
+                      '$displayName님, 반가워요',
+                      size: 28,
+                    ),
+                    subtitleBottom: TdsTopSubtitleParagraph(
+                      widget.user.email ?? widget.user.id,
+                    ),
+                  ),
+                  if (_error != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                      child: Semantics(
+                        liveRegion: true,
+                        child: TdsText(_error!, color: TdsPalette.red600),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: TdsButton(
+                      display: TdsButtonDisplay.block,
+                      variant: TdsButtonVariant.weak,
+                      disabled: _isLoading,
+                      loading: _isLoading,
+                      onPressed: _isLoading ? null : _signOut,
+                      child: const Text('로그아웃'),
+                    ),
+                  ),
+                  const TdsSpacing(24),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

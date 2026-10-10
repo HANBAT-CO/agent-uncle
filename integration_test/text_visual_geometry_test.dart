@@ -148,6 +148,58 @@ void registerTextVisualGeometryTests(
           expect(height / line, closeTo((height / line).roundToDouble(), .001));
           await capture('footer-multiline');
 
+          for (final count in [40, 100]) {
+            final phase = 'footer-long-$count';
+            await mount(
+              SizedBox(
+                width: 342,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TdsListFooterText(
+                      child: Text(List.filled(count, '토스 Ag').join('\n')),
+                    ),
+                    SizedBox(
+                      key: const ValueKey('following-long-label'),
+                      height: 8,
+                      child: ColoredBox(color: theme.color('blue500')),
+                    ),
+                  ],
+                ),
+              ),
+              phase,
+            );
+            final box = tester.renderObject<RenderBox>(find.byType(TdsLineBox));
+            // Exact expanding CSS flow is safe. Rounded-up painted advances
+            // retain the old flow so the fix cannot introduce a new overlap.
+            final expectedFlow = line.round() > line
+                ? (count * line.round() / line).round() * line
+                : count * line;
+            expect(box.size.height, closeTo(expectedFlow, .001));
+            expect(
+              box.getDryLayout(box.constraints).height,
+              closeTo(expectedFlow, .001),
+            );
+            expect(
+              tester
+                      .getTopLeft(
+                        find.byKey(const ValueKey('following-long-label')),
+                      )
+                      .dy -
+                  tester.getTopLeft(find.byType(TdsLineBox)).dy,
+              closeTo(expectedFlow, .001),
+            );
+            final scroll = tester.state<ScrollableState>(
+              find.byType(Scrollable),
+            );
+            scroll.position.jumpTo(scroll.position.maxScrollExtent);
+            await tester.pumpAndSettle();
+            // Inspect the tail and the following flow marker. This is not a
+            // painted-baseline parity assertion; later line advances differ.
+            await capture(phase);
+          }
+
           for (final width in [342.0, 333.25]) {
             final phase = width == 342 ? 'shadow' : 'shadow-fractional';
             await mount(

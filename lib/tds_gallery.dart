@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+// Reference-only inline CSS flow, deliberately not part of the public TDS API.
+// ignore: implementation_imports
+import 'package:tds_mobile_flutter/src/foundation/line_box.dart';
 
 /// Local comparison fixture. Run with flutter run -t lib/tds_gallery.dart.
 void main() => runApp(const TdsGalleryApp());
@@ -479,11 +482,13 @@ class _TdsListFooterColorsReferenceFixtureState
                       ),
                     ],
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: explicitLast
-                        ? children
-                        : children.reversed.toList(),
+                  child: TdsInlineMiddle(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: explicitLast
+                          ? children
+                          : children.reversed.toList(),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -568,20 +573,22 @@ class _TdsListFooterContextsReferenceFixtureState
                 ),
               ],
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const TdsListFooterText(child: Text('상속')),
-                TdsListFooterText(
-                  colorToken: textToken,
-                  child: const Text('명시'),
-                ),
-                if (lateText)
+            child: TdsInlineMiddle(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const TdsListFooterText(child: Text('상속')),
                   TdsListFooterText(
                     colorToken: textToken,
-                    child: const Text('추가'),
+                    child: const Text('명시'),
                   ),
-              ],
+                  if (lateText)
+                    TdsListFooterText(
+                      colorToken: textToken,
+                      child: const Text('추가'),
+                    ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
@@ -687,10 +694,15 @@ class _TdsListFooterEdgesReferenceFixtureState
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          // Source: inline middle-aligned text, top-aligned
+                          // Asset.Icon. A centered Row is not this DOM flow.
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            TdsListFooterText(
-                              colorToken: outer,
-                              child: const Text('바깥'),
+                            TdsInlineMiddle(
+                              child: TdsListFooterText(
+                                colorToken: outer,
+                                child: const Text('바깥'),
+                              ),
                             ),
                             icon('outer-icon', 'green500'),
                           ],
@@ -724,19 +736,21 @@ class _TdsListFooterEdgesReferenceFixtureState
                         icon('last-icon', iconToken),
                       ],
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const TdsListFooterText(child: Text('상속')),
-                        const TdsListFooterText(
-                          colorToken: 'red500',
-                          child: Text('명시'),
-                        ),
-                        TdsListFooterText(
-                          colorToken: textToken,
-                          child: const Text('마지막'),
-                        ),
-                      ],
+                    child: TdsInlineMiddle(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const TdsListFooterText(child: Text('상속')),
+                          const TdsListFooterText(
+                            colorToken: 'red500',
+                            child: Text('명시'),
+                          ),
+                          TdsListFooterText(
+                            colorToken: textToken,
+                            child: const Text('마지막'),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
           ),

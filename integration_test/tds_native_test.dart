@@ -11,6 +11,7 @@ import 'list_input_color_test.dart' show registerListInputColorTests;
 import 'list_replay_async_test.dart' show registerListReplayAsyncTests;
 import 'list_footer_context_test.dart' show registerListFooterContextTests;
 import 'list_footer_edges_test.dart' show registerListFooterEdgesTests;
+import 'text_visual_geometry_test.dart' show registerTextVisualGeometryTests;
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -599,4 +600,5 @@ void main() {
   registerListReplayAsyncTests(binding);
   registerListFooterContextTests(binding);
   registerListFooterEdgesTests(binding);
+  registerTextVisualGeometryTests(binding);
 }

@@ -28,6 +28,19 @@ class TdsGalleryApp extends StatelessWidget {
           )
         : family == 'full-tooltip'
         ? TdsFullTooltipReferenceFixture(state: state)
+        : family == 'visual-typography'
+        ? TdsVisualTypographyFixture(
+            weight: TdsFontWeight.values.firstWhere(
+              (weight) => weight.name == parameters['weight'],
+              orElse: () => TdsFontWeight.regular,
+            ),
+            multiline: state == 'multiline',
+          )
+        : family == 'visual-footer'
+        ? TdsVisualFooterFixture(
+            variant: parameters['variant'] ?? 'default',
+            width: double.tryParse(parameters['width'] ?? '') ?? 342,
+          )
         : family == 'highlight'
         ? const TdsHighlightReferenceFixture()
         : family == 'text-buttons'
@@ -158,6 +171,80 @@ class TdsGalleryApp extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Same block flow as VisualTypographyFixture in the original-source harness.
+class TdsVisualTypographyFixture extends StatelessWidget {
+  const TdsVisualTypographyFixture({
+    this.weight = TdsFontWeight.regular,
+    this.multiline = false,
+    super.key,
+  });
+  final TdsFontWeight weight;
+  final bool multiline;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 390,
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (final type in [
+            TdsTypography.t7,
+            TdsTypography.t5,
+            TdsTypography.t2,
+            TdsTypography.t1,
+          ])
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: TdsText(
+                multiline ? '토스 Ag 012\n둘째 줄 xyz' : '토스 Ag 012',
+                key: ValueKey('type-${type.name}'),
+                typography: type,
+                fontWeight: weight,
+              ),
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Direct flex slots, a wrapping label and a non-animated gradient specimen.
+class TdsVisualFooterFixture extends StatelessWidget {
+  const TdsVisualFooterFixture({
+    this.variant = 'default',
+    this.width = 342,
+    super.key,
+  });
+  final String variant;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(24),
+    child: SizedBox(
+      width: width,
+      child: TdsListFooter(
+        key: const ValueKey('visual-footer'),
+        onPressed: () {},
+        iconName: variant == 'shadow' ? null : 'icon-arrow-right-mono',
+        shadow: variant == 'shadow'
+            ? const TdsListFooterShadow(visible: true)
+            : null,
+        child: variant == 'shadow'
+            ? const SizedBox(height: 120, width: double.infinity)
+            : Text(
+                variant == 'multiline'
+                    ? '글자와 화살표의 위치를 확인하고 다음 안내를 읽어요'
+                    : '더 보기 Ag',
+              ),
+      ),
+    ),
+  );
 }
 
 class TdsListEffectsReferenceFixture extends StatefulWidget {

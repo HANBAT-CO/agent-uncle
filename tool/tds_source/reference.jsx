@@ -153,6 +153,36 @@ function ListFooterNestedFixture() {
   </TDS.ColorSchemeArea>;
 }
 
+// Isolate block typography and direct Footer slots from inline fixture layout.
+// All rendering still comes from the unmodified, pinned React package.
+function VisualTypographyFixture() {
+  const fontWeight = parameters.get('weight') ?? 'regular';
+  const label = state === 'multiline' ? '토스 Ag 012\n둘째 줄 xyz' : '토스 Ag 012';
+  const types = parameters.get('types') === 'all'
+    ? ['t1','st1','st2','st3','t2','st4','st5','st6','t3','st7',
+      't4','st8','st9','t5','st10','t6','st11','t7','st12','st13']
+    : ['t7','t5','t2','t1'];
+  return types.map(typography => <div key={typography}
+    data-case={`type-${typography}`} style={{marginBottom:16}}>
+    <TDS.Text as="div" display="block" typography={typography} fontWeight={fontWeight}
+      style={{whiteSpace:'pre-line'}}>{label}</TDS.Text>
+  </div>);
+}
+
+function VisualFooterFixture() {
+  const variant = parameters.get('variant') ?? 'default';
+  const width = Number(parameters.get('width') ?? 342);
+  return <div style={{width}}>
+    <TDS.ListFooter data-case="visual-footer"
+      onClick={() => window.tdsReference.events.push('footer-click')}
+      icon={variant === 'shadow' ? undefined : 'icon-arrow-right-mono'}
+      shadow={variant === 'shadow' ? <TDS.ListFooter.Shadow style={{opacity:1}} /> : undefined}>
+      {variant === 'shadow' ? <div style={{height:120,width:'100%'}} />
+        : variant === 'multiline' ? '글자와 화살표의 위치를 확인하고 다음 안내를 읽어요' : '더 보기 Ag'}
+    </TDS.ListFooter>
+  </div>;
+}
+
 function Fixture() {
   const [checked, setChecked] = React.useState(parameters.get('checked') === 'true');
   const [tab, setTab] = React.useState(0);
@@ -187,6 +217,8 @@ function Fixture() {
       {family === 'highlight' && <HighlightFixture />}
       {family === 'wiki-viewport' && <WikiViewportFixture />}
       {family === 'full-tooltip' && <FullTooltipFixture />}
+      {family === 'visual-typography' && <VisualTypographyFixture />}
+      {family === 'visual-footer' && <VisualFooterFixture />}
       {family === 'progress' && <TDS.ProgressBar progress={progress} size="bold" />}
       {family === 'switch' && <Switch checked={checked}
         disabled={state === 'disabled'} inert={state === 'inert'}

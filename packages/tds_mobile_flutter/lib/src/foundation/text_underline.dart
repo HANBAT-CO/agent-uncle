@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'line_box.dart';
 
 /// Uniform Toss Product Sans counterpart of text-underline-position: under.
 /// CSS auto thickness is font-size / 10, not the font's post-table thickness.
@@ -71,20 +72,23 @@ class RenderTdsTextUnderline extends RenderProxyBox {
     );
     final lines = <Rect>[];
     for (final box in boxes) {
-      if (box.right <= box.left) continue;
       final rect = box.toRect();
       final index = lines.indexWhere(
         (line) => (line.top - rect.top).abs() < .01,
       );
       if (index < 0) {
         lines.add(rect);
-      } else {
-        lines[index] = lines[index].expandToInclude(rect);
+      } else if (rect.width > 0) {
+        // A newline's zero-width box reserves its line index, but must not
+        // enlarge a visible line's underline (including aligned/RTL labels).
+        lines[index] = lines[index].width > 0
+            ? lines[index].expandToInclude(rect)
+            : rect;
       }
     }
     if (lines.isEmpty) return const [];
     lines.sort((a, b) => a.top.compareTo(b.top));
-    final lineHeight = _fontSize * 1.252;
+    final lineHeight = tdsCssLineHeight(_fontSize * 1.252);
     // Normalize OS/2 sTypoDescender against ascent + descent to one em.
     final underline = _baseline + _fontSize * 534 / (2030 + 534) + 1;
     final thickness = math.max(
@@ -94,12 +98,13 @@ class RenderTdsTextUnderline extends RenderProxyBox {
     final origin = text.localToGlobal(Offset.zero, ancestor: this);
     return [
       for (var i = 0; i < lines.length; i++)
-        Rect.fromLTWH(
-          lines[i].left + origin.dx,
-          i * lineHeight + underline,
-          lines[i].width,
-          thickness,
-        ),
+        if (lines[i].width > 0)
+          Rect.fromLTWH(
+            lines[i].left + origin.dx,
+            i * lineHeight + underline,
+            lines[i].width,
+            thickness,
+          ),
     ];
   }
 

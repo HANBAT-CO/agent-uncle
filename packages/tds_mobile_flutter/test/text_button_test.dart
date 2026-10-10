@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -122,6 +123,243 @@ void main() {
       }
     },
   );
+
+  testWidgets('underlines keep empty lines in their original CSS line index', (
+    tester,
+  ) async {
+    for (final scale in [100.0, 160.0, 200.0]) {
+      final theme = TdsThemeData(
+        platform: TdsPlatform(os: TdsOS.android, fontScale: scale),
+      );
+      for (final size in TdsTextButtonSize.values) {
+        for (final leading in [false, true]) {
+          await tester.pumpWidget(
+            app(
+              TdsTheme(
+                data: theme,
+                child: TdsTextButton(
+                  size: size,
+                  variant: TdsTextButtonVariant.underline,
+                  child: Text('${leading ? '\n' : ''}토스 Ag\n\n끝 gyp'),
+                ),
+              ),
+            ),
+          );
+          final render = tester.renderObject<RenderTdsTextUnderline>(
+            find.byType(TdsTextUnderline),
+          );
+          final box = tester.renderObject<RenderBox>(find.byType(TdsLineBox));
+          final fontSize = theme.platform.size(size.typography);
+          final lineHeight = tdsCssLineHeight(fontSize * 1.252);
+          final offset = render.localToGlobal(Offset.zero, ancestor: box);
+          final rects = render.underlineRects;
+          expect(rects, hasLength(2));
+          // Original TextButton with two BRs has baselines at CSS line 0/2,
+          // or 1/3 with a leading BR. Literal source newlines collapse.
+          for (var i = 0; i < rects.length; i++) {
+            final line = i * 2 + (leading ? 1 : 0);
+            expect(
+              rects[i].top + offset.dy,
+              closeTo(
+                tdsCssTextBaseline(fontSize, lineHeight) +
+                    line * lineHeight +
+                    fontSize * 534 / 2564 +
+                    1,
+                .001,
+              ),
+              reason: '${size.name}/$scale/leading=$leading/line=$line',
+            );
+          }
+        }
+      }
+    }
+  });
+
+  testWidgets(
+    'ellipsized labels preserve their native visible underline boxes',
+    (tester) async {
+      await tester.pumpWidget(
+        app(
+          const SizedBox(
+            width: 120,
+            child: TdsTextButton(
+              size: TdsTextButtonSize.medium,
+              variant: TdsTextButtonVariant.underline,
+              child: Text(
+                '토스 글자를 여러 줄로 확인하고 마지막 생략 부호도 확인해요',
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ),
+        ),
+      );
+      final paragraph = tester.renderObject<RenderParagraph>(
+        find.byType(RichText),
+      );
+      final painter = TextPainter(
+        text: paragraph.text,
+        textDirection: paragraph.textDirection,
+        textAlign: paragraph.textAlign,
+        textScaler: paragraph.textScaler,
+        maxLines: paragraph.maxLines,
+        ellipsis: '\u2026',
+      )..layout(maxWidth: 120);
+      addTearDown(painter.dispose);
+      expect(painter.didExceedMaxLines, isTrue);
+      final render = tester.renderObject<RenderTdsTextUnderline>(
+        find.byType(TdsTextUnderline),
+      );
+      final rects = render.underlineRects;
+      final boxes = painter.getBoxesForSelection(
+        TextSelection(
+          baseOffset: 0,
+          extentOffset: paragraph.text
+              .toPlainText(includeSemanticsLabels: false)
+              .length,
+        ),
+      );
+      expect(rects, hasLength(2));
+      // LineMetrics.width and range boxes differ for trailing blanks/ellipsis.
+      // This change must preserve the existing range geometry, not replace it.
+      expect(
+        rects.last.width,
+        closeTo(boxes.last.right - boxes.last.left, .001),
+      );
+    },
+  );
+
+  testWidgets('blank-only and trailing lines paint no extra underlines', (
+    tester,
+  ) async {
+    for (final entry in {
+      '': 0,
+      '\n\n': 0,
+      '토스 Ag\n\n': 1,
+      '\n\n토스 Ag\n\n끝 gyp\n': 2,
+    }.entries) {
+      await tester.pumpWidget(
+        app(
+          TdsTextButton(
+            size: TdsTextButtonSize.medium,
+            variant: TdsTextButtonVariant.underline,
+            child: Text(entry.key),
+          ),
+        ),
+      );
+      final render = tester.renderObject<RenderTdsTextUnderline>(
+        find.byType(TdsTextUnderline),
+      );
+      expect(render.underlineRects, hasLength(entry.value));
+      expect(tester.takeException(), isNull);
+    }
+  });
+
+  testWidgets('empty newline boxes never extend centered or RTL underlines', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      const label = '\n토스 Ag\n\n끝 gyp';
+      for (final direction in TextDirection.values) {
+        for (final align in [
+          TextAlign.start,
+          TextAlign.center,
+          TextAlign.right,
+        ]) {
+          await tester.pumpWidget(
+            app(
+              SizedBox(
+                width: 160,
+                child: TdsTextButton(
+                  size: TdsTextButtonSize.medium,
+                  variant: TdsTextButtonVariant.underline,
+                  child: Text(
+                    label,
+                    textAlign: align,
+                    textDirection: direction,
+                  ),
+                ),
+              ),
+            ),
+          );
+          final paragraph = tester.renderObject<RenderParagraph>(
+            find.byType(RichText),
+          );
+          final render = tester.renderObject<RenderTdsTextUnderline>(
+            find.byType(TdsTextUnderline),
+          );
+          final origin = paragraph.localToGlobal(Offset.zero, ancestor: render);
+          final boxes = paragraph
+              .getBoxesForSelection(
+                TextSelection(
+                  baseOffset: 0,
+                  extentOffset: paragraph.text
+                      .toPlainText(includeSemanticsLabels: false)
+                      .length,
+                ),
+              )
+              .where((box) => box.right > box.left)
+              .map((box) => box.toRect())
+              .toList();
+          final tops = boxes.map((box) => box.top).toSet().toList()..sort();
+          final rects = render.underlineRects;
+          expect(rects, hasLength(tops.length));
+          for (var i = 0; i < tops.length; i++) {
+            final extent = boxes
+                .where((box) => box.top == tops[i])
+                .reduce((a, b) => a.expandToInclude(b));
+            expect(rects[i].left, closeTo(extent.left + origin.dx, .001));
+            expect(rects[i].right, closeTo(extent.right + origin.dx, .001));
+          }
+          expect(find.bySemanticsLabel(label), findsOneWidget);
+        }
+      }
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('long underline advances use the original 1/64px CSS units', (
+    tester,
+  ) async {
+    for (final scale in [100.0, 160.0, 200.0]) {
+      final theme = TdsThemeData(
+        platform: TdsPlatform(os: TdsOS.android, fontScale: scale),
+      );
+      for (final count in [40, 100]) {
+        await tester.pumpWidget(
+          app(
+            TdsTheme(
+              data: theme,
+              child: SingleChildScrollView(
+                child: SizedBox(
+                  width: 342,
+                  child: TdsTextButton(
+                    size: TdsTextButtonSize.medium,
+                    variant: TdsTextButtonVariant.underline,
+                    child: Text(List.filled(count, '토스 Ag').join('\n')),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        final render = tester.renderObject<RenderTdsTextUnderline>(
+          find.byType(TdsTextUnderline),
+        );
+        final rects = render.underlineRects;
+        final height = tdsCssLineHeight(
+          theme.platform.size(TdsTypography.t5) * 1.252,
+        );
+        expect(rects, hasLength(count));
+        expect(
+          rects.last.top - rects.first.top,
+          closeTo((count - 1) * height, .001),
+        );
+      }
+    }
+  });
 
   testWidgets(
     'all sizes retain fractional flow height and fixed arrow frames at 100/160/200%',

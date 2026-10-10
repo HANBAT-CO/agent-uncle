@@ -88,7 +88,7 @@ and accessibility tables. Do not apply Flutter text scaling again downstream.
 | ReactNode, HTML props, DOM events, refs | Widget slots, named parameters, native callbacks/controllers; incomplete mappings are listed individually |
 | Hooks/context | Inherited providers, scope widgets and disposable controllers |
 | Portal / fixed DOM positioning | Navigator routes, OverlayPortal or retained OverlayEntry; nullable target context and native context capture replace DOM portals |
-| CSS fractional line boxes | Layout wrapper preserves flow height without scaling glyphs; Chromium's 1/64px quantization and glyph rasterization still differ |
+| CSS fractional line boxes | Text/Footer use 1/64px flow geometry and the original font's first baseline without scaling glyphs; later native line advances and glyph rasterization still differ |
 | Browser viewport/keyboard heuristic | MediaQuery insets; fixed-bottom metrics must not be applied again to an already-resized viewport |
 | `maskImage` | 110-degree alpha ShaderMask |
 | Host navigation/haptics/security | Injected `TdsHostProvider` interfaces, no-op/absent without adapters |
@@ -215,6 +215,27 @@ to 240. Held-pointer crosshairs are Flutter test instrumentation, not app UI.
 Twenty-four paired, unscaled Web comparisons cover first press, replay, nested
 press/click, reinsertion and target recapture. Text baselines, arrows and shadow
 pixels still differ; these captures are not golden-parity passes.
+
+The typography/arrow/shadow checkpoint adds source measurements for all 20
+typography types, four weights, 100/160/200% and one/two lines (480 specimens).
+`TdsText` and plain Footer labels now use the original font's measured first
+baseline and quantized line-box height. Korean labels keep whole words when
+wrapping. The text adapter retains the caller's style, semantics identifier,
+scaling, alignment and selection metadata; replacement fonts and mixed Footer
+spans do not receive a forced Toss baseline. Footer shadow bounds quantize the
+120% width before centering, including fractional container widths. The gallery
+also corrects nested Footer inline-middle text and top-aligned arrows; that is
+fixture composition, not a new automatic layout rule for arbitrary children.
+
+Eighty unscaled React/Flutter Web pairs cover typography, Footer labels/arrows,
+shadows and the previous nested/color cases. These are measured differences,
+not golden passes. All 448 package tests and both full native suites pass, with
+56 new Android/iOS captures inspected. In particular, native text still rounds
+each painted line advance: Footer xs at 160% advances by 34px rather than
+33.796875px. Correct flow
+height and first baseline do not imply that every later line matches. Glyph/SVG
+antialiasing and gradient pixels also remain different. See
+[verification.md](reference/verification.md) for reproduction commands and limits.
 
 Arbitrary concurrent React ordering, exhaustive nested/context combinations,
 cross-engine frame/task scheduling, rich inline content and original DOM

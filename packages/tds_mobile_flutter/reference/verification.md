@@ -27,7 +27,7 @@ See `native-coverage.json` for individual outstanding work.
 - `flutter analyze`: clean at the final checkpoint.
 - Root `flutter test`: Google OAuth launch regression test passed; no real OAuth
   credentials/browser authorization or Supabase data changes performed.
-- Package `flutter test`: 434 tests passed. Includes all typography categories;
+- Package `flutter test`: 448 tests passed. Includes all typography categories;
   control activation/disabled/loading; spinner hold/drag/disposal; field raw vs
   display values, formatting and IME; tab/segment keyboard and semantics;
   intrinsic-width dialog footer wrapping; modal dimmer/Escape lifecycle;
@@ -36,6 +36,18 @@ See `native-coverage.json` for individual outstanding work.
   luminance, insets and scroll throttling. Additional families cover sheets,
   navigation, grids/board rows, date/wheel, sliders/rating, agreement/keypad,
   post/chart, code/pin input, overlay adapters and native type composition.
+- `text_visual_geometry_test.dart`: 12 tests include 480 original-browser
+  specimens (20 typography types × four weights × 100/160/200% × one/two lines).
+  `reference/visual-geometry.json` contains only pinned-source DOM/canvas
+  measurements, not Flutter-derived targets. The tests check complete specimen
+  coverage, flow dimensions and the **first** baseline, not every painted line.
+  Other assertions cover Footer xs metrics, parent inline strut/top-aligned
+  arrows, Korean whole-word wrapping and custom/mixed font handling.
+  `word_break_test.dart` separately checks preserved Text metadata.
+  `list_footer_test.dart` adds a regression for source shadow
+  percentage-width quantization before centering at 342px and 333.25px widths.
+  Final package/root test and analyzer logs:
+  `.context/visual-final-{package,root}-{tests,analyze}.log`.
 - New focused coverage: tooltip strong overshoot/reversal/reduced motion;
   WikiText bottom-anchor flip, Escape and keyboard-focus return; agreement
   immediate semantics with delayed color and timer disposal; fit-content menus;
@@ -459,16 +471,18 @@ Android/iOS preparation attempt failed deleting generated Swift package files;
 the same iOS command passed after Android finished, without manual deletion.
 The independent-context checkpoint repeated this sequence successfully after
 both full native runs and both final scoped capture reruns.
-The undefined/nested checkpoint repeated it again after both full native suites;
-Android, ARM64 iOS Simulator, gallery Web and main Web builds all passed.
+The undefined/nested checkpoint repeated it again after both full native suites.
+The typography/arrow/shadow checkpoint has also passed both full native suites,
+followed by Android, ARM64 iOS Simulator and main Web builds in that order;
+its separate gallery Web build passed before the captures.
 `ios/Flutter/Generated.xcconfig` again points to
 `FLUTTER_TARGET=lib/main.dart`. Latest logs are
-`.context/footer-edges-main-android-build.log`,
-`.context/footer-edges-main-ios-config.log` and
-`.context/footer-edges-main-ios-build.log` (quiet xcodebuild, exit 0).
+`.context/visual-main-android-build.log`,
+`.context/visual-main-ios-config.log` and
+`.context/visual-main-ios-build.log` (quiet xcodebuild, exit 0).
 The gallery and main Web logs are
-`.context/footer-edges-gallery-build.log` and
-`.context/footer-edges-main-web-build.log`. The final Simulator Runner binary
+`.context/visual-final-gallery-build.log` and
+`.context/visual-main-web-build.log`. The final Simulator Runner binary
 was checked with `lipo` and is ARM64; `build/web` contains the main app.
 
 The default Flutter multi-architecture simulator command failed earlier with
@@ -622,6 +636,26 @@ markers must not be mistaken for an app graphic or suppressed in production
 input handling. For a scoped rerun use
 `--target=integration_test/list_footer_edges_test.dart` with the existing driver.
 `TDS_WIKI_ONLY` preserves its early return before the added scenarios.
+
+The typography/arrow/shadow checkpoint reran all 12 native scenarios on both
+the Android emulator and ARM64 iOS Simulator, including
+`integration_test/text_visual_geometry_test.dart`. Both suites passed. The new
+scenario checks uniform-text first-baseline/flow geometry, Footer normal/held
+press state, whole-word wrapping, fixed arrow dimensions and shadow bounds at
+integer/fractional widths. It runs light/dark ×100/160% on each engine; iOS
+160% uses the source A11y_Medium category. The assertions concern layout and
+state, not exact painted line advances or cross-engine raster equivalence.
+
+All 56 new native captures (28 per platform) were inspected using fourteen
+`.context/visual-review-native-{android,ios}-{phase}.png` sheets. The four
+large multiline typography images were also opened uncropped, since the
+contact-sheet preview cuts off their last line. Native filenames are
+`.context/tds-native-visual-{type,type-multiline,footer,footer-pressed,footer-multiline,shadow,shadow-fractional}-{android,ios}-{light,dark}-{100,160}.png`.
+The preview sheets may crop/resize for inspection; native screenshots are not
+inputs to the DPR-1 Web pixel comparisons. Held-pointer crosshairs remain test
+instrumentation. Latest full-suite logs: `.context/visual-{android,ios}-drive.log`.
+For a scoped rerun, use `--target=integration_test/text_visual_geometry_test.dart`
+with the existing driver. The WikiText-only early return is unchanged.
 
 Initial Android resize/100% captures still contained the previous raster frame
 despite the logical theme/width assertions passing. The test now pumps a further
@@ -897,10 +931,78 @@ eval. Flutter can combine sibling texts into a newline-separated semantic
 label; the outer nested Footer's button rectangle includes the child, so the
 probe targets the outer text row explicitly.
 
-No pass threshold is approved. Differences remain in text baseline/rasterization,
-Chromium fractional layout quantization, some control geometry and motion.
-Current captures do not validate pressed/hovered/disabled animation timelines,
-every font scale, full multiline/word-break behavior or real iOS/Android pixels.
+### Typography, arrows and Footer shadows
+
+The latest checkpoint adds 80 unscaled React/Flutter Web pairs: 32 typography
+pairs (four weights, one/two lines, light/dark, 100/160%), 24 Footer pairs and
+24 reruns of the previous color/nested cases. The Footer set includes default,
+held press, multiline, whole-label multiline and integer/fractional-width
+shadow crops. Sizes are 390×360/630 for typography, 390×200/280 for Footer and
+390×100/130 for the existing edge cases. All individual source/native images
+and difference panels were inspected via the unscaled
+`.context/visual-review-{type-*,footer-*,edge-*}.png` sheets. Measurements always
+use the original PNGs, never resized previews.
+
+The implementation now preserves Chromium's 1/64px used line height and the
+bundled Toss font's first baseline for uniform Text/plain Footer labels.
+Footer keeps Korean words together, and its shadow resolves 120% width to a
+layout unit before centering: 342px → 410.390625px wide and -34.1953125px left;
+333.25px → 399.890625px wide and -33.3203125px left. The underlying SVG arrow
+paths are unchanged. Separately, the gallery's nested/footer-color fixtures
+now model the original anonymous inline strut, middle-aligned labels and
+top-aligned outer arrow. Their improvements include **fixture composition**
+changes, not just package fixes or an automatic DOM-like child layout feature.
+
+For the 76 pairs with a historical baseline, the original React PNGs are
+byte-identical before/after. The remaining four new pairs show the full
+multiline label and have no before measurement. Aggregate delta>16 counts are:
+
+| Comparable pairs | Before | After |
+| --- | ---: | ---: |
+| 32 typography | 117,904 | 116,698 |
+| 20 Footer | 24,859 | 12,038 |
+| 24 color/nested cases | 17,437 | 10,670 |
+
+No comparable pair increased this count. These are absolute pixel-difference
+counts, **not** acceptance thresholds, similarity percentages or golden passes.
+For example, the 390×200 light/160% default Footer changes from 669 to 282
+delta>16 pixels (mean maximum channel delta 0.805128 → 0.167128). Its multiline
+historical crop changes from 7,234 to 2,594. The eight isolated shadow crops
+still have maximum channel differences of 1–3 despite zero delta>16 pixels.
+Current evidence:
+`.context/visual-after-{react,flutter}-{case}-{light,dark}-{100,160}.png` and
+`.context/visual-after-paired-{case}-{light,dark}-{100,160}.{png,json}`.
+All 80 final capture logs have zero probe/application/font-fetch errors; the
+known CPU-only headless renderer warning remains.
+
+Original geometry is measured without inserting baseline markers or changing
+the pinned package/CSS. `visual-metrics.mjs --all` reads 24 original-only pages
+to generate all 480 specimens in `reference/visual-geometry.json`. The original
+Text fixture must use `display="block"`: `as="div"` and `style.display` do not
+override its default inline display. With the reference/gallery builds served
+at ports 5182/5181, reproduce from the repository root:
+
+```sh
+node tool/tds_source/visual-capture.mjs after
+node tool/tds_source/visual-metrics.mjs after --all
+```
+
+Only use `before` against an actual pre-change gallery build; it overwrites that
+phase's artifacts. No comparison target is derived from Flutter output.
+
+**Remaining multiline difference:** SkParagraph rounds each painted line
+advance, not just the outer height. Footer xs advances by 21px versus CSS
+21.28125px at 17px font size, and 34px versus 33.796875px at 27px. Thus the fourth
+and later lines can differ by about 1px even when the first baseline and total
+flow height match. `forceStrutHeight` does not remove this rounding. The adapter
+does not scale glyphs or repaint clipped line fragments to conceal it. Mixed
+spans, arbitrary font overrides, text selection/copy and full word-break behavior
+are not established by the uniform-label tests. Glyph/SVG antialiasing and
+gradient rasterization also remain different.
+
+No pass threshold is approved. Current captures do not validate complete
+pressed/hovered/disabled animation timelines, every font scale, full multiline
+behavior or pixel equality on physical iOS/Android devices.
 
 ## Next required work
 
@@ -923,6 +1025,9 @@ every font scale, full multiline/word-break behavior or real iOS/Android pixels.
 4. Expand paired fixtures to error/disabled/pressed/loading, multiline, all
    sizes, all scales, dark/light and frame-by-frame motion. Establish reviewed
    golden tolerances per component, not an aggregate similarity percentage.
+   All 20 typography types now have source-backed first-baseline/flow checks;
+   correct each later native line advance without breaking selection, semantics,
+   glyphs/diacritics or mixed spans, then expand the measured visual matrix.
 5. Extend Bubble to custom ancestor/mixed-span cases; expand WikiText observer
    timing, transformed/nested-scroll and rich-font/RTL matrices; finish other
    anchor/ancestor clipping, third-party menu trigger adapters and ListRow's
@@ -948,5 +1053,4 @@ every font scale, full multiline/word-break behavior or real iOS/Android pixels.
    navigation/OAuth return handling. Repeat-build font hashes are stable in the
    current environment; other fonttools/platform versions remain unverified.
 
-Google auth is preserved. Kakao stays commented out. No migration commit or
-push was made during this work.
+Google auth is preserved. Kakao stays commented out.

@@ -1,0 +1,2210 @@
+[
+  {
+    "sources": ["PortalContext.Provider", "PortalContext.Consumer"],
+    "dart": ["TdsPortalContextProvider", "TdsPortalContextConsumer"],
+    "files": ["lib/src/foundation/portal.dart"],
+    "verified": ["test/portal_test.dart"],
+    "differences": ["Nullable OverlayState context and a native builder replace React's context object and render prop."],
+    "remaining": ["Native contexts are not DOM portal targets or React context objects."]
+  },
+  {
+    "sources": ["Asset.accPosition.TopLeft", "Asset.accPosition.TopRight", "Asset.accPosition.BottomLeft", "Asset.accPosition.BottomRight"],
+    "dart": ["TdsAssetAccessoryPosition"],
+    "files": ["lib/src/components/asset.dart"],
+    "verified": ["test/asset_frames_test.dart"],
+    "differences": ["Native enum values expose the exact original strings with .value."],
+    "remaining": ["Parent frame rendering remains partial; these string values and four-way placement have been checked."]
+  },
+  {
+    "sources": ["mapByTypeAndTypography.level1", "mapByTypeAndTypography.level2", "mapByTypeAndTypography.level3", "mapByTypeAndTypography.level4", "mapByTypeAndTypography.level5"],
+    "dart": ["mapByTypeAndTypography", "TdsTouchInsets"],
+    "files": ["lib/src/foundation/api_adapters.dart"],
+    "verified": ["test/compound_constants_test.dart"],
+    "differences": ["Positive native touch insets encode the source CSS negative offsets; they are not Emotion SerializedStyles."],
+    "remaining": ["All 15 inset/radius combinations are checked. Native hit testing outside ancestor bounds differs from DOM hit testing."]
+  },
+  {
+    "sources": ["TextField.format.phoneNumber.transform", "TextField.format.phoneNumber.reset", "TextField.format.price.transform", "TextField.format.price.reset"],
+    "dart": ["TdsTextFieldFormat"],
+    "files": ["lib/src/components/text_field.dart"],
+    "verified": ["test/text_field_test.dart"],
+    "differences": [],
+    "remaining": ["Current formatting edge cases pass; complete randomized original-function corpus and caret/IME cases remain."]
+  },
+  {
+    "sources": ["ListRow.AssetIcon", "ListRow.AssetImage", "ListRow.AssetText", "ListRow.AssetLottie"],
+    "dart": ["TdsListRowAssetIcon", "TdsListRowAssetImage", "TdsListRowAssetText", "TdsListRowAssetLottie"],
+    "files": ["lib/src/components/list_assets.dart", "lib/src/components/asset.dart", "lib/src/foundation/list_row_scope.dart"],
+    "verified": ["test/list_assets_test.dart"],
+    "differences": ["String accessories use an explicit native Asset widget. DOM props and child cloning use Widget slots and named parameters."],
+    "remaining": ["All asset loading/error/animation timelines and native device pixels; arbitrary wrapped Texts need explicit contentsType for first-line alignment. Accessory masking and crop/fit require more visual cases."]
+  },
+  {
+    "sources": ["ListRow.LeftContainer", "ListRow.FillIcon"],
+    "dart": ["TdsListRowLeftContainer", "TdsListRowFillIcon"],
+    "files": ["lib/src/components/list_assets.dart", "lib/src/foundation/list_row_scope.dart"],
+    "verified": ["test/list_assets_test.dart"],
+    "differences": ["Native constraints replace CSS inline-flex layout."],
+    "remaining": ["FillIcon SVG foreignObject scaling and large squircle half-pixel path require pixel comparison. Negative custom CSS margins and DOM event spreading are not native contracts."]
+  },
+  {
+    "sources": ["ListHeader.RightIconButton"],
+    "dart": ["TdsListHeaderRightIconButton"],
+    "files": ["lib/src/components/list_support.dart"],
+    "verified": ["test/list_assets_test.dart"],
+    "differences": [],
+    "remaining": ["Standard title-line geometry and high-font reflow compared. Nonstandard short title slots, hit areas outside ancestor bounds and touch/hover/disabled timelines still differ or need validation."]
+  },
+  {
+    "sources": [
+      "AccessoryButton"
+    ],
+    "dart": [
+      "TdsAccessoryButtonView"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Original host and native fallback placement/action/lifecycle matrix."
+    ]
+  },
+  {
+    "sources": [
+      "Bubble",
+      "BubbleProps"
+    ],
+    "dart": [
+      "TdsBubble"
+    ],
+    "files": [
+      "lib/src/components/tooltip.dart"
+    ],
+    "verified": ["test/font_geometry_test.dart"],
+    "differences": [],
+    "remaining": [
+      "Default host strut now uses original font metrics, including 1.796875px inline-middle offset at 16px/24px. Custom ancestor font styles require explicit native parentFontSize/parentLineHeight; tail, mixed-span, wrapping and scale visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Tooltip",
+      "TooltipProps"
+    ],
+    "dart": [
+      "TdsTooltip"
+    ],
+    "files": [
+      "lib/src/components/tooltip.dart",
+      "lib/src/foundation/css_shadow.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/overlay_motion_test.dart",
+      "test/tooltip_geometry_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Weak/strong spring transitions, reduced motion, reversal, all 18 clipped arrow paths and ratio clamps are tested. Viewport-shifted anchor-to-tail alignment, ancestor clipping and non-painted/composited anchor changes, mixed rich text and full device pixel/timeline matrix remain. The sampled 18-case visual comparison retains glyph and shadow differences."
+    ]
+  },
+  {
+    "sources": [
+      "FullTooltip",
+      "FullTooltipProps"
+    ],
+    "dart": [
+      "TdsFullTooltip"
+    ],
+    "files": [
+      "lib/src/components/full_tooltip.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/full_tooltip_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Two-contour mat silhouette, static teal colors, 1.35 line height/clientHeight rounding, nominal 400/500/700ms relative entrances, floating blur, overlap/offset precedence and timer/global-pointer contracts have scoped tests. Two 100ms trailing size observers, retained-height entrance delays, independent clip/flow restarts, integer CSS height rounding, frozen exit props, fresh body remounts and controlled/floating mode replacement have regression coverage. Interrupted reopen now reproduces eo's unwrapped-child quirk: the next close removes immediately, and fresh mounts or mode replacement restore retained exit. Both relative/floating browser traces confirm the sampled sequence; Android/iOS engine tests cover interrupted and clean close cycles at light/dark 100/160%. Cold-mount observer settling, exhaustive interruption sequences, DOM anchor ID/class resolution, custom rich-message baseline/metrics and complete platform/blur pixel matrices remain."
+    ]
+  },
+  {
+    "sources": [
+      "Highlight",
+      "HighlightProps"
+    ],
+    "dart": [
+      "TdsHighlight"
+    ],
+    "files": [
+      "lib/src/components/highlight.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/highlight_test.dart"
+    ],
+    "differences": [
+      "A native portal, focus scope and pointer absorber replace DOM inert/dialog behavior; native back is consumed. No Toss-host dependency."
+    ],
+    "remaining": [
+      "Delay/cancellation, captured props/callbacks, rejected-close self-dismiss, target inertness, Escape non-dismissal, focus traversal and owner teardown are tested. DOM synthetic/programmatic duplicate target click dispatch, exact inert/focus-restoration timing, nested scroll/transform coordinates and reopen-during-exit timelines remain."
+    ]
+  },
+  {
+    "sources": [
+      "HighlightUI",
+      "HighlightUIProps"
+    ],
+    "dart": [
+      "TdsHighlightUI"
+    ],
+    "files": [
+      "lib/src/components/highlight.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/highlight_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Original SVG arrow, rounded mask/pointer cutout, padding/clamping, static dark color, Android full-alpha offsetblur, six alignments, 2.2s message keyframes, independent basic opacity/slow expansion and reduced motion have scoped tests. Complex interruptions, resized viewport during motion and full raster/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Highlight.Message",
+      "HighlightMessageProps"
+    ],
+    "dart": [
+      "TdsHighlightMessage"
+    ],
+    "files": [
+      "lib/src/components/highlight.dart"
+    ],
+    "verified": [
+      "test/highlight_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Default bold t6, 10px horizontal padding, original-font multiline metrics and 100/160% alignment are tested. Custom styled/rich widgets, bidi and glyph raster parity remain."
+    ]
+  },
+  {
+    "sources": [
+      "PointOverlay",
+      "PointOverlayProps"
+    ],
+    "dart": [
+      "TdsPointOverlay"
+    ],
+    "files": [
+      "lib/src/components/point.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Original rotating glow, character color animation and timing parity; modal focus/scroll locking."
+    ]
+  },
+  {
+    "sources": [
+      "PointCTAOverlay",
+      "PointCTAOverlayProps"
+    ],
+    "dart": [
+      "TdsPointCTAOverlay"
+    ],
+    "files": [
+      "lib/src/components/point.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Focus/scroll modality and source animation/color timelines."
+    ]
+  },
+  {
+    "sources": [
+      "PointToast",
+      "PointToastProps"
+    ],
+    "dart": [
+      "TdsPointToast"
+    ],
+    "files": [
+      "lib/src/components/point.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Measured multiline wrapping and original per-stage animation/placement."
+    ]
+  },
+  {
+    "sources": [
+      "WikiText",
+      "WikiTextProps"
+    ],
+    "dart": [
+      "TdsWikiText"
+    ],
+    "files": [
+      "lib/src/components/wiki_text.dart",
+      "lib/src/foundation/wiki_inline.dart",
+      "lib/src/foundation/wiki_viewport.dart",
+      "lib/src/foundation/wiki_motion.dart",
+      "lib/src/foundation/wiki_description.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/wiki_inline_test.dart",
+      "test/wiki_viewport_motion_test.dart"
+    ],
+    "differences": [
+      "Native RichText fragments replace inline DOM rectangles; original light/dark highlighter PNGs are bundled unmodified.",
+      "A one-time outermost vertical scroll extent snapshot replaces document.body.offsetHeight; post-frame layout/paint/scroll observations replace browser IntersectionObserver scheduling."
+    ],
+    "remaining": [
+      "Scoped tests now cover the 60% viewport boundary, nested clip, initial-above/end-of-document guards, touch/keyboard gating, retained padding, independent inline and popup springs, interrupted popup entry, CSS whitespace and staggered string-description scroll unlocking. Native font boxes/custom fonts, transformed/nested-scroll document equivalence, browser observer scheduling, long unbreakable words, full interruption/device/RTL/accessibility matrices and sampled glyph/fractional-pixel differences remain."
+    ]
+  },
+  {
+    "sources": [
+      "ThemeProvider"
+    ],
+    "dart": [
+      "TdsThemeProvider"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source derived primary opacity tokens and all consumers still require comparison."
+    ]
+  },
+  {
+    "sources": [
+      "LEGACY_TDS_WEB_BUTTON_CLASS_NAME"
+    ],
+    "dart": [
+      "legacyTdsWebButtonClassName"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Metadata only; native widgets do not emit a CSS class."
+    ]
+  },
+  {
+    "sources": [
+      "Menu"
+    ],
+    "dart": [
+      "TdsMenu"
+    ],
+    "files": [
+      "lib/src/components/menu.dart",
+      "lib/src/foundation/activation_scope.dart",
+      "lib/src/foundation/pressable.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.Dropdown",
+      "MenuDropdownProps"
+    ],
+    "dart": [
+      "TdsMenuDropdown"
+    ],
+    "files": [
+      "lib/src/components/menu.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.DropdownItem",
+      "MenuDropdownItemProps"
+    ],
+    "dart": [
+      "TdsMenuDropdownItem"
+    ],
+    "files": [
+      "lib/src/components/menu.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.DropdownCheckItem",
+      "MenuDropdownCheckItemProps"
+    ],
+    "dart": [
+      "TdsMenuDropdownCheckItem"
+    ],
+    "files": [
+      "lib/src/components/menu.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.DropdownIcon",
+      "MenuDropdownIconProps"
+    ],
+    "dart": [
+      "TdsMenuDropdownIcon"
+    ],
+    "files": [
+      "lib/src/components/menu.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.Header",
+      "MenuHeaderProps"
+    ],
+    "dart": [
+      "TdsMenuHeader"
+    ],
+    "files": [
+      "lib/src/components/menu.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Menu.Trigger",
+      "MenuTriggerProps"
+    ],
+    "dart": [
+      "TdsMenuTrigger"
+    ],
+    "files": [
+      "lib/src/components/menu.dart",
+      "lib/src/foundation/activation_scope.dart",
+      "lib/src/foundation/pressable.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart",
+      "test/menu_geometry_test.dart",
+      "test/menu_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Native focus/semantics and an OverlayPortal replace FloatingUI/DOM. Original uses click/focus/dismiss, not a typeahead or list-navigation hook."
+    ],
+    "remaining": [
+      "Nested TDS activation and paint-time anchor translations are tested. Third-party gesture bubbling needs an adapter. Ancestor clipping, non-painted/composited anchor changes, exact spring interruption and full device visual/accessibility matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "assignBadgeVariables"
+    ],
+    "dart": [
+      "assignBadgeVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "assignIconVariables"
+    ],
+    "dart": [
+      "assignIconVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "assignLinkVariables"
+    ],
+    "dart": [
+      "assignLinkVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "assignTextVariables"
+    ],
+    "dart": [
+      "assignTextVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "borderBottomWidthVar"
+    ],
+    "dart": [
+      "borderBottomWidthVar"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "colorVar"
+    ],
+    "dart": [
+      "colorVar"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "fontWeightVar"
+    ],
+    "dart": [
+      "fontWeightVar"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "paragraphVariables",
+      "paragraphVariables.common",
+      "paragraphVariables.common.fontWeight",
+      "paragraphVariables.common.color",
+      "paragraphVariables.text",
+      "paragraphVariables.text.fontSize",
+      "paragraphVariables.text.lineHeight",
+      "paragraphVariables.icon",
+      "paragraphVariables.icon.height",
+      "paragraphVariables.badge",
+      "paragraphVariables.badge.fontSize",
+      "paragraphVariables.badge.borderRadius",
+      "paragraphVariables.badge.padding",
+      "paragraphVariables.link",
+      "paragraphVariables.link.verticalPadding",
+      "paragraphVariables.link.horizontalPadding",
+      "paragraphVariables.link.borderRadius",
+      "paragraphVariables.link.lightThickness",
+      "paragraphVariables.link.boldThickness"
+    ],
+    "dart": [
+      "paragraphVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compound_constants_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "All map keys/leaves match pinned source extraction. Native CSS metadata does not itself style Flutter widgets; parent Paragraph runtime remains partial."
+    ]
+  },
+  {
+    "sources": [
+      "mapByTypeAndTypography"
+    ],
+    "dart": [
+      "mapByTypeAndTypography"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native metadata/constants adapter; complete original value/boundary test matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "forwardRefWithAs"
+    ],
+    "dart": [
+      "forwardRefWithAs"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Typed native builder adapter, not React DOM polymorphism/ref forwarding."
+    ]
+  },
+  {
+    "sources": [
+      "styledButton",
+      "StyledButtonProps"
+    ],
+    "dart": [
+      "styledButton",
+      "TdsStyledWidget"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native decorator supports button options only; React styled/HTML props are not supported."
+    ]
+  },
+  {
+    "sources": [
+      "styledText",
+      "StyledTextProps"
+    ],
+    "dart": [
+      "styledText",
+      "TdsStyledWidget"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native text style decorator; rich spans and DOM prop inference differ."
+    ]
+  },
+  {
+    "sources": [
+      "withLoadingSkeleton",
+      "WithLoadingSkeletonOptions"
+    ],
+    "dart": [
+      "withLoadingSkeleton"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/collections_feedback_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Builder HOC adaptation; complete host skeleton timing matrix."
+    ]
+  },
+  {
+    "sources": [
+      "useLimitedTdsMobileCSSVariables",
+      "UseLimitedTdsMobileCSSVariablesProps"
+    ],
+    "dart": [
+      "useLimitedTdsMobileCSSVariables",
+      "TdsTypographyVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Resolved CSS values replace original var() indirection; all iOS boundary categories remain to verify."
+    ]
+  },
+  {
+    "sources": [
+      "useLimitedTdsWebCSSVariables",
+      "UseLimitedTdsWebCSSVariablesProps"
+    ],
+    "dart": [
+      "useLimitedTdsWebCSSVariables",
+      "TdsTypographyVariables"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Web metadata table is separate from native rendering; all iOS boundary categories remain to verify."
+    ]
+  },
+  {
+    "sources": [
+      "useOverlay_will_be_deleted"
+    ],
+    "dart": [
+      "useOverlay_will_be_deleted",
+      "TdsOverlayController"
+    ],
+    "files": [
+      "lib/src/foundation/overlay_controller.dart"
+    ],
+    "verified": [
+      "test/overlay_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Unmount persistence and nested root host/lifetime behavior require comparison."
+    ]
+  },
+  {
+    "sources": [
+      "useToastContext",
+      "ToastContext"
+    ],
+    "dart": [
+      "useToastContext",
+      "TdsHostToast",
+      "TdsToastContextProvider"
+    ],
+    "files": [
+      "lib/src/foundation/toast_controller.dart",
+      "lib/src/foundation/host.dart"
+    ],
+    "verified": [
+      "test/toast_test.dart",
+      "test/toast_host_test.dart",
+      "test/toast_lifecycle_test.dart"
+    ],
+    "differences": [
+      "Context returns a nullable host-toast capability, not the fallback controller. A nested explicit null hides outer host capability."
+    ],
+    "remaining": [
+      "Real Toss host adapter and physical-device verification. Host show-only API cannot provide invented close or open-state feedback."
+    ]
+  },
+  {
+    "sources": [
+      "tds-mobile-ait:TDSMobileAITProviderProps"
+    ],
+    "dart": [
+      "TdsMobileAITProvider"
+    ],
+    "files": [
+      "lib/src/foundation/theme.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native typed constructor/value counterpart; full source host/prop/environment matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "A11yCondition"
+    ],
+    "dart": [
+      "TdsA11yCondition"
+    ],
+    "files": [
+      "lib/src/foundation/theme.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native typed constructor/value counterpart; full source host/prop/environment matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "ColorSchemeAreaProps"
+    ],
+    "dart": [
+      "TdsColorSchemeArea"
+    ],
+    "files": [
+      "lib/src/foundation/theme.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native typed constructor/value counterpart; full source host/prop/environment matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "FontScaleLimitProps"
+    ],
+    "dart": [
+      "TdsFontScaleLimit"
+    ],
+    "files": [
+      "lib/src/foundation/theme.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native typed constructor/value counterpart; full source host/prop/environment matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "Platform"
+    ],
+    "dart": [
+      "TdsPlatform"
+    ],
+    "files": [
+      "lib/src/foundation/theme.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native typed constructor/value counterpart; full source host/prop/environment matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3CollapsibleGroupRef"
+    ],
+    "dart": [
+      "TdsAgreementV3CollapsibleGroupController"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Controlled/uncontrolled native controller replaces imperative React ref; animation parity remains."
+    ]
+  },
+  {
+    "sources": [
+      "AlphabetKey"
+    ],
+    "dart": [
+      "TdsAlphabetKey"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Validated native value object and typed constructor replace string union."
+    ]
+  },
+  {
+    "sources": [
+      "NumberKey"
+    ],
+    "dart": [
+      "TdsNumberKey"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Dart enum with numeric values replaces numeric literal union."
+    ]
+  },
+  {
+    "sources": [
+      "AlphabetKeypadRef",
+      "NumberKeypadRef"
+    ],
+    "dart": [
+      "TdsElementRef"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "GlobalKey exposes native Element/RenderObject, not HTMLDivElement."
+    ]
+  },
+  {
+    "sources": [
+      "As",
+      "ComponentWithAs",
+      "PropsOf"
+    ],
+    "dart": [
+      "TdsAs",
+      "TdsComponentWithAs",
+      "TdsPropsOf"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Explicit Dart generic props/builders replace TypeScript inference and React element types; no DOM polymorphism."
+    ]
+  },
+  {
+    "sources": [
+      "DefaultPropsType",
+      "MergeWithAs",
+      "OmitCommonProps",
+      "RightJoinProps"
+    ],
+    "dart": [
+      "TdsProps"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Immutable runtime prop-map operations replace TS conditional/keyof types; static structural type transformations have no Dart equivalent."
+    ]
+  },
+  {
+    "sources": [
+      "Navigation"
+    ],
+    "dart": [
+      "TdsNavigation"
+    ],
+    "files": [
+      "lib/src/foundation/host.dart"
+    ],
+    "verified": [
+      "test/host_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native navigation capability still requires an actual Toss host implementation and integration verification."
+    ]
+  },
+  {
+    "sources": ["GlobalConfigContext", "TDSConfig"],
+    "dart": ["TdsGlobalConfigContext", "TdsGlobalConfig"],
+    "files": ["lib/src/foundation/host.dart"],
+    "verified": ["test/global_loading_test.dart", "test/modal_context_test.dart"],
+    "differences": ["Native callback/Stream data and post-frame lifecycle replace React context/EventTarget."],
+    "remaining": ["Full provider replacement/unmount ordering and real host back-event integration."]
+  },
+  {
+    "sources": [
+      "UseScrollingDirectionProps"
+    ],
+    "dart": [
+      "TdsScrollingDirectionController"
+    ],
+    "files": [
+      "lib/src/foundation/host.dart"
+    ],
+    "verified": [
+      "test/host_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "ScrollController/ValueListenable replaces target HTMLElement and direct callbacks."
+    ]
+  },
+  {
+    "sources": [
+      "UseBackgroundStyleProps"
+    ],
+    "dart": [
+      "useBackgroundStyle"
+    ],
+    "files": [
+      "lib/src/foundation/layout_adapters.dart"
+    ],
+    "verified": [
+      "test/host_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Typed native background parameter replaces CSS/string props."
+    ]
+  },
+  {
+    "sources": [
+      "UseTopNavigationHeightProps"
+    ],
+    "dart": [
+      "useTopNavigationHeight"
+    ],
+    "files": [
+      "lib/src/foundation/layout_adapters.dart"
+    ],
+    "verified": [
+      "test/host_adapters_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Named native option withSafeAreaTop replaces TS object."
+    ]
+  },
+  {
+    "sources": [
+      "BadgeProps"
+    ],
+    "dart": [
+      "TdsBadge"
+    ],
+    "files": [
+      "lib/src/components/badge.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Rich inline inheritance/baselines and full visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "ParagraphBadgeProps",
+      "Paragraph.Badge",
+      "Top.SubtitleParagraph.Badge"
+    ],
+    "dart": [
+      "TdsParagraphBadge"
+    ],
+    "files": [
+      "lib/src/components/badge.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart",
+      "test/paragraph_inheritance_test.dart",
+      "test/badge_geometry_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Parent metrics inherit and default 1.5em badge line height is checked at all sizes and 100/160/200 percent. CSS inline-middle baseline and anonymous parent strut, custom rich children and rasterization remain different."
+    ]
+  },
+  {
+    "sources": [
+      "SwitchProps"
+    ],
+    "dart": [
+      "TdsSwitch"
+    ],
+    "files": [
+      "lib/src/components/switch.dart"
+    ],
+    "verified": [
+      "test/interaction_test.dart",
+      "test/checkable_motion_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native named options replace HTML props. Pinned source root tap motion is dormant due to a mount-captured null rally; native follows that behavior. Full color/knob retarget, dynamic host replacements and visual/device matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "LoaderProps"
+    ],
+    "dart": [
+      "TdsLoader"
+    ],
+    "files": [
+      "lib/src/components/loader.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native named constructor/Widget options replace HTML props; all source props, focus events, motion and visual matrix remain partial."
+    ]
+  },
+  {
+    "sources": [
+      "CheckboxProps",
+      "CheckboxCircleProps",
+      "CheckboxLineProps",
+      "CheckboxLineTransparentProps",
+      "Checkbox.Circle",
+      "Checkbox.Line",
+      "Checkbox.LineTransparent"
+    ],
+    "dart": [
+      "TdsCheckbox"
+    ],
+    "files": [
+      "lib/src/components/checkbox.dart"
+    ],
+    "verified": [
+      "test/interaction_test.dart",
+      "test/checkable_motion_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Selection/150ms return, quadratic wiggle, immediate press/haptic, squared-channel fill, disabled check and callback ordering are tested. Full mixed hover/press/controlled-update timelines, graphic-type replacement, native DOM adapters and visual/device matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "IconButtonImageProps"
+    ],
+    "dart": [
+      "TdsIconButtonImage"
+    ],
+    "files": [
+      "lib/src/components/icon_button.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Native named constructor/Widget options replace HTML props; all source props, focus events, motion and visual matrix remain partial."
+    ]
+  },
+  {
+    "sources": [
+      "ModalProps"
+    ],
+    "dart": [
+      "TdsModal"
+    ],
+    "files": [
+      "lib/src/components/modal.dart"
+    ],
+    "verified": [
+      "test/dialog_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native named constructor/Widget options replace HTML props; all source props, focus events, motion and visual matrix remain partial."
+    ]
+  },
+  {
+    "sources": [
+      "ModalContentProps",
+      "Modal.Content"
+    ],
+    "dart": [
+      "TdsModalContent"
+    ],
+    "files": [
+      "lib/src/components/modal.dart"
+    ],
+    "verified": [
+      "test/dialog_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native named constructor/Widget options replace HTML props; all source props, focus events, motion and visual matrix remain partial."
+    ]
+  },
+  {
+    "sources": [
+      "ModalOverlayProps",
+      "Modal.Overlay"
+    ],
+    "dart": [
+      "TdsModalOverlay"
+    ],
+    "files": [
+      "lib/src/components/modal.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Native named constructor/Widget options replace HTML props; all source props, focus events, motion and visual matrix remain partial."
+    ]
+  },
+  {
+    "sources": [
+      "TDSButtonColor"
+    ],
+    "dart": [
+      "TdsButtonColor"
+    ],
+    "files": [
+      "lib/src/components/button.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source values are Dart enums; complete state/size/theme visual matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "TDSButtonDisplay"
+    ],
+    "dart": [
+      "TdsButtonDisplay"
+    ],
+    "files": [
+      "lib/src/components/button.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source values are Dart enums; complete state/size/theme visual matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "TDSButtonSize"
+    ],
+    "dart": [
+      "TdsButtonSize"
+    ],
+    "files": [
+      "lib/src/components/button.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source values are Dart enums; complete state/size/theme visual matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "TDSButtonVariant"
+    ],
+    "dart": [
+      "TdsButtonVariant"
+    ],
+    "files": [
+      "lib/src/components/button.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source values are Dart enums; complete state/size/theme visual matrix remains."
+    ]
+  },
+  {
+    "sources": [
+      "AssetIconProps",
+      "Asset.Icon",
+      "Asset.IconProps",
+      "Asset.AssetIconProps"
+    ],
+    "dart": [
+      "TdsAssetIcon"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Full accessory/masking/overlap/scale props, image load lifecycle and original frame render matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AssetImageProps",
+      "Asset.Image",
+      "Asset.ImageProps",
+      "Asset.AssetImageProps"
+    ],
+    "dart": [
+      "TdsAssetImage"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Full accessory/masking/overlap/scale props, image load lifecycle and original frame render matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AssetLottieProps",
+      "Asset.Lottie",
+      "Asset.LottieProps",
+      "Asset.AssetLottieProps"
+    ],
+    "dart": [
+      "TdsAssetLottie"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Full accessory/masking/overlap/scale props, image load lifecycle and original frame render matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AssetFrameProps",
+      "Asset.Frame",
+      "Asset.FrameProps",
+      "Asset.AssetFrameProps"
+    ],
+    "dart": [
+      "TdsAssetFrame"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Full accessory/masking/overlap/scale props, image load lifecycle and original frame render matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AssetFrameShapeType",
+      "Asset.FrameShapeType",
+      "Asset.AssetFrameShapeType"
+    ],
+    "dart": [
+      "TdsAssetFrameShape"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Typed dimensions replace source named-shape/record union; frame table is TdsAssetFrames."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.Text"
+    ],
+    "dart": [
+      "TdsAssetText"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Typography, accessorizing and source native frame matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.SquircleMasking"
+    ],
+    "dart": [
+      "TdsSquircleMasking"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/controls_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Rendering all six exact source paths across native backends remains."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.accPosition"
+    ],
+    "dart": [
+      "TdsAssetAccessoryPosition"
+    ],
+    "files": [
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Source string constants become typed Dart enum."
+    ]
+  },
+  {
+    "sources": [
+      "AssetContentIconProps",
+      "Asset.ContentIcon",
+      "Asset.ContentIconProps",
+      "Asset.AssetContentIconProps"
+    ],
+    "dart": [
+      "TdsAssetContentIcon"
+    ],
+    "files": [
+      "lib/src/components/asset_content.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Content-only native adapter; object-fit constraints, asset lifecycle, accessibility and all original options remain to compare. Video autoplay/codecs differ by platform."
+    ]
+  },
+  {
+    "sources": [
+      "AssetContentImageProps",
+      "Asset.ContentImage",
+      "Asset.ContentImageProps",
+      "Asset.AssetContentImageProps"
+    ],
+    "dart": [
+      "TdsAssetContentImage"
+    ],
+    "files": [
+      "lib/src/components/asset_content.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Content-only native adapter; object-fit constraints, asset lifecycle, accessibility and all original options remain to compare. Video autoplay/codecs differ by platform."
+    ]
+  },
+  {
+    "sources": [
+      "AssetContentLottieProps",
+      "Asset.ContentLottie",
+      "Asset.ContentLottieProps",
+      "Asset.AssetContentLottieProps"
+    ],
+    "dart": [
+      "TdsAssetContentLottie"
+    ],
+    "files": [
+      "lib/src/components/asset_content.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Content-only native adapter; object-fit constraints, asset lifecycle, accessibility and all original options remain to compare. Video autoplay/codecs differ by platform."
+    ]
+  },
+  {
+    "sources": [
+      "AssetContentVideoProps",
+      "Asset.ContentVideo",
+      "Asset.ContentVideoProps",
+      "Asset.AssetContentVideoProps"
+    ],
+    "dart": [
+      "TdsAssetContentVideo"
+    ],
+    "files": [
+      "lib/src/components/asset_content.dart"
+    ],
+    "verified": [
+      "test/asset_video_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Content-only native adapter; object-fit constraints, asset lifecycle, accessibility and all original options remain to compare. Video autoplay/codecs differ by platform."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.Video"
+    ],
+    "dart": [
+      "TdsAssetVideo"
+    ],
+    "files": [
+      "lib/src/components/asset_content.dart"
+    ],
+    "verified": [
+      "test/asset_video_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Composed native video/frame constructor; original media events, browser playsInline false and full visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "BottomInfoProps"
+    ],
+    "dart": [
+      "TdsBottomInfo"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [],
+    "differences": [],
+    "remaining": [
+      "Gradient/spacing visual comparison and rich content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopProps",
+      "TopRootProps"
+    ],
+    "dart": [
+      "TdsTop"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Named Widget slots replace React nodes; high-font right slot reflow still needs source parity."
+    ]
+  },
+  {
+    "sources": [
+      "TopLowerButtonProps",
+      "Top.LowerButton"
+    ],
+    "dart": [
+      "TdsTopLowerButton"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopLowerCTAProps",
+      "Top.LowerCTA"
+    ],
+    "dart": [
+      "TdsTopLowerCTA"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopLowerCTAButtonProps",
+      "Top.LowerCTAButton"
+    ],
+    "dart": [
+      "TdsTopLowerCTAButton"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopRightButtonProps",
+      "Top.RightButton"
+    ],
+    "dart": [
+      "TdsTopRightButton"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopRightAssetContentProps",
+      "Top.RightAssetContent"
+    ],
+    "dart": [
+      "TdsTopRightAssetContent"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopRightArrowProps",
+      "Top.RightArrow"
+    ],
+    "dart": [
+      "TdsTopRightArrow"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopSubtitleBadgesProps",
+      "Top.SubtitleBadges"
+    ],
+    "dart": [
+      "TdsTopSubtitleBadges"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopSubtitleParagraphProps",
+      "Top.SubtitleParagraph"
+    ],
+    "dart": [
+      "TdsTopSubtitleParagraph"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart",
+      "test/paragraph_inheritance_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Rich InlineSpan/WidgetSpan inheritance is implemented; CSS inline-middle baselines, Korean keep-all with anywhere fallback, selection and all-scale visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopSubtitleSelectorProps",
+      "Top.SubtitleSelector"
+    ],
+    "dart": [
+      "TdsTopSubtitleSelector"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopSubtitleTextButtonProps",
+      "Top.SubtitleTextButton"
+    ],
+    "dart": [
+      "TdsTopSubtitleTextButton"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopTitleParagraphProps",
+      "Top.TitleParagraph"
+    ],
+    "dart": [
+      "TdsTopTitleParagraph"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopTitleSelectorProps",
+      "Top.TitleSelector"
+    ],
+    "dart": [
+      "TdsTopTitleSelector"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopTitleTextButtonProps",
+      "Top.TitleTextButton"
+    ],
+    "dart": [
+      "TdsTopTitleTextButton"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "TopUpperAssetContentProps",
+      "Top.UpperAssetContent"
+    ],
+    "dart": [
+      "TdsTopUpperAssetContent"
+    ],
+    "files": [
+      "lib/src/components/top.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound constructor; exact inherited spacing, rich content, typography/large-font reflow and visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowIconButtonProps",
+      "ListRow.IconButton"
+    ],
+    "dart": [
+      "TdsListRowIconButton"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowIconProps",
+      "ListRow.Icon"
+    ],
+    "dart": [
+      "TdsListRowIcon"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowImageContainerProps",
+      "ListRow.ImageContainer"
+    ],
+    "dart": [
+      "TdsListRowImageContainer"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowImageProps",
+      "ListRow.Image"
+    ],
+    "dart": [
+      "TdsListRowImage"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowLeftTextProps",
+      "ListRow.LeftText"
+    ],
+    "dart": [
+      "TdsListRowLeftText"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowLoaderProps",
+      "ListRow.Loader"
+    ],
+    "dart": [
+      "TdsListRowLoader"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowTextProps",
+      "ListRow.Text"
+    ],
+    "dart": [
+      "TdsListRowText"
+    ],
+    "files": [
+      "lib/src/components/list_compounds.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native compound geometry subset; inherited slot alignment, all accessibility scales, CSS/HTML props and original animation/pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListRowRef"
+    ],
+    "dart": [
+      "TdsListRowController"
+    ],
+    "files": [
+      "lib/src/foundation/list_row_controller.dart",
+      "lib/src/foundation/list_row_motion.dart",
+      "lib/src/foundation/raw_press_region.dart",
+      "lib/src/foundation/input_dispatch.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart",
+      "test/list_row_motion_test.dart",
+      "test/list_row_blink_batch_test.dart",
+      "test/list_row_input_order_test.dart",
+      "test/list_row_async_test.dart"
+    ],
+    "differences": [
+      "GlobalKey replaces HTMLElement fields; nonpositive duration/repeat counts are rejected; native reduced motion and complete timer disposal are deliberate adaptations.",
+      "Imperative microtask chains commit in a native event task or before a frame; discrete input commits in a microtask. This is not a reproduction of React concurrent lanes, transitions or flushSync."
+    ],
+    "remaining": [
+      "Blink has source-fixed radial color, a live adaptive dimmer, current-opacity exit and retained-radius reentry with independent 80/480ms delays. Imperative microtask chains versus discrete pointer, keyboard and semantics activation have regressions alongside mixed input order, accepted deadlines and post-release activation. Shine captures integer light endpoints separately from live geometry and retargets changed width/count from the current position. Arbitrary concurrent scheduling, stylus/host gestures and frame-by-frame device comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListFooterHairlineProps",
+      "ListFooter.Hairline"
+    ],
+    "dart": [
+      "TdsListFooterHairline"
+    ],
+    "files": [
+      "lib/src/components/list_support.dart"
+    ],
+    "verified": [
+      "test/list_footer_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Inherited/explicit hairline indentation and minimum-height distribution have scoped tests. Arbitrary CSS/HTML prop overrides and frame-by-frame device comparison remain; descendant color registration is covered by the ListFooter/Text/Icon mappings."
+    ]
+  },
+  {
+    "sources": [
+      "ListFooterShadowProps",
+      "ListFooter.Shadow"
+    ],
+    "dart": [
+      "TdsListFooterShadow"
+    ],
+    "files": [
+      "lib/src/components/list_support.dart"
+    ],
+    "verified": [
+      "test/list_footer_test.dart",
+      "test/list_footer_color_test.dart",
+      "test/list_footer_replay_test.dart",
+      "test/list_footer_context_test.dart",
+      "test/list_footer_undefined_test.dart",
+      "test/list_footer_nested_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Source elliptical shadow, shared rapid interpolation, independent press/release contexts and nested content/shadow selector snapshots have scoped tests. Shape nodes register with every ancestor Footer and detach on unmount; late replacements join only newly captured contexts. Arbitrary custom descendant transforms, exhaustive nested/context combinations, cross-engine frame scheduling and device pixel comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ListHeaderTitleSelectorProps",
+      "ListHeader.TitleSelector"
+    ],
+    "dart": [
+      "TdsListHeaderTitleSelector"
+    ],
+    "files": [
+      "lib/src/components/list_support.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Native header scope inherited metrics; large-font transform and source rich content matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "ParagraphProps"
+    ],
+    "dart": [
+      "TdsParagraph"
+    ],
+    "files": [
+      "lib/src/components/text.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart",
+      "test/paragraph_inheritance_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Rich InlineSpan/WidgetSpan inheritance is implemented; CSS inline-middle baselines, Korean keep-all with anywhere fallback, selection and all-scale visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "ParagraphTextProps",
+      "Paragraph.Text",
+      "Top.SubtitleParagraph.Text"
+    ],
+    "dart": [
+      "TdsParagraphText"
+    ],
+    "files": [
+      "lib/src/components/text.dart"
+    ],
+    "verified": [
+      "test/typography_test.dart",
+      "test/paragraph_inheritance_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Typed inline spans inherit color/weight and preserve per-span text metrics. CSS vertical-align middle, keep-all with anywhere fallback, rich selection and all mixed baseline pixels remain."
+    ]
+  },
+  {
+    "sources": [
+      "ParagraphIconProps",
+      "Paragraph.Icon",
+      "Top.SubtitleParagraph.Icon"
+    ],
+    "dart": [
+      "TdsParagraphIcon"
+    ],
+    "files": [
+      "lib/src/components/text.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart",
+      "test/paragraph_inheritance_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Parent icon metrics now inherit and explicit typography overrides them. CSS inline-middle baseline differs from a default WidgetSpan; custom spans/assets and all-scale pixels remain."
+    ]
+  },
+  {
+    "sources": [
+      "ParagraphLinkProps",
+      "Paragraph.Link",
+      "Top.SubtitleParagraph.Link"
+    ],
+    "dart": [
+      "TdsParagraphLink"
+    ],
+    "files": [
+      "lib/src/components/text.dart"
+    ],
+    "verified": [
+      "test/compounds_types_test.dart",
+      "test/paragraph_inheritance_test.dart"
+    ],
+    "differences": [],
+    "remaining": [
+      "Parent color, weight and text metrics inherit. Native activation callback replaces href/DOM events; inline-middle/2px underline baseline, keep-all wrapping and rich content comparisons remain."
+    ]
+  }
+]

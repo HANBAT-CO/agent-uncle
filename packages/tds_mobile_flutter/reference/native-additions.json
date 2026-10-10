@@ -1,0 +1,1355 @@
+[
+  {
+    "sources": [
+      "Post"
+    ],
+    "dart": [
+      "TdsPost"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Rich React children/span/ref/HTML contracts and complete visual matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H1",
+      "PostH1Props"
+    ],
+    "dart": [
+      "TdsPostH1"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H2",
+      "PostH2Props"
+    ],
+    "dart": [
+      "TdsPostH2"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H3",
+      "PostH3Props"
+    ],
+    "dart": [
+      "TdsPostH3"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H4",
+      "PostH4Props"
+    ],
+    "dart": [
+      "TdsPostH4"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Paragraph",
+      "PostParagraphProps"
+    ],
+    "dart": [
+      "TdsPostParagraph"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Li",
+      "PostLiProps"
+    ],
+    "dart": [
+      "TdsPostLi"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Ol",
+      "PostOlProps"
+    ],
+    "dart": [
+      "TdsPostOl"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Ul",
+      "PostUlProps"
+    ],
+    "dart": [
+      "TdsPostUl"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Hr",
+      "PostHrProps"
+    ],
+    "dart": [
+      "TdsPostHr"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Rich span/DOM adaptations and complete visual typography/spacing comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper",
+      "StepperProps"
+    ],
+    "dart": [
+      "TdsStepper"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Independent source left/title/line stagger timelines and all reflow cases remain."
+    ]
+  },
+  {
+    "sources": [
+      "StepperRow",
+      "StepperRowProps",
+      "Stepper.StepperRow"
+    ],
+    "dart": [
+      "TdsStepperRow"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "All line visibility/layout/animation variants and visual comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper.Texts",
+      "Stepper.StepperRow.Texts",
+      "StepperRow.Texts",
+      "StepperRowTextsProps"
+    ],
+    "dart": [
+      "TdsStepperRowTexts"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full native compound forwarding and source visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper.NumberIcon",
+      "Stepper.StepperRow.NumberIcon",
+      "StepperRow.NumberIcon",
+      "StepperRowNumberIconProps"
+    ],
+    "dart": [
+      "TdsStepperRowNumberIcon"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full native compound forwarding and source visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper.AssetFrame",
+      "Stepper.StepperRow.AssetFrame",
+      "StepperRow.AssetFrame",
+      "StepperRowAssetFrameProps"
+    ],
+    "dart": [
+      "TdsStepperRowAssetFrame"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full native compound forwarding and source visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper.RightArrow",
+      "Stepper.StepperRow.RightArrow",
+      "StepperRow.RightArrow",
+      "StepperRowRightArrowProps"
+    ],
+    "dart": [
+      "TdsStepperRowRightArrow"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full native compound forwarding and source visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "Stepper.RightButton",
+      "Stepper.StepperRow.RightButton",
+      "StepperRow.RightButton",
+      "StepperRowRightButtonProps"
+    ],
+    "dart": [
+      "TdsStepperRowRightButton"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full native compound forwarding and source visual/motion matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "ProgressStepper",
+      "ProgressStepperProps"
+    ],
+    "dart": [
+      "TdsProgressStepper",
+      "TdsProgressStepperVariant"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "More-than-three-step source width allocation, glow, vertical progress geometry and visual comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "ProgressStep",
+      "ProgressStepProps"
+    ],
+    "dart": [
+      "TdsProgressStep"
+    ],
+    "files": [
+      "lib/src/components/stepper.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Original check icon, source icon borders and full reflow/visual comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "Doughnut",
+      "DoughnutProps"
+    ],
+    "dart": [
+      "TdsDoughnut"
+    ],
+    "files": [
+      "lib/src/components/charts.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Source 80% visibility trigger, exact motion timing/gradients and all theme/data visual cases remain."
+    ]
+  },
+  {
+    "sources": [
+      "DoughnutChart",
+      "DoughnutChartProps"
+    ],
+    "dart": [
+      "TdsDoughnutChart"
+    ],
+    "files": [
+      "lib/src/components/charts.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Source 80% visibility trigger, exact motion timing/gradients and all theme/data visual cases remain."
+    ]
+  },
+  {
+    "sources": [
+      "DoughnutLabel",
+      "DoughnutLabelProps"
+    ],
+    "dart": [
+      "TdsDoughnutLabel"
+    ],
+    "files": [
+      "lib/src/components/charts.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Source 80% visibility trigger, exact motion timing/gradients and all theme/data visual cases remain."
+    ]
+  },
+  {
+    "sources": [
+      "BarChart",
+      "BarChartProps"
+    ],
+    "dart": [
+      "TdsBarChart"
+    ],
+    "files": [
+      "lib/src/components/charts.dart"
+    ],
+    "verified": [
+      "test/post_charts_test.dart"
+    ],
+    "remaining": [
+      "Source 80% visibility trigger, exact motion timing/gradients and all theme/data visual cases remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3"
+    ],
+    "dart": [
+      "TdsAgreementV3"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Namespace adapted to named native widgets; complete composition/DOM/motion parity remains."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.SingleCheckboxField",
+      "AgreementV3SingleCheckboxFieldProps"
+    ],
+    "dart": [
+      "TdsAgreementV3SingleCheckboxField"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.SingleField",
+      "AgreementV3SingleFieldProps"
+    ],
+    "dart": [
+      "TdsAgreementV3SingleField"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.Group",
+      "AgreementV3GroupProps"
+    ],
+    "dart": [
+      "TdsAgreementV3Group"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.GroupItem",
+      "AgreementV3GroupItemProps"
+    ],
+    "dart": [
+      "TdsAgreementV3GroupItem"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.Button",
+      "AgreementV3ButtonProps"
+    ],
+    "dart": [
+      "TdsAgreementV3Button"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.Tag",
+      "AgreementV3TagProps"
+    ],
+    "dart": [
+      "TdsAgreementV3Tag"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.Description",
+      "AgreementV3DescriptionProps"
+    ],
+    "dart": [
+      "TdsAgreementV3Description"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.CollapsibleGroup",
+      "AgreementV3CollapsibleGroupProps"
+    ],
+    "dart": [
+      "TdsAgreementV3CollapsibleGroup"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV3.Collapsible",
+      "AgreementV3CollapsibleProps"
+    ],
+    "dart": [
+      "TdsAgreementV3Collapsible"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original field typography metrics, group padding, arbitrary event/HTML props and independent touch animations remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4"
+    ],
+    "dart": [
+      "TdsAgreementV4"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Full original compound motion timelines, rich-child accessibility label extraction and visual matrix remain; direct Text and AgreementText labels are inferred."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Badge",
+      "AgreementV4BadgeProps"
+    ],
+    "dart": [
+      "TdsAgreementBadge"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Checkbox",
+      "AgreementV4Checkbox"
+    ],
+    "dart": [
+      "TdsAgreementCheckbox"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.IndentPushable",
+      "AgreementV4IndentPushableProps"
+    ],
+    "dart": [
+      "TdsAgreementIndentPushable"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.IndentPushableContent",
+      "AgreementV4IndentPushableContentProps"
+    ],
+    "dart": [
+      "TdsAgreementIndentPushableContent"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.IndentPushableTrigger",
+      "AgreementV4IndentPushableTriggerProps"
+    ],
+    "dart": [
+      "TdsAgreementIndentPushableTrigger"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Description",
+      "AgreementV4DescriptionProps"
+    ],
+    "dart": [
+      "TdsAgreementDescription"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Group",
+      "AgreementV4GroupProps"
+    ],
+    "dart": [
+      "TdsAgreementGroup"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Header",
+      "AgreementV4HeaderProps"
+    ],
+    "dart": [
+      "TdsAgreementHeader"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Necessity",
+      "AgreementV4NecessityProps"
+    ],
+    "dart": [
+      "TdsAgreementNecessity"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Pressable"
+    ],
+    "dart": [
+      "TdsAgreementPressable"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.RightArrow"
+    ],
+    "dart": [
+      "TdsAgreementRightArrow"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Text"
+    ],
+    "dart": [
+      "TdsAgreementText"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.Collapsible"
+    ],
+    "dart": [
+      "TdsAgreementCollapsible"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.CollapsibleContent"
+    ],
+    "dart": [
+      "TdsAgreementCollapsibleContent"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementV4.CollapsibleTrigger"
+    ],
+    "dart": [
+      "TdsAgreementCollapsibleTrigger"
+    ],
+    "files": [
+      "lib/src/components/agreement.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Checkbox delayed color, variant transitions and expanded hit area are implemented; gradient animation, nested indentation, rich span/DOM contracts and pixel/timeline matrix remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementModuleContent",
+      "AgreementModuleContentProps",
+      "FullPageAgreementModule.Content",
+      "FloatButtonAgreementModule.Content",
+      "BottomSheetAgreementModule.Content",
+      "GradientBottomSheetAgreementModule.Content"
+    ],
+    "dart": [
+      "TdsAgreementModuleContent"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Source line-by-line animation, measured fixed header transitions, exact default layout and rich titles remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementModuleStagger",
+      "AgreementModuleStaggerProps",
+      "FullPageAgreementModule.Stagger",
+      "FloatButtonAgreementModule.Stagger",
+      "BottomSheetAgreementModule.Stagger",
+      "GradientBottomSheetAgreementModule.Stagger"
+    ],
+    "dart": [
+      "TdsAgreementModuleStagger"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Source line-by-line animation, measured fixed header transitions, exact default layout and rich titles remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementModuleTop",
+      "AgreementModuleTopProps",
+      "FullPageAgreementModule.Top",
+      "FloatButtonAgreementModule.Top",
+      "BottomSheetAgreementModule.Top",
+      "GradientBottomSheetAgreementModule.Top"
+    ],
+    "dart": [
+      "TdsAgreementModuleTop"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Source line-by-line animation, measured fixed header transitions, exact default layout and rich titles remain."
+    ]
+  },
+  {
+    "sources": [
+      "AgreementModuleTopTitle",
+      "AgreementModuleTopTitleProps",
+      "FullPageAgreementModule.TopTitle",
+      "FloatButtonAgreementModule.TopTitle",
+      "BottomSheetAgreementModule.TopTitle",
+      "GradientBottomSheetAgreementModule.TopTitle"
+    ],
+    "dart": [
+      "TdsAgreementModuleTopTitle"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Source line-by-line animation, measured fixed header transitions, exact default layout and rich titles remain."
+    ]
+  },
+  {
+    "sources": [
+      "FullPageAgreementModule",
+      "AgreementModuleFullPageProps"
+    ],
+    "dart": [
+      "TdsFullPageAgreementModule"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Native layout adaptation: source absolute header/CTA layout, scrollToTop, gradient geometry, focus behavior and all visual/device states remain."
+    ]
+  },
+  {
+    "sources": [
+      "FullPageAgreementModule.CTA",
+      "AgreementModuleFullPageCTAProps"
+    ],
+    "dart": [
+      "TdsAgreementModuleCTA"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Full original custom button props, animated resizing/reflow, full-page fixed spacer and scrollToTop integration remain."
+    ]
+  },
+  {
+    "sources": [
+      "FloatButtonAgreementModule",
+      "AgreementModuleFloatButtonProps"
+    ],
+    "dart": [
+      "TdsFloatButtonAgreementModule"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Native layout adaptation: source absolute header/CTA layout, scrollToTop, gradient geometry, focus behavior and all visual/device states remain."
+    ]
+  },
+  {
+    "sources": [
+      "FloatButtonAgreementModule.CTA",
+      "AgreementModuleFloatButtonCTAProps"
+    ],
+    "dart": [
+      "TdsAgreementModuleCTA"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Full original custom button props, animated resizing/reflow, full-page fixed spacer and scrollToTop integration remain."
+    ]
+  },
+  {
+    "sources": [
+      "BottomSheetAgreementModule",
+      "AgreementModuleBottomSheetProps"
+    ],
+    "dart": [
+      "TdsBottomSheetAgreementModule"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Native layout adaptation: source absolute header/CTA layout, scrollToTop, gradient geometry, focus behavior and all visual/device states remain."
+    ]
+  },
+  {
+    "sources": [
+      "BottomSheetAgreementModule.CTA",
+      "AgreementModuleBottomSheetCTAProps"
+    ],
+    "dart": [
+      "TdsAgreementModuleCTA"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Full original custom button props, animated resizing/reflow, full-page fixed spacer and scrollToTop integration remain."
+    ]
+  },
+  {
+    "sources": [
+      "GradientBottomSheetAgreementModule",
+      "AgreementModuleGradientBottomSheetProps"
+    ],
+    "dart": [
+      "TdsGradientBottomSheetAgreementModule"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Native layout adaptation: source absolute header/CTA layout, scrollToTop, gradient geometry, focus behavior and all visual/device states remain."
+    ]
+  },
+  {
+    "sources": [
+      "GradientBottomSheetAgreementModule.CTA",
+      "AgreementModuleGradientBottomSheetCTAProps"
+    ],
+    "dart": [
+      "TdsAgreementModuleCTA"
+    ],
+    "files": [
+      "lib/src/components/agreement_module.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Full original custom button props, animated resizing/reflow, full-page fixed spacer and scrollToTop integration remain."
+    ]
+  },
+  {
+    "sources": [
+      "NumberKeypad",
+      "NumberKeypadProps"
+    ],
+    "dart": [
+      "TdsNumberKeypad"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Press-start dispatch, fixed text/row geometry, exact back arrow and typed keys implemented. Inline SVG baseline, secure highlight timing, scroll/pointer/focus device matrix and ref contracts remain. Capture protection requires injected native host."
+    ]
+  },
+  {
+    "sources": [
+      "AlphabetKeypad",
+      "AlphabetKeypadProps"
+    ],
+    "dart": [
+      "TdsAlphabetKeypad"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart"
+    ],
+    "remaining": [
+      "Press-start dispatch, fixed text/row geometry, exact back arrow and typed keys implemented. Inline SVG baseline, secure highlight timing, scroll/pointer/focus device matrix and ref contracts remain. Capture protection requires injected native host."
+    ]
+  },
+  {
+    "sources": [
+      "FullSecureKeypad",
+      "FullSecureKeypadProps"
+    ],
+    "dart": [
+      "TdsFullSecureKeypad",
+      "TdsSecureKeypadController"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart",
+      "lib/src/foundation/secure_keypad_layout.dart"
+    ],
+    "verified": [
+      "test/agreement_keypad_test.dart",
+      "test/secure_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original SVGs, press-start dispatch, 2:2:5:5 grid, fixed font boxes, deferred reorder and 200ms/1s live-region lifecycle have scoped tests. Complete mode/state/device pixels, browser subpixel grid quantization and screen-reader behavior remain. OS capture protection still requires an injected host adapter."
+    ],
+    "differences": [
+      "Native keyboard/semantics activation supplements the source pointer/touch handlers. Cryptographic native randomness replaces Math.random while preserving the source insertion bounds. DOM element ref adapts to Widget keys."
+    ]
+  },
+  {
+    "sources": [
+      "FullSecureKeypadRef"
+    ],
+    "dart": [
+      "TdsSecureKeypadController"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/secure_keypad_test.dart"
+    ],
+    "remaining": [
+      "Original SVGs, press-start dispatch, 2:2:5:5 grid, fixed font boxes, deferred reorder and 200ms/1s live-region lifecycle have scoped tests. Complete mode/state/device pixels, browser subpixel grid quantization and screen-reader behavior remain. OS capture protection still requires an injected host adapter."
+    ],
+    "differences": [
+      "Native keyboard/semantics activation supplements the source pointer/touch handlers. Cryptographic native randomness replaces Math.random while preserving the source insertion bounds. DOM element ref adapts to Widget keys."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule",
+      "CodeAuthModuleRootProps"
+    ],
+    "dart": [
+      "TdsCodeAuthModule"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [],
+    "remaining": [
+      "Original success Lottie and background gradient/motion pipeline remain; native composition replaces React contexts."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.AuthFieldController",
+      "CodeAuthModuleAuthFieldControllerProps"
+    ],
+    "dart": [
+      "TdsCodeAuthFieldController"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.AuthField",
+      "CodeAuthModuleAuthFieldProps"
+    ],
+    "dart": [
+      "TdsCodeAuthField"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.Error",
+      "CodeAuthModuleErrorProps"
+    ],
+    "dart": [
+      "TdsCodeAuthError"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.Top",
+      "CodeAuthModuleTopProps"
+    ],
+    "dart": [
+      "TdsCodeAuthTop"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.TopTitle",
+      "CodeAuthModuleTopTitleProps"
+    ],
+    "dart": [
+      "TdsCodeAuthTopTitle"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.TopSubtitle",
+      "CodeAuthModuleTopSubtitleProps"
+    ],
+    "dart": [
+      "TdsCodeAuthTopSubtitle"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.Field",
+      "CodeAuthModuleFieldProps"
+    ],
+    "dart": [
+      "TdsCodeAuthModuleField"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "CodeAuthModule.FixedBottomTextButton",
+      "CodeAuthModuleFixedBottomTextButtonProps"
+    ],
+    "dart": [
+      "TdsCodeAuthFixedBottomTextButton"
+    ],
+    "files": [
+      "lib/src/components/code_auth.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Native single editable OTP field replaces individual DOM inputs. Per-cell cursor/focus/paste reducer, source success Lottie, full responsive/animation comparison remain."
+    ]
+  },
+  {
+    "sources": [
+      "SplitTextField",
+      "SplitTextField.RRN13",
+      "SplitTextField.RRNFirst7",
+      "SplitTextFieldRRN13TextFieldProps",
+      "SplitTextFieldRRNFirst7TextFieldProps"
+    ],
+    "dart": [
+      "TdsSplitTextField",
+      "TdsSplitInput"
+    ],
+    "files": [
+      "lib/src/components/split_text_field.dart"
+    ],
+    "verified": [
+      "test/code_split_test.dart"
+    ],
+    "remaining": [
+      "Full source field props, accessible font reflow, caret/selection transitions and original visual matrix remain."
+    ]
+  }
+]

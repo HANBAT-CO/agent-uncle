@@ -1,0 +1,115 @@
+[
+  {"sources":["BoardRow","BoardRowProps"],"dart":["TdsBoardRow"],"files":["lib/src/components/collections.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Header/content IDs become native keys and semantics; animation timeline, arbitrary rich title, last-row detection and full visual matrix still need comparison."]},
+  {"sources":["BoardRow.Prefix","BoardRowPrefixProps"],"dart":["TdsBoardRowPrefix"],"files":["lib/src/components/collections.dart"],"remaining":["All Paragraph span props and rich inline baseline parity."]},
+  {"sources":["BoardRow.ArrowIcon","BoardRowArrowIconProps"],"dart":["TdsBoardRowArrowIcon"],"files":["lib/src/components/collections.dart"],"remaining":["Custom icon/frame overrides and motion timeline comparison."]},
+  {"sources":["BoardRow.Text","BoardRowTextProps"],"dart":["TdsBoardRowText"],"files":["lib/src/components/collections.dart"],"remaining":["Rich Post paragraph props and visual matrix."]},
+  {"sources":["GridList","GridListProps"],"dart":["TdsGridList"],"files":["lib/src/components/collections.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Pressed enlarged-overlay behavior and visual comparison."]},
+  {"sources":["GridList.Item","GridListItemProps"],"dart":["TdsGridListItem"],"files":["lib/src/components/collections.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Original enlarged press overlay and arbitrary child contracts."]},
+  {"sources":["Selector","SelectorProps","TDSSelectorType"],"dart":["TdsSelector","TdsSelectorType"],"files":["lib/src/components/collections.dart"],"remaining":["Expanded hit inset, original underline metrics, color transform, URL activation and visual state matrix."]},
+  {"sources":["Chip","ChipProps"],"dart":["TdsChip"],"files":["lib/src/components/chip.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Exact rowGap at every platform font scale and wrap/overflow visual comparison."]},
+  {"sources":["ChipItem","ChipItemProps"],"dart":["TdsChipItem"],"files":["lib/src/components/chip.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Radial selected gradient, redDot geometry, custom compound colors and motion/visual matrix."]},
+  {"sources":["ChipItemLeftIcon","ChipItemLeftIconProps"],"dart":["TdsChipItemLeftIcon"],"files":["lib/src/components/chip.dart"],"remaining":["All font-scale/color-background combinations and visual comparison."]},
+  {"sources":["ChipItemLeftImage","ChipItemLeftImageProps"],"dart":["TdsChipItemLeftImage"],"files":["lib/src/components/chip.dart"],"remaining":["Image loading/error behavior and visual comparison."]},
+  {"sources":["ChipItemLeftCard","ChipItemLeftCardProps"],"dart":["TdsChipItemLeftCard"],"files":["lib/src/components/chip.dart"],"remaining":["Image loading/error behavior and original rotated-frame visual comparison."]},
+  {"sources":["ChipItemRightIcon","ChipItemRightIconProps"],"dart":["TdsChipItemRightIcon"],"files":["lib/src/components/chip.dart"],"remaining":["Original GR compound color selection and visual matrix."]},
+  {"sources":["ChipItemRightNumber","ChipItemRightNumberProps"],"dart":["TdsChipItemRightNumber"],"files":["lib/src/components/chip.dart"],"remaining":["Original compound weight, shape spacing, GR color selection and visual matrix."]},
+  {
+    "sources": [
+      "Skeleton",
+      "SkeletonProps"
+    ],
+    "dart": [
+      "TdsSkeleton",
+      "TdsSkeletonPart",
+      "TdsSkeletonPattern"
+    ],
+    "files": [
+      "lib/src/components/feedback.dart"
+    ],
+    "verified": [
+      "test/collections_feedback_test.dart",
+      "test/skeleton_motion_test.dart"
+    ],
+    "remaining": [
+      "Initial show/hide fade, interruption without opacity jumps, 100ms staggering and the original 600ms alternate ease curve are tested. Index changes mid-pulse, all theme/pattern motion captures and device reduced-motion policy remain unverified."
+    ],
+    "differences": [
+      "Hidden wrapper children leave native semantics, unlike transparent DOM. Native constraints replace CSS width:100vw."
+    ]
+  },
+  {
+    "sources": [
+      "Skeleton.Wrapper",
+      "SkeletonWrapperProps"
+    ],
+    "dart": [
+      "TdsSkeletonWrapper"
+    ],
+    "files": [
+      "lib/src/components/feedback.dart"
+    ],
+    "remaining": [
+      "Initial show/hide fade, interruption without opacity jumps, 100ms staggering and the original 600ms alternate ease curve are tested. Index changes mid-pulse, all theme/pattern motion captures and device reduced-motion policy remain unverified."
+    ],
+    "verified": [
+      "test/skeleton_motion_test.dart"
+    ],
+    "differences": [
+      "Hidden wrapper children leave native semantics, unlike transparent DOM. Native constraints replace CSS width:100vw."
+    ]
+  },
+  {
+    "sources": [
+      "Skeleton.Item",
+      "SkeletonItemProps"
+    ],
+    "dart": [
+      "TdsSkeletonItem"
+    ],
+    "files": [
+      "lib/src/components/feedback.dart"
+    ],
+    "verified": [
+      "test/collections_feedback_test.dart",
+      "test/skeleton_motion_test.dart"
+    ],
+    "remaining": [
+      "Initial show/hide fade, interruption without opacity jumps, 100ms staggering and the original 600ms alternate ease curve are tested. Index changes mid-pulse, all theme/pattern motion captures and device reduced-motion policy remain unverified."
+    ],
+    "differences": [
+      "Hidden wrapper children leave native semantics, unlike transparent DOM. Native constraints replace CSS width:100vw."
+    ]
+  },
+  {"sources":["FadeIn","FadeInProps"],"dart":["TdsFadeIn"],"files":["lib/src/components/feedback.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Rally playback/variant prop adaptation and exact fast preset comparison."]},
+  {"sources":["LoadingCompleteView","LoadingCompleteViewProps"],"dart":["TdsLoadingCompleteView"],"files":["lib/src/components/feedback.dart"],"remaining":["Toss host remove callback integration on devices and first-paint verification."]},
+  {"sources":["FullScreenLoader"],"dart":["TdsFullScreenLoader"],"files":["lib/src/components/feedback.dart"],"differences":["Must be placed in a full-screen native Stack; does not portal itself."],"remaining":["Host navigation center offset, portal convenience API and device verification."]},
+  {"sources":["LoaderAnimation"],"dart":["TdsLoaderAnimation"],"files":["lib/src/components/loader.dart"],"remaining":["Frame-by-frame source SVG dash/rotation comparison and native reduced-motion behavior."]},
+  {"sources":["Rating","RatingProps"],"dart":["TdsRating","TdsRatingSize","TdsRatingVariant"],"files":["lib/src/components/feedback.dart"],"verified":["test/collections_feedback_test.dart"],"remaining":["Editable press-scale animation, original read-only mask versus icon shape, all sizing/theme matrix."]},
+  {"sources":["Result","ResultProps"],"dart":["TdsResult"],"files":["lib/src/components/feedback.dart"],"remaining":["Full available-height alignment and all figure/large-text visual comparisons."]},
+  {"sources":["Result.Button","ResultButtonProps"],"dart":["TdsResultButton"],"files":["lib/src/components/feedback.dart"],"remaining":["Full Button prop forwarding and original compound visual comparison."]},
+  {"sources":["PortalProvider","PortalConsumer","PortalContext"],"dart":["TdsPortalProvider","TdsPortalConsumer","TdsPortalContext"],"files":["lib/src/foundation/portal.dart","lib/src/foundation/overlay_host.dart"],"verified":["test/portal_test.dart","test/sheet_navigation_test.dart"],"differences":["Explicit OverlayEntry targets replace HTMLElement containers. TDS/media/direction/inherited themes are captured; arbitrary app InheritedWidgets must live above the target Overlay."],"remaining":["Root/nested target migration, nullable scopes and teardown tested. Arbitrary React context continuity and server-rendering are not native contracts."]},
+  {"sources":["BottomCTA","BottomCTA.Single","BottomCTA.Double","BottomCTAProps","BottomCTATypeAProps","BottomCTATypeBProps"],"dart":["TdsBottomCTA","TdsBottomCTADelayedEntrance"],"files":["lib/src/components/bottom_cta.dart"],"verified":["test/bottom_cta_test.dart","test/sheet_navigation_test.dart"],"differences":["ScrollNotificationObserver or an explicit ScrollController replaces window scroll events. Invisible controls are excluded from focus and semantics; reduced motion skips transitions."],"remaining":["DOM containerStyle/ref and full Button-prop forwarding; motion frame comparison, arbitrary child intrinsic sizing, keyboard/safe-area device matrix."]},
+  {"sources":["FixedBottomCTA","FixedBottomCTA.Double","FixedBottomCTAProps","FixedBottomCTATypeBProps"],"dart":["TdsFixedBottomCTA"],"files":["lib/src/components/bottom_cta.dart"],"verified":["test/bottom_cta_test.dart","test/sheet_navigation_test.dart"],"differences":["Native OverlayPortal measures a flow spacer; keyboard uses MediaQuery instead of browser viewport heuristics. Double does not move above keyboard by default."],"remaining":["Multi-Navigator and soft keyboard device verification; complete DOM style/ref and Button-prop forwarding."]},
+  {"sources":["FontScaleLimit.TdsWeb","FontScaleLimit.TdsMobile"],"dart":["TdsFontScaleLimit.tdsWeb","TdsFontScaleLimit.tdsMobile"],"files":["lib/src/foundation/theme.dart"],"verified":["test/typography_test.dart"],"differences":["Native metric scopes replace CSS variable inheritance without changing usePlatform or conditional hooks."],"remaining":["DOM asChild/stylePropName composition and complete visual limit matrix."]},
+  {"sources":["ListRow.Typography"],"dart":["tdsListRowTypography"],"files":["lib/src/components/list_compounds.dart"],"verified":["test/compound_constants_test.dart"],"remaining":["String-keyed native enum map is not a React namespace member; parent ListRow remains partial."]},
+  {"sources":["BottomSheet","BottomSheetProps"],"dart":["TdsBottomSheet","TdsBottomSheetHeight"],"files":["lib/src/components/bottom_sheet.dart","lib/src/components/modal.dart","lib/src/foundation/sheet_motion.dart","lib/src/foundation/bottom_sheet_scope.dart"],"verified":["test/sheet_navigation_test.dart","test/modal_context_test.dart","test/bottom_sheet_compounds_test.dart","test/sheet_motion_test.dart"],"remaining":["Source motion interruption/dimmer throttling, focus-within filtering and React child-array stagger rules, hasTextField viewport special cases, nested focus restoration, dimmer-off modality and full visual/device matrix. Drag thresholds use displacement, not velocity."]},
+  {"sources":["BottomSheet.Header","BottomSheetHeaderProps"],"dart":["TdsBottomSheetHeader"],"files":["lib/src/components/bottom_sheet.dart"],"verified":["test/sheet_navigation_test.dart","test/bottom_sheet_compounds_test.dart","light 100% sheet-select comparison, not a parity pass"],"remaining":["Mixed custom-font line boxes, arbitrary HTML/CSS props and complete scale/theme/device matrix."]},
+  {"sources":["BottomSheet.HeaderDescription","BottomSheetHeaderDescriptionProps"],"dart":["TdsBottomSheetHeaderDescription"],"files":["lib/src/components/bottom_sheet.dart"],"verified":["test/bottom_sheet_compounds_test.dart","light 100% sheet-select comparison, not a parity pass"],"remaining":["Mixed-font rich line boxes/inline assets, arbitrary HTML/CSS props and complete visual matrix."]},
+  {"sources":["BottomSheet.CTA","BottomSheetCTAProps"],"dart":["TdsBottomSheetCTA"],"files":["lib/src/components/bottom_sheet.dart","lib/src/foundation/bottom_sheet_scope.dart"],"verified":["test/sheet_navigation_test.dart","test/bottom_sheet_compounds_test.dart","light 100% scrolling-sheet comparison, not a parity pass"],"differences":["Nullable native background boolean resolves the source none/default/automatic behavior; CSS containerStyle remains a native layout adaptation."],"remaining":["DOM refs/containerStyle, inherited Button contract gaps and full keyboard/safe-area/state matrix. Source 600ms CTA drag fade and overlap are covered."]},
+  {"sources":["BottomSheet.DoubleCTA","BottomSheetDoubleCTAProps"],"dart":["TdsBottomSheetDoubleCTA"],"files":["lib/src/components/bottom_sheet.dart","lib/src/foundation/bottom_sheet_scope.dart"],"verified":["test/bottom_sheet_compounds_test.dart"],"remaining":["DOM refs/containerStyle, inherited DoubleCTA contract gaps and full visual/keyboard/safe-area matrix. Source 600ms CTA drag fade and overlap are covered."]},
+  {"sources":["BottomSheet.Select","BottomSheetSelectProps"],"dart":["TdsBottomSheetSelect","TdsBottomSheetSelectOption"],"files":["lib/src/components/bottom_sheet.dart"],"verified":["test/sheet_navigation_test.dart","test/bottom_sheet_compounds_test.dart","original browser Enter/Space/ArrowDown dispatch produced no change; click did","light 100% sheet-select comparison, not a parity pass"],"differences":["Native radio semantics replaces nested DOM radio/checkbox roles. Duration replaces seconds; onCheckedChange exposes the source checked event field."],"remaining":["Per-mark checkbox hover/press animation, dynamic option reordering/timeline interruption, CSS/event adapters, full theme/scale/multiline/device matrix."]},
+  {"sources":["useBottomSheet"],"dart":["TdsBottomSheetController","TdsBottomSheetOptions","TdsSheetButtonBuilder","TdsSheetButtonState","useBottomSheet"],"files":["lib/src/foundation/bottom_sheet_controller.dart"],"verified":["test/sheet_navigation_test.dart","test/bottom_sheet_controller_test.dart","original closeOnDestroy=false owner unmount removed its overlay"],"differences":["Typed native button builders replace ReactElement cloning/loadingPropName. Native async actions are deduplicated; replacement and provider destruction settle pending futures. Source useOverlay still defaults exitOnUnmount=true even with closeOnDestroy=false."],"remaining":["Exact custom clone callback ordering versus explicit native builders, raw DOM prop adapters and full replacement/exit timing matrix. Source closeOnDestroy=false does not imply persistence."]},
+  {"sources":["TopNavigation","TopNavigationProps"],"dart":["TdsTopNavigation"],"files":["lib/src/components/navigation.dart"],"verified":["test/sheet_navigation_test.dart"],"remaining":["Exact iOS intrinsic grid allocation, descendant button detection, source blur settings and scroll/background visual comparison."]},
+  {"sources":["RootTopNavigation","RootTopNavigationProps"],"dart":["TdsRootTopNavigation"],"files":["lib/src/components/navigation.dart"],"remaining":["All navigation background/theme/scroll props and native large-text visual comparison."]},
+  {"sources":["TopNavigationBackButton","TopNavigationBackButtonProps"],"dart":["TdsTopNavigationBackButton"],"files":["lib/src/components/navigation.dart"],"remaining":["All IconButton prop forwarding and native host navigation integration."]},
+  {"sources":["TopNavigationIconButton","TopNavigationIconButtonProps"],"dart":["TdsTopNavigationIconButton"],"files":["lib/src/components/navigation.dart"],"verified":["test/sheet_navigation_test.dart"],"remaining":["All IconButton overrides, original radius and badge positioning visual comparison."]},
+  {"sources":["TopNavigationTextButton","TopNavigationTextButtonProps"],"dart":["TdsTopNavigationTextButton"],"files":["lib/src/components/navigation.dart"],"remaining":["All TextButton overrides and original red-dot/padding visual comparison."]},
+  {"sources":["SearchField","SearchFieldProps"],"dart":["TdsSearchField"],"files":["lib/src/components/input_controls.dart"],"verified":["test/input_date_test.dart"],"remaining":["End-gradient mask, fixedSafeZoneOffset, original fixed spacer+5px, all InputHTMLAttributes adapters and selection-menu/device verification."]},
+  {"sources":["Slider","SliderProps"],"dart":["TdsSlider","TdsSliderLabel"],"files":["lib/src/components/input_controls.dart","lib/src/foundation/anchored_overlay.dart","lib/src/components/tooltip.dart"],"verified":["test/input_date_test.dart","test/slider_tooltip_test.dart"],"remaining":["Default progress-origin anchor/30px top gap, value formatting, native Tooltip prop forwarding, controlled updates and cleanup are tested. DOM positioning strategy and native Tooltip's remaining anchor clipping/arrow/visual contracts, browser range attributes and device matrix remain."]},
+  {"sources":["SliderTooltip","SliderTooltipProps"],"dart":["TdsSliderTooltip"],"files":["lib/src/components/input_controls.dart","lib/src/foundation/anchored_overlay.dart","lib/src/components/tooltip.dart"],"remaining":["Default progress-origin anchor/30px top gap, value formatting, native Tooltip prop forwarding, controlled updates and cleanup are tested. DOM positioning strategy and native Tooltip's remaining anchor clipping/arrow/visual contracts, browser range attributes and device matrix remain."],"verified":["test/slider_tooltip_test.dart"]},
+  {"sources":["Wheel","WheelProps"],"dart":["TdsWheel","TdsWheelPerspective"],"files":["lib/src/components/date_picker.dart"],"verified":["test/input_date_test.dart"],"differences":["ListWheelScrollView replaces KeenSlider DOM 3D transforms and native semantics replace HTML select."],"remaining":["Source inertia, perspective, exact gradient masks, all initial/loop updates and visual matrix."]},
+  {"sources":["WheelDatePicker","WheelDatePickerProps"],"dart":["TdsWheelDatePicker"],"files":["lib/src/components/date_picker.dart"],"remaining":["Source date-fns formatting is replaced with a typed formatter; trigger and large-font layout visual comparison."]},
+  {"sources":["WheelDateSheet","WheelDateSheetProps"],"dart":["TdsWheelDateSheet"],"files":["lib/src/components/date_picker.dart"],"verified":["test/input_date_test.dart"],"differences":["Native month/day bounds update immediately instead of source 500ms debounce."],"remaining":["Original responsive wheel widths and motion; every min/max/reopen device case."]},
+  {"sources":["DatePicker","DatePickerProps"],"dart":["TdsDatePicker"],"files":["lib/src/components/date_picker.dart"],"verified":["test/input_date_test.dart"],"remaining":["Roving calendar keyboard focus, PageUp/PageDown behavior, fixed typography scale, custom source format adapters and full visual matrix."]},
+  {"sources":["DateRangePicker","DateRangePickerProps"],"dart":["TdsDateRangePicker","TdsDateRange"],"files":["lib/src/components/date_picker.dart"],"verified":["test/input_date_test.dart"],"remaining":["Roving focus, paging keyboard selection, large-font visual matrix and all controlled-null transitions."]}
+]

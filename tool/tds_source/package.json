@@ -1,0 +1,24 @@
+{
+  "name": "agent-uncle-tds-source-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "inventory": "node inventory.mjs",
+    "source": "node inspect.mjs",
+    "generate": "node inventory.mjs && node tokens.mjs && node lists.mjs && dart format ../../packages/tds_mobile_flutter/lib/src/foundation/tokens.g.dart ../../packages/tds_mobile_flutter/lib/src/foundation/color_motion_dependencies.g.dart ../../packages/tds_mobile_flutter/lib/src/components/asset_frames.g.dart ../../packages/tds_mobile_flutter/lib/src/components/list_presets.g.dart && node coverage.mjs",
+    "coverage": "node coverage.mjs --check",
+    "reference": "vite --host 127.0.0.1 --port 5179"
+  },
+  "devDependencies": {
+    "@apps-in-toss/web-framework": "3.8.0",
+    "@types/react": "18.3.26",
+    "@emotion/react": "11.14.0",
+    "@toss/tds-mobile": "2.5.1",
+    "@toss/tds-mobile-ait": "2.5.1",
+    "prettier": "3.6.2",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "typescript": "5.9.3",
+    "vite": "7.3.7"
+  }
+}

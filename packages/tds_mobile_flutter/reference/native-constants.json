@@ -1,0 +1,1203 @@
+[
+  {
+    "sources": [
+      "Asset.frameShape.CircleXSmall",
+      "Asset.frameShape.CircleXSmall.width",
+      "Asset.frameShape.CircleXSmall.height",
+      "Asset.frameShape.CircleXSmall.radius",
+      "Asset.frameShape.CircleXSmall.acc",
+      "Asset.frameShape.CircleXSmall.acc.width",
+      "Asset.frameShape.CircleXSmall.acc.height",
+      "Asset.frameShape.CircleXSmall.acc.x",
+      "Asset.frameShape.CircleXSmall.acc.y",
+      "Asset.frameShape.CircleXSmall.overlap",
+      "Asset.frameShape.CircleXSmall.overlap.x",
+      "Asset.frameShape.CircleXSmall.overlap.y",
+      "Asset.frameShape.CircleXSmall.overlap.blur",
+      "Asset.frameShape.CircleXSmall.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.circleXSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CircleSmall",
+      "Asset.frameShape.CircleSmall.width",
+      "Asset.frameShape.CircleSmall.height",
+      "Asset.frameShape.CircleSmall.radius",
+      "Asset.frameShape.CircleSmall.acc",
+      "Asset.frameShape.CircleSmall.acc.width",
+      "Asset.frameShape.CircleSmall.acc.height",
+      "Asset.frameShape.CircleSmall.acc.x",
+      "Asset.frameShape.CircleSmall.acc.y",
+      "Asset.frameShape.CircleSmall.overlap",
+      "Asset.frameShape.CircleSmall.overlap.x",
+      "Asset.frameShape.CircleSmall.overlap.y",
+      "Asset.frameShape.CircleSmall.overlap.blur",
+      "Asset.frameShape.CircleSmall.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.circleSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CircleMedium",
+      "Asset.frameShape.CircleMedium.width",
+      "Asset.frameShape.CircleMedium.height",
+      "Asset.frameShape.CircleMedium.radius",
+      "Asset.frameShape.CircleMedium.acc",
+      "Asset.frameShape.CircleMedium.acc.width",
+      "Asset.frameShape.CircleMedium.acc.height",
+      "Asset.frameShape.CircleMedium.acc.x",
+      "Asset.frameShape.CircleMedium.acc.y",
+      "Asset.frameShape.CircleMedium.overlap",
+      "Asset.frameShape.CircleMedium.overlap.x",
+      "Asset.frameShape.CircleMedium.overlap.y",
+      "Asset.frameShape.CircleMedium.overlap.blur",
+      "Asset.frameShape.CircleMedium.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.circleMedium"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CircleLarge",
+      "Asset.frameShape.CircleLarge.width",
+      "Asset.frameShape.CircleLarge.height",
+      "Asset.frameShape.CircleLarge.radius",
+      "Asset.frameShape.CircleLarge.acc",
+      "Asset.frameShape.CircleLarge.acc.width",
+      "Asset.frameShape.CircleLarge.acc.height",
+      "Asset.frameShape.CircleLarge.acc.x",
+      "Asset.frameShape.CircleLarge.acc.y",
+      "Asset.frameShape.CircleLarge.overlap",
+      "Asset.frameShape.CircleLarge.overlap.x",
+      "Asset.frameShape.CircleLarge.overlap.y",
+      "Asset.frameShape.CircleLarge.overlap.blur",
+      "Asset.frameShape.CircleLarge.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.circleLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CircleXLarge",
+      "Asset.frameShape.CircleXLarge.width",
+      "Asset.frameShape.CircleXLarge.height",
+      "Asset.frameShape.CircleXLarge.radius",
+      "Asset.frameShape.CircleXLarge.acc",
+      "Asset.frameShape.CircleXLarge.acc.width",
+      "Asset.frameShape.CircleXLarge.acc.height",
+      "Asset.frameShape.CircleXLarge.acc.x",
+      "Asset.frameShape.CircleXLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.circleXLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.Circle2XLarge",
+      "Asset.frameShape.Circle2XLarge.width",
+      "Asset.frameShape.Circle2XLarge.height",
+      "Asset.frameShape.Circle2XLarge.radius",
+      "Asset.frameShape.Circle2XLarge.acc",
+      "Asset.frameShape.Circle2XLarge.acc.width",
+      "Asset.frameShape.Circle2XLarge.acc.height",
+      "Asset.frameShape.Circle2XLarge.acc.x",
+      "Asset.frameShape.Circle2XLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.circle2XLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquircleXSmall",
+      "Asset.frameShape.SquircleXSmall.width",
+      "Asset.frameShape.SquircleXSmall.height",
+      "Asset.frameShape.SquircleXSmall.acc",
+      "Asset.frameShape.SquircleXSmall.acc.width",
+      "Asset.frameShape.SquircleXSmall.acc.height",
+      "Asset.frameShape.SquircleXSmall.acc.x",
+      "Asset.frameShape.SquircleXSmall.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircleXSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquircleSmall",
+      "Asset.frameShape.SquircleSmall.width",
+      "Asset.frameShape.SquircleSmall.height",
+      "Asset.frameShape.SquircleSmall.acc",
+      "Asset.frameShape.SquircleSmall.acc.width",
+      "Asset.frameShape.SquircleSmall.acc.height",
+      "Asset.frameShape.SquircleSmall.acc.x",
+      "Asset.frameShape.SquircleSmall.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircleSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquircleMedium",
+      "Asset.frameShape.SquircleMedium.width",
+      "Asset.frameShape.SquircleMedium.height",
+      "Asset.frameShape.SquircleMedium.acc",
+      "Asset.frameShape.SquircleMedium.acc.width",
+      "Asset.frameShape.SquircleMedium.acc.height",
+      "Asset.frameShape.SquircleMedium.acc.x",
+      "Asset.frameShape.SquircleMedium.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircleMedium"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquircleLarge",
+      "Asset.frameShape.SquircleLarge.width",
+      "Asset.frameShape.SquircleLarge.height",
+      "Asset.frameShape.SquircleLarge.acc",
+      "Asset.frameShape.SquircleLarge.acc.width",
+      "Asset.frameShape.SquircleLarge.acc.height",
+      "Asset.frameShape.SquircleLarge.acc.x",
+      "Asset.frameShape.SquircleLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircleLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquircleXLarge",
+      "Asset.frameShape.SquircleXLarge.width",
+      "Asset.frameShape.SquircleXLarge.height",
+      "Asset.frameShape.SquircleXLarge.acc",
+      "Asset.frameShape.SquircleXLarge.acc.width",
+      "Asset.frameShape.SquircleXLarge.acc.height",
+      "Asset.frameShape.SquircleXLarge.acc.x",
+      "Asset.frameShape.SquircleXLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircleXLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.Squircle2XLarge",
+      "Asset.frameShape.Squircle2XLarge.width",
+      "Asset.frameShape.Squircle2XLarge.height",
+      "Asset.frameShape.Squircle2XLarge.acc",
+      "Asset.frameShape.Squircle2XLarge.acc.width",
+      "Asset.frameShape.Squircle2XLarge.acc.height",
+      "Asset.frameShape.Squircle2XLarge.acc.x",
+      "Asset.frameShape.Squircle2XLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squircle2XLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquareSmall",
+      "Asset.frameShape.SquareSmall.width",
+      "Asset.frameShape.SquareSmall.height",
+      "Asset.frameShape.SquareSmall.radius",
+      "Asset.frameShape.SquareSmall.acc",
+      "Asset.frameShape.SquareSmall.acc.width",
+      "Asset.frameShape.SquareSmall.acc.height",
+      "Asset.frameShape.SquareSmall.acc.x",
+      "Asset.frameShape.SquareSmall.acc.y",
+      "Asset.frameShape.SquareSmall.overlap",
+      "Asset.frameShape.SquareSmall.overlap.x",
+      "Asset.frameShape.SquareSmall.overlap.y",
+      "Asset.frameShape.SquareSmall.overlap.blur",
+      "Asset.frameShape.SquareSmall.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.squareSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquareMedium",
+      "Asset.frameShape.SquareMedium.width",
+      "Asset.frameShape.SquareMedium.height",
+      "Asset.frameShape.SquareMedium.radius",
+      "Asset.frameShape.SquareMedium.acc",
+      "Asset.frameShape.SquareMedium.acc.width",
+      "Asset.frameShape.SquareMedium.acc.height",
+      "Asset.frameShape.SquareMedium.acc.x",
+      "Asset.frameShape.SquareMedium.acc.y",
+      "Asset.frameShape.SquareMedium.overlap",
+      "Asset.frameShape.SquareMedium.overlap.x",
+      "Asset.frameShape.SquareMedium.overlap.y",
+      "Asset.frameShape.SquareMedium.overlap.blur",
+      "Asset.frameShape.SquareMedium.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.squareMedium"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquareLarge",
+      "Asset.frameShape.SquareLarge.width",
+      "Asset.frameShape.SquareLarge.height",
+      "Asset.frameShape.SquareLarge.radius",
+      "Asset.frameShape.SquareLarge.acc",
+      "Asset.frameShape.SquareLarge.acc.width",
+      "Asset.frameShape.SquareLarge.acc.height",
+      "Asset.frameShape.SquareLarge.acc.x",
+      "Asset.frameShape.SquareLarge.acc.y",
+      "Asset.frameShape.SquareLarge.overlap",
+      "Asset.frameShape.SquareLarge.overlap.x",
+      "Asset.frameShape.SquareLarge.overlap.y",
+      "Asset.frameShape.SquareLarge.overlap.blur",
+      "Asset.frameShape.SquareLarge.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.squareLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.SquareXLarge",
+      "Asset.frameShape.SquareXLarge.width",
+      "Asset.frameShape.SquareXLarge.height",
+      "Asset.frameShape.SquareXLarge.radius",
+      "Asset.frameShape.SquareXLarge.acc",
+      "Asset.frameShape.SquareXLarge.acc.width",
+      "Asset.frameShape.SquareXLarge.acc.height",
+      "Asset.frameShape.SquareXLarge.acc.x",
+      "Asset.frameShape.SquareXLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.squareXLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.Square2XLarge",
+      "Asset.frameShape.Square2XLarge.width",
+      "Asset.frameShape.Square2XLarge.height",
+      "Asset.frameShape.Square2XLarge.radius",
+      "Asset.frameShape.Square2XLarge.acc",
+      "Asset.frameShape.Square2XLarge.acc.width",
+      "Asset.frameShape.Square2XLarge.acc.height",
+      "Asset.frameShape.Square2XLarge.acc.x",
+      "Asset.frameShape.Square2XLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.square2XLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.RectangleMedium",
+      "Asset.frameShape.RectangleMedium.width",
+      "Asset.frameShape.RectangleMedium.height",
+      "Asset.frameShape.RectangleMedium.radius",
+      "Asset.frameShape.RectangleMedium.acc",
+      "Asset.frameShape.RectangleMedium.acc.width",
+      "Asset.frameShape.RectangleMedium.acc.height",
+      "Asset.frameShape.RectangleMedium.acc.x",
+      "Asset.frameShape.RectangleMedium.acc.y",
+      "Asset.frameShape.RectangleMedium.overlap",
+      "Asset.frameShape.RectangleMedium.overlap.x",
+      "Asset.frameShape.RectangleMedium.overlap.y",
+      "Asset.frameShape.RectangleMedium.overlap.blur",
+      "Asset.frameShape.RectangleMedium.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.rectangleMedium"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.RectangleLarge",
+      "Asset.frameShape.RectangleLarge.width",
+      "Asset.frameShape.RectangleLarge.height",
+      "Asset.frameShape.RectangleLarge.radius",
+      "Asset.frameShape.RectangleLarge.acc",
+      "Asset.frameShape.RectangleLarge.acc.width",
+      "Asset.frameShape.RectangleLarge.acc.height",
+      "Asset.frameShape.RectangleLarge.acc.x",
+      "Asset.frameShape.RectangleLarge.acc.y",
+      "Asset.frameShape.RectangleLarge.overlap",
+      "Asset.frameShape.RectangleLarge.overlap.x",
+      "Asset.frameShape.RectangleLarge.overlap.y",
+      "Asset.frameShape.RectangleLarge.overlap.blur",
+      "Asset.frameShape.RectangleLarge.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.rectangleLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardXXXSmall",
+      "Asset.frameShape.CardXXXSmall.width",
+      "Asset.frameShape.CardXXXSmall.height",
+      "Asset.frameShape.CardXXXSmall.radius"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardXXXSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardXXSmall",
+      "Asset.frameShape.CardXXSmall.width",
+      "Asset.frameShape.CardXXSmall.height",
+      "Asset.frameShape.CardXXSmall.radius"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardXXSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardXSmall",
+      "Asset.frameShape.CardXSmall.width",
+      "Asset.frameShape.CardXSmall.height",
+      "Asset.frameShape.CardXSmall.radius",
+      "Asset.frameShape.CardXSmall.acc",
+      "Asset.frameShape.CardXSmall.acc.width",
+      "Asset.frameShape.CardXSmall.acc.height",
+      "Asset.frameShape.CardXSmall.acc.x",
+      "Asset.frameShape.CardXSmall.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardXSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardSmall",
+      "Asset.frameShape.CardSmall.width",
+      "Asset.frameShape.CardSmall.height",
+      "Asset.frameShape.CardSmall.radius",
+      "Asset.frameShape.CardSmall.acc",
+      "Asset.frameShape.CardSmall.acc.width",
+      "Asset.frameShape.CardSmall.acc.height",
+      "Asset.frameShape.CardSmall.acc.x",
+      "Asset.frameShape.CardSmall.acc.y",
+      "Asset.frameShape.CardSmall.overlap",
+      "Asset.frameShape.CardSmall.overlap.x",
+      "Asset.frameShape.CardSmall.overlap.y",
+      "Asset.frameShape.CardSmall.overlap.blur",
+      "Asset.frameShape.CardSmall.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardSmall"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardMedium",
+      "Asset.frameShape.CardMedium.width",
+      "Asset.frameShape.CardMedium.height",
+      "Asset.frameShape.CardMedium.radius",
+      "Asset.frameShape.CardMedium.acc",
+      "Asset.frameShape.CardMedium.acc.width",
+      "Asset.frameShape.CardMedium.acc.height",
+      "Asset.frameShape.CardMedium.acc.x",
+      "Asset.frameShape.CardMedium.acc.y",
+      "Asset.frameShape.CardMedium.overlap",
+      "Asset.frameShape.CardMedium.overlap.x",
+      "Asset.frameShape.CardMedium.overlap.y",
+      "Asset.frameShape.CardMedium.overlap.blur",
+      "Asset.frameShape.CardMedium.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardMedium"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardLarge",
+      "Asset.frameShape.CardLarge.width",
+      "Asset.frameShape.CardLarge.height",
+      "Asset.frameShape.CardLarge.radius",
+      "Asset.frameShape.CardLarge.acc",
+      "Asset.frameShape.CardLarge.acc.width",
+      "Asset.frameShape.CardLarge.acc.height",
+      "Asset.frameShape.CardLarge.acc.x",
+      "Asset.frameShape.CardLarge.acc.y",
+      "Asset.frameShape.CardLarge.overlap",
+      "Asset.frameShape.CardLarge.overlap.x",
+      "Asset.frameShape.CardLarge.overlap.y",
+      "Asset.frameShape.CardLarge.overlap.blur",
+      "Asset.frameShape.CardLarge.overlap.spread"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CardXLarge",
+      "Asset.frameShape.CardXLarge.width",
+      "Asset.frameShape.CardXLarge.height",
+      "Asset.frameShape.CardXLarge.radius",
+      "Asset.frameShape.CardXLarge.acc",
+      "Asset.frameShape.CardXLarge.acc.width",
+      "Asset.frameShape.CardXLarge.acc.height",
+      "Asset.frameShape.CardXLarge.acc.x",
+      "Asset.frameShape.CardXLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.cardXLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.Card2XLarge",
+      "Asset.frameShape.Card2XLarge.width",
+      "Asset.frameShape.Card2XLarge.height",
+      "Asset.frameShape.Card2XLarge.radius",
+      "Asset.frameShape.Card2XLarge.acc",
+      "Asset.frameShape.Card2XLarge.acc.width",
+      "Asset.frameShape.Card2XLarge.acc.height",
+      "Asset.frameShape.Card2XLarge.acc.x",
+      "Asset.frameShape.Card2XLarge.acc.y"
+    ],
+    "dart": [
+      "TdsAssetFrames.card2XLarge"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW16",
+      "Asset.frameShape.CleanW16.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW16"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW20",
+      "Asset.frameShape.CleanW20.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW20"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW24",
+      "Asset.frameShape.CleanW24.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW24"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW30",
+      "Asset.frameShape.CleanW30.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW30"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW32",
+      "Asset.frameShape.CleanW32.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW32"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW36",
+      "Asset.frameShape.CleanW36.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW36"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW40",
+      "Asset.frameShape.CleanW40.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW40"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW60",
+      "Asset.frameShape.CleanW60.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW60"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW100",
+      "Asset.frameShape.CleanW100.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW100"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanW250",
+      "Asset.frameShape.CleanW250.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanW250"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanWFull",
+      "Asset.frameShape.CleanWFull.width"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanWFull"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.cleanH20",
+      "Asset.frameShape.cleanH20.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH20"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanH24",
+      "Asset.frameShape.CleanH24.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH24"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanH28",
+      "Asset.frameShape.CleanH28.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH28"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanH32",
+      "Asset.frameShape.CleanH32.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH32"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanH60",
+      "Asset.frameShape.CleanH60.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH60"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  },
+  {
+    "sources": [
+      "Asset.frameShape.CleanH100",
+      "Asset.frameShape.CleanH100.height"
+    ],
+    "dart": [
+      "TdsAssetFrames.cleanH100"
+    ],
+    "files": [
+      "lib/src/components/asset_frames.g.dart",
+      "lib/src/components/asset.dart"
+    ],
+    "verified": [
+      "test/asset_frames_test.dart"
+    ],
+    "differences": [
+      "Size/Offset replace nested acc/overlap objects; 100% maps to available native width."
+    ],
+    "remaining": [
+      "44 original literal tables and 176 frame/position layouts are checked. CSS overflow under undersized parents, mask antialiasing, shadow pixels and arbitrary content sizing remain."
+    ]
+  }
+]

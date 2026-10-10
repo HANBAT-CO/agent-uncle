@@ -1,0 +1,172 @@
+[
+  {
+    "name": "icn-arrow-rightwards",
+    "url": "https://static.toss.im/icons/svg/icn-arrow-rightwards.svg",
+    "sha256": "d6de9dc40b3e7cbabb1137a3e8da60d7b329914df91d798f6075a406105aeb70"
+  },
+  {
+    "name": "icon-arrow-down-mono",
+    "url": "https://static.toss.im/icons/svg/icon-arrow-down-mono.svg",
+    "sha256": "5ee6a418d3942c855e7054a59ec6c79eefd7ae9918443c8bc554a94cb4e021ef"
+  },
+  {
+    "name": "icon-x-circle-mono",
+    "url": "https://static.toss.im/icons/svg/icon-x-circle-mono.svg",
+    "sha256": "fffda604929bbd0f12ae483dc259ad33f025f6dbb1bf27bb1adc9ff2ffb16cdb"
+  },
+  {
+    "name": "icon-arrow-right-small-mono",
+    "url": "https://static.toss.im/icons/svg/icon-arrow-right-small-mono.svg",
+    "sha256": "f57877ab519a86290c8b9e35e4226adc6452492d91ab3597c4282571da5d6ad5"
+  },
+  {
+    "name": "icon-arrow-up-sidebar-mono",
+    "url": "https://static.toss.im/icons/svg/icon-arrow-up-sidebar-mono.svg",
+    "sha256": "50285f934798e10611c38a2cf410dd7a54845940e5f30870b2eb0d87b596cf30"
+  },
+  {
+    "name": "icon-eye-on-mono",
+    "url": "https://static.toss.im/icons/svg/icon-eye-on-mono.svg",
+    "sha256": "4383c5fdcb7eba5ad1bbd483706024be4500256da9727e32da8bde00a6568f88"
+  },
+  {
+    "name": "icon-eye-off-mono",
+    "url": "https://static.toss.im/icons/svg/icon-eye-off-mono.svg",
+    "sha256": "1d579a1e9f23c244079ba2bbe85be0f0980c94563b6e71bee488ea698e55e404"
+  },
+  {
+    "name": "icn-searchfield",
+    "url": "https://static.toss.im/icons/svg/icn-searchfield.svg",
+    "sha256": "e8c8dae9d73a58e37f31c3f9874ec1fdd2f93f5bd850a0bd7ce414540b44fa4b"
+  },
+  {
+    "name": "icn-delete",
+    "url": "https://static.toss.im/icons/svg/icn-delete.svg",
+    "sha256": "66a26999e7782dc45498d0af86ce6a5f929ac7c9eeca0bb90ecdc3dcaaa8182f"
+  },
+  {
+    "name": "icon-arrow-right-mono",
+    "url": "https://static.toss.im/icons/svg/icon-arrow-right-mono.svg",
+    "sha256": "8199e40b420c379b5ccc500ae3a6faf22b4a78fb879f827e7b89b7f10ccfa562"
+  },
+  {
+    "name": "icon-arrow-up-mono",
+    "url": "https://static.toss.im/icons/svg/icon-arrow-up-mono.svg",
+    "sha256": "f5292a69ae2acd2485c129b42c3fa46e05af0b4f44cfc1b00fad09e5b3cbdf00"
+  },
+  {
+    "name": "icon-star-mono",
+    "url": "https://static.toss.im/icons/svg/icon-star-mono.svg",
+    "sha256": "f81c887aca2619e263d975ca6dcb67e752513ded2a41e7418d6a838e16b69a27"
+  },
+  {
+    "name": "icon-chip-arrow-down-mono",
+    "url": "https://static.toss.im/icons/svg/icon-chip-arrow-down-mono.svg",
+    "sha256": "979297c1ebc0f73b52358371ee5ff3715c65265b6b14e23618caf048bc48644c"
+  },
+  {
+    "name": "icon-chip-x-mono",
+    "url": "https://static.toss.im/icons/svg/icon-chip-x-mono.svg",
+    "sha256": "4dab13925bcc81964d8ed3cc52cd72cb7bf03c6794f0389e1e9991c03f0834d6"
+  },
+  {
+    "name": "icon-system-arrow-back-ios-outlined",
+    "url": "https://static.toss.im/icons/svg/icon-system-arrow-back-ios-outlined.svg",
+    "sha256": "a9d7f2aaabfc1b6081fec95dbca5f72cf9f8c292594b5186069b359398808565"
+  },
+  {
+    "name": "icon-system-arrow-back-android-outlined",
+    "url": "https://static.toss.im/icons/svg/icon-system-arrow-back-android-outlined.svg",
+    "sha256": "e84836fa373d8906779188176a76dcad4d6d703c2f46035230cc33ec49d7f054"
+  },
+  {
+    "name": "icon-step1-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step1-rounded-light.svg",
+    "sha256": "718e10b0a4070b3aa238ded630f2d7be139d3d28fdc144112d8b5c6b8e691364"
+  },
+  {
+    "name": "icon-step1-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step1-rounded-dark.svg",
+    "sha256": "00a1c602c2cb80606365730a94d530878be5b4d8b84bbf7a0ed271143806c34b"
+  },
+  {
+    "name": "icon-step2-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step2-rounded-light.svg",
+    "sha256": "0737007d8e468a8ca2062a7531106ab7048fbdb75afe044588326a2dbf0b5abb"
+  },
+  {
+    "name": "icon-step2-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step2-rounded-dark.svg",
+    "sha256": "3b52b735910233eeae21f0d563b2adc6bfc7d80ea9b92199ad5595f451793d57"
+  },
+  {
+    "name": "icon-step3-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step3-rounded-light.svg",
+    "sha256": "6b7d3aec891187d54824bd9f5a3a046678d016eff67dc17ae3fc15e14fcca07a"
+  },
+  {
+    "name": "icon-step3-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step3-rounded-dark.svg",
+    "sha256": "4a06c58538ae90f47f70bc16f682c82b66312b858a8a96b4e5f43d5b1006b2c4"
+  },
+  {
+    "name": "icon-step4-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step4-rounded-light.svg",
+    "sha256": "de7971054b9eb77b6ea7504e03950dfebc738a7acbc09cc74a9d3a26bbe90428"
+  },
+  {
+    "name": "icon-step4-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step4-rounded-dark.svg",
+    "sha256": "4e2a46433d26956e2b5af76a30eb188b52d2112bbf8d2f7bb5a2938b215d7d2d"
+  },
+  {
+    "name": "icon-step5-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step5-rounded-light.svg",
+    "sha256": "4180026868b5a85f1ae298c3df746ab0daabdd2de1428d468349ad213f21c921"
+  },
+  {
+    "name": "icon-step5-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step5-rounded-dark.svg",
+    "sha256": "414342ca8d22fee4bc06d9ec876aa8f696ace5453b87f7601de3ddf5ced36873"
+  },
+  {
+    "name": "icon-step6-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step6-rounded-light.svg",
+    "sha256": "de2016a9a39f6e4ae72a8bb3556603db7d0fccb5b3572800e1b1763c444fb86a"
+  },
+  {
+    "name": "icon-step6-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step6-rounded-dark.svg",
+    "sha256": "9fcdde278ca67cc1eeabc2aee07a15eb91398336718293b57cdcf14e28d1490f"
+  },
+  {
+    "name": "icon-step7-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step7-rounded-light.svg",
+    "sha256": "31aae904e8ec8de410bc72cffc4e6d22981bc2b74f0a4f0a5c012979cde7b14f"
+  },
+  {
+    "name": "icon-step7-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step7-rounded-dark.svg",
+    "sha256": "b7b9343767d0f71036da2f575df49ecd66e34bf94d8b3c45e4c44e11c98e1e13"
+  },
+  {
+    "name": "icon-step8-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step8-rounded-light.svg",
+    "sha256": "596fa0fc0b1b3825d0f3dd0450f96f31cd08bedb670ca7c03ae8ae92ac1c03a9"
+  },
+  {
+    "name": "icon-step8-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step8-rounded-dark.svg",
+    "sha256": "8511aed62338671f25851e67edcbe10bd235a3c22a5aca426c84602eb7cbd5d6"
+  },
+  {
+    "name": "icon-step9-rounded-light",
+    "url": "https://static.toss.im/icons/svg/icon-step9-rounded-light.svg",
+    "sha256": "5a978bee76d4a6da15dab3e57c2185dd3a4c170dae2f7384d3d85e050a6ada86"
+  },
+  {
+    "name": "icon-step9-rounded-dark",
+    "url": "https://static.toss.im/icons/svg/icon-step9-rounded-dark.svg",
+    "sha256": "11d9d9d8ea6e947e08970df8f8dae76a4eac2e81784ba692320952fd51326684"
+  }
+]

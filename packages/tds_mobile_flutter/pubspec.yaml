@@ -1,0 +1,44 @@
+name: tds_mobile_flutter
+description: Project-local native Flutter port of TDS Mobile 2.5.1.
+publish_to: none
+version: 0.1.0
+environment:
+  sdk: ^3.12.2
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_svg: ^2.2.4
+  lottie: ^3.3.3
+  video_player: ^2.11.1
+  url_launcher: ^6.3.2
+dev_dependencies:
+  video_player_platform_interface: ^6.9.0
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  assets:
+    - assets/icons/
+    - assets/point/
+    - assets/wiki/
+  fonts:
+    - family: Toss Product Sans
+      fonts:
+        - asset: assets/fonts/TossProductSans-300.ttf
+          weight: 300
+        - asset: assets/fonts/TossProductSans-400.ttf
+          weight: 400
+        - asset: assets/fonts/TossProductSans-500.ttf
+          weight: 500
+        - asset: assets/fonts/TossProductSans-600.ttf
+          weight: 600
+        - asset: assets/fonts/TossProductSans-700.ttf
+          weight: 700
+        - asset: assets/fonts/TossProductSans-800.ttf
+          weight: 800
+        - asset: assets/fonts/TossProductSans-900.ttf
+          weight: 900
+    - family: Toss Product Sans Black
+      fonts:
+        - asset: assets/fonts/TossProductSans-950.ttf
+          weight: 900

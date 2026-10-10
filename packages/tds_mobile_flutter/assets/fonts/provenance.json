@@ -1,0 +1,3167 @@
+{
+  "family": "Toss Product Sans",
+  "css": [
+    {
+      "url": "https://static.toss.im/tps/main.css",
+      "sha256": "5661e9bb06494dced6ed13b73de6f5db1d7064594a94cd8a7bf50c201fdd3b97"
+    },
+    {
+      "url": "https://static.toss.im/tps/others.css",
+      "sha256": "de79a28614c8e56415c192c8e9dbac42dbb73eaf481991e46459e5439f8a1d12"
+    }
+  ],
+  "faces": [
+    {
+      "weight": 300,
+      "asset": "TossProductSans-300.ttf",
+      "sha256": "0f321f03e210043c3b4a2ce8a96cd5054a216d7356c1258a1b3846dad81b44c7",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/light/0.woff2",
+          "sha256": "5cf82aed51a2d80a041a4cc4781d004d86df7730371547068a95c3588e106da5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/10.woff2",
+          "sha256": "6ad25dceee77ed352d3c1dfe9bba00f0bdbd09e5c026d77eb840cc6bcac01515"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/100.woff2",
+          "sha256": "22e6c887590814d216eba637ffe7afb9a0b04e94ac19c6733e62354b3d74ca32"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/101.woff2",
+          "sha256": "877e29e27b359c58d238c4da241adab249ed5805a191f174cd0e5524155d1d86"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/102.woff2",
+          "sha256": "57ce0c3c3d883ebd2c635c084f821857072e6ce17dc5372e5533ebf85296b817"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/103.woff2",
+          "sha256": "2a32c01403e3dd64c0860c7859cd795a14ca3f88d8710a719e3e9b98d8333bf0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/104.woff2",
+          "sha256": "23ecb13b02e2d96a37a438345f670a56fa8bd3c33c4c05b8b037f169b566dc53"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/105.woff2",
+          "sha256": "1138097eac16425182cd84f9fe91b3cc9dfe59799b0669d2276688001c147fdb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/106.woff2",
+          "sha256": "6acfb8e03dc9b48c675aebc3445610d8da0623c330485f2797a26680a122f790"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/107.woff2",
+          "sha256": "e9862a8084e778e93d9667aa8bf386e78ac83ab4127ae32212c2ad04103ae34e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/108.woff2",
+          "sha256": "410eca822bd5a5e857aaeec009aa306618fe700cb842557fcc149eafca229913"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/109.woff2",
+          "sha256": "dce09b9dd6765fc68ea64f2b35a8fff183a7292eaf6b3864c3f6b78f71e64d9c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/11.woff2",
+          "sha256": "1bb8e543583eda2d16991e535a7c0aa632447634c4dc07cc66c24c1b7cc0b7f8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/110.woff2",
+          "sha256": "4903c909a4df3ef51f0666b99c13021c2a2b6ed380e61321a92610cc722bcaa5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/111.woff2",
+          "sha256": "ec2f5914f0c1ac9eac7b8091f1f03f227e899b9a37b7d6158db83c095ccee2b5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/112.woff2",
+          "sha256": "af5b280432076e86f6a922a6d979f003315a93f054e6fd68f48bc537acbeaf83"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/113.woff2",
+          "sha256": "40e72e90d54ffb946aef3f774b5999eec5a7a87bdefee16b6e7cffa0b3802826"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/114.woff2",
+          "sha256": "87164fecf2fc2d877043a0295eff50182bf0a8e19cdd655c723bebcf1d1985cb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/115.woff2",
+          "sha256": "88144e0d86f745b09278bf76702c2199f2537ed8775535a2068c7e76a2978a79"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/116.woff2",
+          "sha256": "0e56cc77bd095d90e090467b4f4d1d266b07f707edc6fe0b5f1bd2891b6650fe"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/117.woff2",
+          "sha256": "632b17200fd54d3fd42e6994425f0deff6edb480b4d47f8015238cf4ec3ba8c7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/118.woff2",
+          "sha256": "d43f5290e0441876d17d05ba18a521d9ce1fc3e7660a54c4cf9e3be3edf93d5b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/119.woff2",
+          "sha256": "ad49818ee7a0793a862ef23145e10c67d396b5a18f898c4131017d0fabe5d1b1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/12.woff2",
+          "sha256": "8931d752dad8ec5eb3d596b8b966ec13fc11b6d38b59969df55b66f729a1ad86"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/120.woff2",
+          "sha256": "ee57c8e99dd39b9969dde562f9f94fb65a597e250e8681642cc13afb9869cfb8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/121.woff2",
+          "sha256": "598b1a137541d8fb1d5893f791e8507032a365e9cc31a4ce3bef76e7f7be565d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/122.woff2",
+          "sha256": "090aa3eceac6b1e30b32e1b9bdae12cfc20ec7c67dba0938a3ef21b7e2bfa3a7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/123.woff2",
+          "sha256": "84ca126833d111f0d34e38f962bc29e25bcd7977d0fb5621308923d16ac67a62"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/13.woff2",
+          "sha256": "c0f6c118bbbaf2c83cf0ba4d5d2c3d906c9304eec65f5ffa3bda45038471faba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/14.woff2",
+          "sha256": "8fe004e8201383ddbbffa101735af2b2fc965e6feb0de1c9e70d56b158b218e4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/15.woff2",
+          "sha256": "57aa112e3c911257448f4b50986458a0560fc2c7bb982a2461cfd09b5cf9749a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/16.woff2",
+          "sha256": "a2930c3165d5542d41f535a38dab832a53ee712fc4a3996e01bd654f448ba71f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/17.woff2",
+          "sha256": "7fb5fd2aea45bf44322b9c6d8c41462288d92b4895a36701bd2725823366f744"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/18.woff2",
+          "sha256": "7f84ce10df0fc92b36b70bbc242afb0b8d5154055f96d3ca2a3956866b0b9101"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/19.woff2",
+          "sha256": "f77195ff247ac51e4aa9fc40fa9e6b13d37cc31d9acfb9047791f2152e0d312f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/2.woff2",
+          "sha256": "084ca833a32188a9deb45792f33cde17efb3d064aad3eb56976e93f850c0aea2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/20.woff2",
+          "sha256": "d9cf83be47f87104311f27da0a65b307cd40ccea0d7a4d86ddb900160c0fc3ee"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/21.woff2",
+          "sha256": "807bd29c32ba17b57797ef05291fb3003395f7dffed1171fc460b4c9467350f7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/22.woff2",
+          "sha256": "80528e0857619b173e1c85fb229463b2ae3d6cc7513a0ffce74d27960af9490f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/23.woff2",
+          "sha256": "b488a539714ef02eb5d0d8ffa99524d7374d855555adabe0ff318d62ba9bf4ef"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/24.woff2",
+          "sha256": "47756631b1129082132c9411d9bacb14d15f44c530c91bb7f0aa2d4ba084bcce"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/25.woff2",
+          "sha256": "420b2fcfe7cc2c38fb01275470cf68cba5e5795d13adead9729e64a52a52936e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/26.woff2",
+          "sha256": "128b00c0b6865e2db6d06400fa8ff1da3a72d7bb3f6b57e348ac028aa4e7c4a1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/27.woff2",
+          "sha256": "4fa9219503808f471b8b0a0e6d374f671a5449cc24fc5d6e0f5705af80b78ff5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/28.woff2",
+          "sha256": "35096ce836129071557b71452087f6f25dc4b9e28c0836372c668a66a4e754e3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/29.woff2",
+          "sha256": "fd0bdf1ec1497e25942b5209fa0ac01568f973b3d776fd937a78add19845869f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/3.woff2",
+          "sha256": "2fd56276f89a22408239ead44b15a379c8d5096cbb0151d1648ddfedc8f71f17"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/30.woff2",
+          "sha256": "f3d66298204c1c6f02a19f6d38b41d5f5d790672318aed50c72b84dbe2dc38ab"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/31.woff2",
+          "sha256": "900c6a594531ee4bc9eb1bffe209c060b535e6e1fbd0461c26eb73a635356110"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/32.woff2",
+          "sha256": "5e9c64cbe49e39fe94728d38729bd1462ab7f2b71c4d8711e3d0392281eb1967"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/33.woff2",
+          "sha256": "02c3cc42496519eed3c2c3b87a1238d342d6432bce32a9cabe5621c80b183bf2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/34.woff2",
+          "sha256": "f0b4400a89635a2ee7cf78ed5f233ba38c35b12f99ee00caf28323d56cca0bbd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/35.woff2",
+          "sha256": "feddc3b3bbcedf4944667f50f30f3ccd6fa24c72def3ae2e9c3454cfa83f4c0d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/36.woff2",
+          "sha256": "3f10d613da2b4e2f2768172a5f6cf3c8804e8fdfa8dbbef28a9e41cc993c531b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/37.woff2",
+          "sha256": "5ed2e837fff430cb7189a148f315ac748e2cc0434478353d898ba6d43b70a8eb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/38.woff2",
+          "sha256": "3a048eaf7f6f3492fccad2cd9720d9c781749cdd89af5c5707fa54ad5736b705"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/39.woff2",
+          "sha256": "0276aa45e1138c301d9b83157ea1a0cab7f3e0d60d76861fd96d2e6ab6ef6fc4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/4.woff2",
+          "sha256": "ba4144e3506e9a20a469aa59b7d4664dd8148e955aeb106718bf4ec2cb0ba690"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/40.woff2",
+          "sha256": "d0f280c7c9baf66a30d782b7aaf9c7fb30e997727fa22cdc4feae8a34997cb07"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/41.woff2",
+          "sha256": "460156ec5d78d217ba6d08e4c175ff31371a341000115805f5b85468e4d0c357"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/42.woff2",
+          "sha256": "f7944ec30bdc7754d26b7c2815d8bcef461720e141b0077c17f85218667ffded"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/43.woff2",
+          "sha256": "a5f8cd47cd1ed5c11b4ac6880062d37bbf2c59c14a2d30b4db753b8161b911c2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/44.woff2",
+          "sha256": "3a8a260f4f435f569a35c4433b778ff518aae22999057471c3899f163fa49235"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/45.woff2",
+          "sha256": "e92abd4174141b2487710e5447135ccdba406af9af4ef9739aa95d18761a2c33"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/46.woff2",
+          "sha256": "9395e9bdf30a190b0a6ac8ccebb1d814a58ba1e19535b5d2a823bea0251c7633"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/47.woff2",
+          "sha256": "74c2b9a249026f272446101e8c895dd0edd473a8a37e992da4ef323557679b30"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/48.woff2",
+          "sha256": "247a19584629b9d4ba44a77fcff02947b163a51c30649d882dfdef08672ce890"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/49.woff2",
+          "sha256": "47d81452a3b11729babdb64f8b10b71227b158d657027b4bb9b87f4cd321383b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/5.woff2",
+          "sha256": "9b009b258517f1a0690407eb39e3ace082aa5ef5aac610b5a594a4aeafd011f7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/50.woff2",
+          "sha256": "fca5c2a11a684af5bbb0a9d57aeeae7ccf81e994cdf8f8395a0d0717c1435701"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/51.woff2",
+          "sha256": "ebc3adf12acaa897b8fa25ce290d5f007dd7ff5f3f6319ac629cf0984b713e46"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/52.woff2",
+          "sha256": "ea0e6543c3e6d2841822804e5e732eff6e5cc160b2148a4117e031afdb752595"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/53.woff2",
+          "sha256": "78d62ffe6ec20cebff83c29eb384e0508bab02f8f6f56d70665ca10ddeb1ed9c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/54.woff2",
+          "sha256": "897a0132c33bf016e94411327d0497bbf05afe9f90c04d355391b7a9dab5d483"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/55.woff2",
+          "sha256": "753307a010f8b129e5f0e55ecb387223fd59a2954a4a2eafcf9521e050c38467"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/56.woff2",
+          "sha256": "aa9a64c387e24fce35563cc47c0683a5f299f05bea230c80b083159550383954"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/57.woff2",
+          "sha256": "1badfbf5c0cdcbd964f59b7e0fa55990329435bdc6a884da3c5fd3b646261fa6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/58.woff2",
+          "sha256": "bea95034d354ae0bfbc140b5285eb81f3844114c96a531c32018bd9e115f8fac"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/59.woff2",
+          "sha256": "a045d0367b1885defcb552fc2a52b285781c1b9aae03fd2b4262dfd035e6e1c3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/6.woff2",
+          "sha256": "11220ab3afa3033efb9dae0515e3b4b873b4e6b95b65a2655721d8ef8e1e78a6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/60.woff2",
+          "sha256": "aa6a5f3767ff9a31dabeedd7a16faaa841ff80fc0508b3637c4d9257a88febbf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/61.woff2",
+          "sha256": "84cb4481c5dc8549116b47aeeebe1edc3df883e057d5ec7cb59715f7862619de"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/62.woff2",
+          "sha256": "5bfd48ff6a3582becb49b849a172a0eae53740a6b4a261874a41ccb3be51167d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/63.woff2",
+          "sha256": "e8bda6511e8bac362f1a322a8a5f643fb01dd71b6d22f547db7eaa034aab9254"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/64.woff2",
+          "sha256": "6aa7162e8f2667030fc37123219365beaa2a9863f66cdd94a440a6c6154da801"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/65.woff2",
+          "sha256": "8f8537b4a577d6fb35ee94e0bebb4dad72101ae0c511001a1a3b57d5e8dd9919"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/7.woff2",
+          "sha256": "a203874bde5c6938bb2e213a7f476abadd6328df139101537cd82f15b5c432a4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/8.woff2",
+          "sha256": "6094e4660ca3b183b12637dd8265277ae9150026c563311ff6e9857d99635c03"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/9.woff2",
+          "sha256": "58fc4aa6372246f700cd0a29b633f23b488dde2e8258318a63271079a2524180"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/93.woff2",
+          "sha256": "3f0c11df6383e5caa2bf02179ec6718e007bdb8a888803b5eb79d95d035b73b3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/94.woff2",
+          "sha256": "ff18995e16f5868f5de1a324e0ca5a2543ee089c9d6df3e5d6830adc76727041"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/95.woff2",
+          "sha256": "51cea57e1a7a10169fd8655150471669f8ea9fb0ccd1d3331017ea8c5451cb4e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/96.woff2",
+          "sha256": "f91a5e44d38b2d2edb105d373b1e98a42c873db3c602555e1b7fd5d12b23b298"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/97.woff2",
+          "sha256": "4eab2b7454924002bb42c3c4a619ddbc3f82fdc617b1e9a63ff869fd161561b9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/98.woff2",
+          "sha256": "56285170a79a44dc2a3f17bbf8a9af9468bb7c5b2397a90f3806f7f4b1bf4f40"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/light/99.woff2",
+          "sha256": "8e5277026b578c3fb5bafcfa417459b69cda0f043f5b89d8f2e8c7a81239e4bd"
+        }
+      ]
+    },
+    {
+      "weight": 400,
+      "asset": "TossProductSans-400.ttf",
+      "sha256": "2d21e748afbf0ef1fc37c2187ce9ee8c1231eaf5254c776f0da92df59df78651",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/0.woff2",
+          "sha256": "199b256f27f3d3769b1f9be90008c5cb46d2a54fe1486b754b727ef0921e2756"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/10.woff2",
+          "sha256": "b632b4015025c885330c8e0264da14589cd1a2507ff6618a33a7e8725fb419dd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/100.woff2",
+          "sha256": "f523e9e0976881197971ca52b2fdd764e9ba49ae9cc25e43b9ab7666763b4e0d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/101.woff2",
+          "sha256": "a52e27dba21cb42eaa1e7c634253c54a03a0b10cf64106cb7d2d80bd1b3573ef"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/102.woff2",
+          "sha256": "6daf92a64a995b64f39680cb5fabc9f2ec78a5a50abfb8a1b2baf6889360b8f2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/103.woff2",
+          "sha256": "4948ae7094bd73e72d1ff6ecd5f073e4a4afd062d61c1bb34b55ec5e4a2511d4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/104.woff2",
+          "sha256": "06085eb3a8f451866531a9a41df3236aec6ec953ceebb8d992e6edf0c3d5e234"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/105.woff2",
+          "sha256": "701b9cc651cd9301d2f8f3793b940d5ece6c1e83e71af0fa6fe6e21ac95cae24"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/106.woff2",
+          "sha256": "52e0eccd56d5e0a6b61942a9414278b3871791da98ae6957be586c526654d893"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/107.woff2",
+          "sha256": "13aa2b2be38619e9fefee9f6c4472a76dc80f235ecef34a0ed1e4a543733c7d8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/108.woff2",
+          "sha256": "be94c118460534f3737a6cfae1db25fda65042b5250318e26440b26f6ebdb974"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/109.woff2",
+          "sha256": "ea2c4d081ad136f2ec21a7602012dd7ced69af0ae8a19c657a170b8cb3c74a45"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/11.woff2",
+          "sha256": "b6da1f0250f0ff88afdd6b310d240323e03f3fbd555152726617cbecb9d696bb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/110.woff2",
+          "sha256": "534bac35767b8ee42d3737d40c1d5cd259c1a60e482a66feddd7002d895c5dba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/111.woff2",
+          "sha256": "e8268f12e75f8141793f0d3dae87a559f935669227d4bb5e793a238938d09470"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/112.woff2",
+          "sha256": "a10c856795585badbf6233d0bf930df102aff623a91e6e8921fe3ccccc7ae399"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/113.woff2",
+          "sha256": "33ab331caa86e8a3dea60c2a54c7898dc7de07deac8ae1627670680dbd0fb4f5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/114.woff2",
+          "sha256": "e9dd78cbcffef2188d94d441ceb663e2e9465e4cc888e34134dd8757301d5284"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/115.woff2",
+          "sha256": "1899320412add4459742f53bfcec835a2182c0dc8200b409c4341066cfbca10c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/116.woff2",
+          "sha256": "51b179fd381e2139ca562cb177323debcc7ec59ccb2257abfc1f1de03ca212ae"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/117.woff2",
+          "sha256": "23b63adf87d5889c14e6f69b58ddb2fa48f01ad3437e41c3749801248b1e40ac"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/118.woff2",
+          "sha256": "acbc7d74e2b4f4b554d546fcb9e4b485df8c035f8243cfa2867b332abf497410"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/119.woff2",
+          "sha256": "3890cdde9948aadde8c771df8f6c237799e6b449522ecc8e7e288e157a44d2d5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/12.woff2",
+          "sha256": "5d148fd4b3cafc2b75135370476b539a13801f682d2d5a32a677ec04d2837940"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/120.woff2",
+          "sha256": "c0dfb0d7b94204490f7093a8a7250517f01ddea7019dd5d2d82854946e808a86"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/121.woff2",
+          "sha256": "93371b6653c84c4c0ca97a217d385146def5b76ec7bc210f9f093b5df6e8cf55"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/122.woff2",
+          "sha256": "de4c1fcb1bc7bd4841dd44961a685765068b40d0ce32608a8399b14d6e3ab1ec"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/123.woff2",
+          "sha256": "f84fcdff74f766b3f10c5dc578763512c77e713b5985e7fc16f34761d835b704"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/13.woff2",
+          "sha256": "4ebfc9f8198a093eff66de6d4c562c26ee7d043a7077ba935b1e3269d70dc5dd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/14.woff2",
+          "sha256": "5778b619554c62998e50c8eae77d870369770772abbdaca2b7eb543271effec5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/15.woff2",
+          "sha256": "77b0e2c4b31709e110ac88ab5fbb7f1c587c25d67a9ccbca6fefaba5724c8940"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/16.woff2",
+          "sha256": "c40e71363fa8e5070540d1811b7b6282eb9400af915f4518f05988dea2e66b89"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/17.woff2",
+          "sha256": "4669e6672d3a1dd305010ba0e90bb3136f40b576144dcc8c8d944dc1eb608a90"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/18.woff2",
+          "sha256": "8e32dad627eb58257c89a0e72a5d70d7116de81527bdb6819488ff8aa6760a61"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/19.woff2",
+          "sha256": "534cadfef8c218cb7c4a6f62dcd508874ea74fb06e40efed810c7711f9bf108c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/2.woff2",
+          "sha256": "5c370f43a25ba2815c7f528f87875bb1a644b79ca4b2ac243b3d33b0b421f3a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/20.woff2",
+          "sha256": "ebb38493ab9b3bb22d2c675c13126f52f759b800be719c5babcbcb5fb6a58b36"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/21.woff2",
+          "sha256": "036de850aaffc2993b5fb2c359d8ab41dcb3addb0eb96b772410380732440fbd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/22.woff2",
+          "sha256": "97c68c1ee8085562fdbebbae6082c7033eb5dc42c29bf7014650ec954b6be15e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/23.woff2",
+          "sha256": "731b546cb2fcb857e888abf8f067a295fb121c58cfd21a9380544ebcbe9d1226"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/24.woff2",
+          "sha256": "cc2dec619212975c54d80e79a5fe13272010e6febd4350f893c7fb43b1a8176c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/25.woff2",
+          "sha256": "d5df40b8d5decca3cbef8fb917cd65b2c1435dd81f69d8d3b117603d69bb6411"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/26.woff2",
+          "sha256": "bb9eaa023cb3461d04fd480420c0277bd5081c1a7bd0404956d6e9a18ec8c3d0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/27.woff2",
+          "sha256": "d68553273ee443afe9c2d452789f1ca4d4c44ff7e3ae809fd8a05069f9928f63"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/28.woff2",
+          "sha256": "80d00a0c23eae33c98a629b08b3471d35d65f66dd5b42a0232975d35fa36a505"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/29.woff2",
+          "sha256": "117eb18a2854c2e6b45532aa859919a5cf3c0dbf23371afed2bd2891324e98cd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/3.woff2",
+          "sha256": "3eeed7849d57ceb90ade089af8cf1d83db415c7e75289ba0317f6ed851b0ce80"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/30.woff2",
+          "sha256": "92fada6ad10029125925c782e1a644f7e8ba321754ae9169e120dd0a278465c6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/31.woff2",
+          "sha256": "0e7071475ee697df8ffef20bafd7faa7765f811d6b2afc55b67cec14ca0b34a5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/32.woff2",
+          "sha256": "24858ec4b148ad2432a5e6eff91baf1a80328e0707c450e76a4b3be223fcc6c2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/33.woff2",
+          "sha256": "71ff12564812dadc23ffa5233b52f2df117b200a898673f73ca81a011c1912d4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/34.woff2",
+          "sha256": "44c8506e467f8c06ed5466bdfe8736a9f1430568c1fb40cb815a0421079d7b5e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/35.woff2",
+          "sha256": "cda26e3af478d10b5411ecae3e8b2b7cb5d6f5de3bfe25c4ba6af62e17ad7e05"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/36.woff2",
+          "sha256": "8490aaf8b0663816877c3e875b4a1886400d3452392c55412d5fe8f3a768cb25"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/37.woff2",
+          "sha256": "48a6971ad5a901faa45b30b7405d20233a8070ca7a6e4de12906eb69fc7da4fa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/38.woff2",
+          "sha256": "31a3b135515817bf572722a90dc775ada4fcd04fa496e7035f41e8576018a846"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/39.woff2",
+          "sha256": "a3d0c8b5076e4ac2a2caeebd694ac72c162b08bbd003f79b72e0399027972568"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/4.woff2",
+          "sha256": "4f41054650ba4b37f791bb8ac41dd1bb4cb80fdbbcd3b813675925dbe00c50d0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/40.woff2",
+          "sha256": "8567af743251794196c1115bada58ac865b2e093639f26d9cd4c235ae1503f8b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/41.woff2",
+          "sha256": "05e2c1dcafcb1762b5932475fc216816dedc89bbdf31582137f4edadef28edbf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/42.woff2",
+          "sha256": "b7ff06012a62e24858058a39456de3397ed4c4c7fc7b13a885d3c8600955c215"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/43.woff2",
+          "sha256": "94ec4d85ace2525e62b975e7f5dcbd3f8440f2820d0c19a59d041f0272eeed4d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/44.woff2",
+          "sha256": "593cf409c2d2bbbdd35983fdc16ecc10454dfef885741f4f1c38edb6375f7d81"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/45.woff2",
+          "sha256": "3216f0b9d1ce8fc85807207f90c1497e922447c7827ae0fe10bb9603e9325eeb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/46.woff2",
+          "sha256": "09f79e5ac32d4d7828ee107882a11adf8fd6166817d4e16e698ddc8432a5ec80"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/47.woff2",
+          "sha256": "e91a77ca9a2e9ac51ee595b11269abd1ab252eb9f3156d28098afe4ad7cb4744"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/48.woff2",
+          "sha256": "1849863421b760c5e95616293297b4ded48d177abea3f54a9afc4afb68bd3054"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/49.woff2",
+          "sha256": "2bed7e51a70f7e51887af08fa873926ccb44feb089aaad000e1d593eb425af8a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/5.woff2",
+          "sha256": "261fc0b4399c02e78c46de0e37c0dd8bf8ff89b3b3d4ffb482ff3823937acd25"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/50.woff2",
+          "sha256": "5a3e19581abd4a148e310d194e9f9854d3c4432639c66aade43f84fd6c83cdef"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/51.woff2",
+          "sha256": "bbd0e6dea1ef44229c5aee3ba12187c7131f3836d20581d92c0064b08d82697b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/52.woff2",
+          "sha256": "21ea39666ae24547661a8cdb5f0ebb4fc8592d306c3ac0cb2c7ef57f0d9165fb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/53.woff2",
+          "sha256": "0f0181aff5111d2629d7e5b5f53a8d2c7402099dc01511313bc43c0e3c4021e7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/54.woff2",
+          "sha256": "30bca87e1990b3640f1be6442bff17a5ee4bce7b049401d4b231eb2858886b68"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/55.woff2",
+          "sha256": "ffa07c8fb9823093f73bc85f4ad8f693defeadab29fd0894b7648e0f0795bce4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/56.woff2",
+          "sha256": "a5b95a97a7d3150d85285a8773c158426fa565dfcd0edd7f4c784d3e00e61ddb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/57.woff2",
+          "sha256": "30273ab5619ce2bbdfeea2fec737e68cdbf0a874f6adea5281264ab65a17d57e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/58.woff2",
+          "sha256": "4ff8ab362e9cf70c1e92d945d5c49dd2772c09183386fa4ba519010d11a740cf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/59.woff2",
+          "sha256": "0da2755e8f11a208fe48acd490259992a03678186407084c51a643979588ab98"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/6.woff2",
+          "sha256": "26b84d89d99dccc7a2214649ba186f7f56aacdc04370388ea1a742ce8adaaf29"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/60.woff2",
+          "sha256": "a658e9f87dc1afaf743956f41a9222194e7c97f5bea64682bc1057aace6c4f64"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/61.woff2",
+          "sha256": "2b2e2a6e1351d640706316686c532531e4c59ddf18dde296ddd79ddfa40adf14"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/62.woff2",
+          "sha256": "8c9cf8c6a7b18d3be7e9d06545a11141905232ce0a330fa669f76ad22a4c7f2b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/63.woff2",
+          "sha256": "364483dde3a9cec7f3eaeb3eaa8d3ff41aeb462ec0797e13454281155e6f301f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/64.woff2",
+          "sha256": "b4ab45a78d077ed52d178094e29689b3debf20476d5f8962713dae41f540ca34"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/65.woff2",
+          "sha256": "ae071e3a148f4aa09a16274bea5ee422dc7a87432236c22fc9e47ebea69eb206"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/7.woff2",
+          "sha256": "2152ff54a07d54e62c64f3f98da4236641a9d550c6d455d0212db373c3982b83"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/8.woff2",
+          "sha256": "db30a4bd8259b008703278d516e9f2c55c4052a594fe305d7c4eaea3cc8cf2fa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/9.woff2",
+          "sha256": "e814c1aa992e9db20472f7a37d354eb7b08ee426b87c1f99fec4d0e1b5020993"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/93.woff2",
+          "sha256": "b89c2418af7d1a4aa9acb701949bce3dc050481b228ab299634f1c766b889e9e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/94.woff2",
+          "sha256": "05f50d55173f2f0392f672060e83c9c9570fc6ad796ddeafcd9165f84d81edd0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/95.woff2",
+          "sha256": "db93c3fb14f0d5b3934b22cd843a5cd7ac706d4d2bb5e4627a127766c149c7fe"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/96.woff2",
+          "sha256": "efe26a38773b614ed8a60711b0a7a4ab70cd88e49e2bdee1978819c67e700a8e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/97.woff2",
+          "sha256": "7fd8f2eac7db9c70624ef3c8b9bf1cb0509c76ace9eb46f84042bcd584800333"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/98.woff2",
+          "sha256": "2d0761c42ee56245a705d02607ad761b13a80a733405afb82b13a702387f0a72"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/regular/99.woff2",
+          "sha256": "78518deb3a745482263f4804534ba6a98ec870d4adcb831768829c844e41ac97"
+        }
+      ]
+    },
+    {
+      "weight": 500,
+      "asset": "TossProductSans-500.ttf",
+      "sha256": "40fc98a3ac33d364fd6e557a6f16ad757a64c3a62e34d0a05ac267d56775010a",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/0.woff2",
+          "sha256": "632564de14b177c82e6d4fd05bf1b4b4fec69a3215d1f03292cfdc5cc703f9e0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/10.woff2",
+          "sha256": "402e29e7603ddd7d6a72f8345d7b865b67808fefcefceb31c814b2bf8cc9825e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/100.woff2",
+          "sha256": "73ca55de92ff84cdea0dee3eba8b34f42a18592c7a6c66706b26529ffedc1878"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/101.woff2",
+          "sha256": "534e07189ac762f8b78e57d2e528f9f7ba487ce8da26d30fe6cb05c6e05877f1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/102.woff2",
+          "sha256": "74464599bc5b0f3d45c3b589e6236d47c94f615327e00be8ec42b0ea92f629d4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/103.woff2",
+          "sha256": "ab16bfa930cfeba4def15ac56c8f35e1c3e24dd9d5afb672c65bff5b8c93477c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/104.woff2",
+          "sha256": "456eee0f169adb2cfadbe24fa7c8fa61d6e759ecc335aad5d5db5f0d91977dc4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/105.woff2",
+          "sha256": "ddf53f196bef97dfca6685aad9eb3841345a6c681ee7afac09632e2113dd9014"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/106.woff2",
+          "sha256": "b9384d5f67f69b249ddf00b260d4050bfb5de2e196805fe03d5b9f19c0bd8c6f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/107.woff2",
+          "sha256": "67c266da2021fe873edd01a2f1c27bb7ce94a334a1e3013dd9651d4e7822c1df"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/108.woff2",
+          "sha256": "4827e922ede056b7b9835e843ef0da9a4dcaed1ef6e92919c7d4abb1a8365076"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/109.woff2",
+          "sha256": "0cf9d953a22af284735b355bb13a05cbe5e34187a7239a964630ef27ec7010b8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/11.woff2",
+          "sha256": "478ec1907ab29736fd8bf320ae9ab733ac13df565c95d0560db374d979b86280"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/110.woff2",
+          "sha256": "034379ccaeb95b3cc856cdb5a5f26ba5926381ced97abcf7de1a5748540bfcbf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/111.woff2",
+          "sha256": "9718b4a082ca88bc6619709c6529b1eae02494a6f1b82b8982ff2809db4bedfa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/112.woff2",
+          "sha256": "bb25070e89d75beb31ba851fb8d7958afb5ca89e0a720c0fedca8ef08612c9c6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/113.woff2",
+          "sha256": "caab70690a1a5e078b3296530d7c8125938815d8197cce9fa55785897b4d00b5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/114.woff2",
+          "sha256": "6d4c66a07503583e8017f5bff0c88b8b22b96ba4387a390595c5fc2331ef3199"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/115.woff2",
+          "sha256": "0a2d373ba3176e32c4326e0fd5a01ebae0b61b0044a4341c2d130452b468a173"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/116.woff2",
+          "sha256": "cd5a44a1dee89dde78b02df83489bf170fb6e1e054e49ec2e53811fdf118edd9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/117.woff2",
+          "sha256": "000fd0757e75991ce6958f864650b18a2cb3986157812e2d5049faf32b0366e0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/118.woff2",
+          "sha256": "5af2023cbc036d2ea2a1f06e8e5985224591321a9eb35affe4e2089ceec8433d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/119.woff2",
+          "sha256": "a68ada3a97fa500ce8c7a01375d005a12240b6fe456b4781dc2736562651d203"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/12.woff2",
+          "sha256": "1c5637c50604697c56faaa0d04f54bf6479c340d19069c3b4bf59af24515137e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/120.woff2",
+          "sha256": "5f90d5a4efb909445689d5c4fdcdfddba21dc09c31676e987b7242a3c26bdc3a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/121.woff2",
+          "sha256": "e39782504caf0271a1d583432e9d1a0571b7f453dc9aef9525a37a0d32c8d9ba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/122.woff2",
+          "sha256": "70cf9aa526354b4b06ea958e9ca939469d0d375706dbd58f26a01058bac0e8ad"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/123.woff2",
+          "sha256": "d0abe8d5ee6c36453fdf963b1f0ba3014b5167a0863d85c079969a193aac64a4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/13.woff2",
+          "sha256": "b9fe95a4b742b4ef60e90e7a0a9633b3cd314ad306c0c40f8981af4919f10be8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/14.woff2",
+          "sha256": "e702e62d2c72c8948f9cdadca98474f4fca42c2caa682ba6957fec2f7f022612"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/15.woff2",
+          "sha256": "7a7782cd851df63cf44b124b132248e1b00a37136da88af4be410eb533bd776e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/16.woff2",
+          "sha256": "dba03957cd132931d8d01eb2cbc4793aba0c1bac4cea021a2b1207385e69762b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/17.woff2",
+          "sha256": "6f6975c4bf00977437b24fbe7264533389beba3190d22e346e1c7ed3cb0c2bba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/18.woff2",
+          "sha256": "7af4edce5b3aa5cd9c060b5d1aebf607c782a439b617386bafce7c2ba7b93e63"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/19.woff2",
+          "sha256": "692781810f94c9010396fba562eda77f813286f7c3f63cc1988379db8cb519e5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/2.woff2",
+          "sha256": "a8ef201c4dd5a55e662e765800b727f49f50f23cafa7c7d87b7af1c0a5c1d6e0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/20.woff2",
+          "sha256": "cd40153e553cdd049fb8e3eff8d43b6f47631a24a6fa2c897640a9b736c29b4a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/21.woff2",
+          "sha256": "ab9a981d30ba7b6105bce4196541f0be1eb4fc9b9d6cbf5117016f8f398cbd10"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/22.woff2",
+          "sha256": "b468361663c3dcf2031472fc48d4ca47c2717eb087fed4357c5cff44084f6df2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/23.woff2",
+          "sha256": "efe6b7c28ec76dd6d3bc05df2d7295aee9248aaa3ff85a0b958afeb3fe719aed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/24.woff2",
+          "sha256": "f8410fefc26e97c946b23e482153e3df72cb08fe0923f2c72912853673a977a2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/25.woff2",
+          "sha256": "3f5b8950c05e00944bf92c6fd563486cd833b83023130c4a5f16ebb708f42327"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/26.woff2",
+          "sha256": "e886fe70dd8ef222cea751f0d0d5bfb6448c2fc71d679d1fcb70074783bd9a80"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/27.woff2",
+          "sha256": "f4000ce6abfa8a2ecaa7631db0249c1d946a0d621cba525df8d6cb3d55d1fc9d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/28.woff2",
+          "sha256": "a91ddcf3354994dd49f066d9789351e1a19e05bc5e7ce8b95dace902a8572227"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/29.woff2",
+          "sha256": "ef7f1c01539c1d4e03ab75073310f4d8dc1a8ac317686639fa1f5a9848e91f6f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/3.woff2",
+          "sha256": "92d26fe7976ca53fcf3877f15cb0244ff05aa2906e97e54d665c2922d325e1d4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/30.woff2",
+          "sha256": "f25c24eb93d1a7f8dc47fce91109b47c1c51d7ab8bf17364a85af89b593ad2d3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/31.woff2",
+          "sha256": "a2067c83c58457033d2f0f75e5759c52cf64947b6e6b513bc10303950d9bc8d2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/32.woff2",
+          "sha256": "b2d3bb3d511dc44b274890149b2bb122d842f9b36727ab3fbe922bd58fd69533"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/33.woff2",
+          "sha256": "2c623543050efd2d973fa1a1b5501282c167e8c83891dfeaf3f336cd9bf951cc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/34.woff2",
+          "sha256": "9e978c57f00ecc6d9a23dee8168a3bf73173ecfdba6fa6ff89717be51e202cdd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/35.woff2",
+          "sha256": "2d9a6d985b3b6b69d0fb9b472d429188c9c68bd6b0398d85a39bf9d9ab001967"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/36.woff2",
+          "sha256": "d76beb13c0a4671fe19c15dcf0e609fc2f14a2f973e337348f612b3dd521c8f8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/37.woff2",
+          "sha256": "fdd69066da02a2357c0bf7701178ad6864d484f7861d056b255788ac41f48c3c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/38.woff2",
+          "sha256": "fab94cfe82bd9061191a6550232e80c8e07c9731e559b9075886d528bfc2dca0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/39.woff2",
+          "sha256": "002374add6ea76086123428943f0043585674462b42bd7c21c7541455eec390c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/4.woff2",
+          "sha256": "ebea7d9b9d82536d60f45ad2df99277168dc1f7a58d7435fcfdd02b936eadbbb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/40.woff2",
+          "sha256": "deb30e127ff91dbe063a8e5a8d77066cfaf7178a79141a4836dd1f1ea0978a33"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/41.woff2",
+          "sha256": "d18678722a4ecb427c411c6b14b177af9ca509ccbc2e96a4533b4944d9554958"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/42.woff2",
+          "sha256": "b196cba7516589597967b4671ba358260e32b8176fb6a8fd5d39c1fe7f666d09"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/43.woff2",
+          "sha256": "7a00832c208f3c15d8e9565b7a6f0f0c23d5a1c69372c1a5fc2cdd9d7deea8ff"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/44.woff2",
+          "sha256": "26ff590ee96ff76d477aea807c1a328668d03d7fe5e903835054d89eb00ab79e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/45.woff2",
+          "sha256": "4127064510c341b4407beb856c9be6449388eefb69aaa84dd4d011a7f7c0bc94"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/46.woff2",
+          "sha256": "ae04b79f2a79565f6639a81566bababa7d7f1109524de4671d3ab44023a85ce4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/47.woff2",
+          "sha256": "3a1a313798ecf7abb6ac8f3e69b9cb7b4886123fce259d8bf543ae68b123152e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/48.woff2",
+          "sha256": "9e52a0dfa5950ebd19ddf3eecdad3c27c0b327f7521375490ab15d0fd27fbb3f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/49.woff2",
+          "sha256": "c063f73db05154e664655c32ae8c13f61ee13dd05e4f961d635c4f5dbc1cc083"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/5.woff2",
+          "sha256": "9a545eb74034a934da727723e61af4a50ee812057ecd3dc19e824cc82db95c60"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/50.woff2",
+          "sha256": "ae77bc6629a796c8916a0dc67b7702a61fbf902d5461b2f4f5ba456e024ed20a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/51.woff2",
+          "sha256": "3d4d92dbd3ee46d3804b0322b5bfc53eb31e0a41b104004a2c82eaaf8aa9ba89"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/52.woff2",
+          "sha256": "c8dff6be96d8a75759605f93f2a1a4453e980383e17f0e06daa861dfa13d0a88"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/53.woff2",
+          "sha256": "87e08ef345ba0a6a071e138c6ca99304b162b3e332a82ee45f3a158e79f0d4a0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/54.woff2",
+          "sha256": "80e2e11b3bb5b6b5a5dfd47f5a0a7b910212b090232e751ac2ff812d0a82926d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/55.woff2",
+          "sha256": "60ba09d0219e99bc321c9612e6673059212ab400c60636167cc75483bf6da18e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/56.woff2",
+          "sha256": "ca04e8afd891ed23ea595c917d122933bbb22bc5a73be5b243664073d166dfd4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/57.woff2",
+          "sha256": "b42f53bbfd337dc3a434476b7df38629c161dd65e6e15a7a7d718aa7cbfa4fae"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/58.woff2",
+          "sha256": "6ca168d4c0b20109388e9b5b50eb099abfecbebe93501abf5b875372c5541ada"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/59.woff2",
+          "sha256": "91c272da80aa73eb2c58a70c3d1d2091168080e5c814355f83eb6314f103a270"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/6.woff2",
+          "sha256": "2d956e7503f7067697f146d36c94f66597de8bd4130024faf26f99790956bfd7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/60.woff2",
+          "sha256": "a184cfbe0f7a2a198b0642ca72f34c2091b713a453110a35e95e7fb0cee7252e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/61.woff2",
+          "sha256": "7ad9066016dc7abc272956d1865775a58be6ce441086d1e52983bef315b0a491"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/62.woff2",
+          "sha256": "c4cc0706cec4b2188238ff42a843eb2a654b7b38860853742d118367ede2eeca"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/63.woff2",
+          "sha256": "ece6dfa272e8ef6fe4b3e6f3bebc5bea18636142b4da786c480c498adec77b83"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/64.woff2",
+          "sha256": "2e314141b6f6e3afa9d6b258d07cdf67bf33cd7c3b68ec2de4a26a347e1171e5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/65.woff2",
+          "sha256": "19983e314ed1579e678b3b13e6b0b30581ca16d32ec03296d4058e7ad84afc48"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/7.woff2",
+          "sha256": "a526316a5e46f777d7f9be888fcf72033568cba79c6dd339a2782cc7c21bd82c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/8.woff2",
+          "sha256": "bc62e48c2cdec0ebbf27a9225acf37e29fa22836bce6f67ac00063e37e6898fa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/9.woff2",
+          "sha256": "1e60871134a27818977b2c146183f5fb183a17c546e4e20d53acdae838758914"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/93.woff2",
+          "sha256": "66c0d10bfcd9e04821670e17921ffaa090a888e72f942c7b91123750c273de8c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/94.woff2",
+          "sha256": "5020e33264fa08a6d6014fe50f51c063821e1babf2147ff6cc9271020f65c945"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/95.woff2",
+          "sha256": "6be8a9be1638acdc60db0eeb16d01ff8d9e5d41aa2425540d38b9dcfa6e05757"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/96.woff2",
+          "sha256": "cfe80b72e34a0e3068292fc34a31b3c2d6fcdf6077583ce9cf0afd77bb77dc8d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/97.woff2",
+          "sha256": "54b245081238134919caf69883d499d16b88fb5b45d8e95cd4003166c12f7523"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/98.woff2",
+          "sha256": "c6f5ac99006770bfa22dcc5f8136bb6d170660aadf8331ab49dd180d63d135fc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/medium/99.woff2",
+          "sha256": "3e1755a5e0591677c60e702826a38d8e417bf15ce49b3780fc3789b375641577"
+        }
+      ]
+    },
+    {
+      "weight": 600,
+      "asset": "TossProductSans-600.ttf",
+      "sha256": "aeddac6bbb56bf3dd047b6a3df31c44175099fec9ad17518ec27dcbd840e1fb2",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/0.woff2",
+          "sha256": "b3f546cfe8ecc3ce16aa54f82e390f6f765869a65cddf9315c740d2d612a7476"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/10.woff2",
+          "sha256": "b22d176e4c8d6c31622fdf0205e2cccbc25388c58bec74de4879a57d81e56459"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/100.woff2",
+          "sha256": "6aaf584cb6abf543010a0726323139f4e464f41b73ed7b67a348b74099263508"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/101.woff2",
+          "sha256": "24524777d6f6ef97c41bc51d4cdd4ed50b0a3bcb01e918404fec991c3207f509"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/102.woff2",
+          "sha256": "e027c89d48ec9f09565750cfc69ed1dbca0a6541257269e42da5ed4938a62d4f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/103.woff2",
+          "sha256": "72fa16159cf4b287deb8996aaa67b9f2e5b1197da980cd5bd9c35e6129e44994"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/104.woff2",
+          "sha256": "1339d066412d5b4404f5153f96273b019ddf6c375bfeb94ce389173c4043f137"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/105.woff2",
+          "sha256": "89c01403c4481343aa42a89eee5ac3918b2e354a35442618c31dfe64581696da"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/106.woff2",
+          "sha256": "1e66e91fc58251af4e6f7480bdda4217461f3dcb1c1ee2441759674f9320604f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/107.woff2",
+          "sha256": "0606057e7891c208039f00b778b210452063aa764d692c6f94042d0a899f1f3f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/108.woff2",
+          "sha256": "87580f821a61ceab2f88a18b9704d2aee019d61b80f986c10dea1fc7e2fd3853"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/109.woff2",
+          "sha256": "b8d393f07a1677699a49e19ea4c169e23bc049f551d4598d6df4cf7461994cbc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/11.woff2",
+          "sha256": "e26a28b71ba6a54424814c15eca70fd7340ee474e6fca4e109003eb27a1a16a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/110.woff2",
+          "sha256": "612e18e67e693a7bd0a1c083ef1aa12382647b4c648dd99a537a4d7a1f21f574"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/111.woff2",
+          "sha256": "b2f67aa6a4ed2f3cd2f077044f8b6400e0698c138d03da47d1d3d653bc5e4276"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/112.woff2",
+          "sha256": "4767d3dc5d87fcf793a00b2c7fd894d40032d18c76af54685420bc8d344899cd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/113.woff2",
+          "sha256": "0a8414d3ee782b669eab95e7611ab6c13824fa1bfbebcba0dd9329aaefe94501"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/114.woff2",
+          "sha256": "6efcfb18ccb94679ddc67930dce5b0be93a7bbfbf6eb7092b8eb1baebe319253"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/115.woff2",
+          "sha256": "d8e059f5639be3b76f23ae47b2c075c10dc0dadf0c0ca39c67debf8c8ab4abf0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/116.woff2",
+          "sha256": "57434aa5873a2d07da93172799c37081d5f21ec03889f8a6d0213a909d7bca3d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/117.woff2",
+          "sha256": "14331ee5f926d09a631e2a922eb43ac66ed8f6c305264872ea2b31cea23fb791"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/118.woff2",
+          "sha256": "f301f0e9d6f731cdb83491e32e786b815f59b151884ebaf1944e5ef8b239d5f4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/119.woff2",
+          "sha256": "bf71133086d0a12ce98139b74e54fdd27e1e2c37d8498b61abd357221f86f471"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/12.woff2",
+          "sha256": "62c9092341d76a28d7f2fca1ab3ced485a04e3580e57df27571246ce6bd8efed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/120.woff2",
+          "sha256": "4bfc4f406d05e4a414c3e688a587ab5fc9daca5c873d4bd51d8f6cecafe7a4fc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/121.woff2",
+          "sha256": "d5d8fac2ae03e4ef091e947d6c80b89c989d64307378ff09bc576934832a8a7e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/122.woff2",
+          "sha256": "40fa575abed5cb03353939411fe9faa4e9676f166302b70875c4872430e666da"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/123.woff2",
+          "sha256": "cb549e1e0ae355b91b76bf00175996e537060fbda9f3f02801f041b144caef53"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/13.woff2",
+          "sha256": "2e509ec0329c3b118248f8d3c167402af384bcae1c53714f0fac8d9dd8dc977f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/14.woff2",
+          "sha256": "0e8e36e2b9a3976e3817fc87668d5bd96bc3b5bd60a8df29c9063d07cf1070c7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/15.woff2",
+          "sha256": "4cc9894fdf8f9c661f6865e430e0ce67b35cf2b33797f454a61d5bc0d681a728"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/16.woff2",
+          "sha256": "4479e3ca863fec0afd3119a0de8928144a96f16dbea8def15f944cbdcacfa712"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/17.woff2",
+          "sha256": "476e71a773eceef494b77a5ff189ff03282347d1f69d6f511f9b2a0a02813430"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/18.woff2",
+          "sha256": "0ecd7a492c1330a0ff0c252e99d028b6dee7de614ed5e2152bda3195d18e1fc3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/19.woff2",
+          "sha256": "f6b75ac1de913687c219c8e2b060f33537875cd0066ede01bc7636816b735a08"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/2.woff2",
+          "sha256": "8623899c1cc5245b32d589004cbaa302ab27f99b29c9f19d34603fc0eabbf5a6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/20.woff2",
+          "sha256": "1b0f0d93ebb3e89e60ae1dfba0e0f2915ad96d5d251d6247d696cfe88b2003e5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/21.woff2",
+          "sha256": "43eedbaa9679423b559a647c9073fb0bc109c15e56be9f1f62eb2ab02cb2953f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/22.woff2",
+          "sha256": "901f127881411df3a05b38e8c66c060f44875b3f63487f6ec0b04b0bc0f143a0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/23.woff2",
+          "sha256": "f30adb41c06e114128f5276f46ab2bb06a7cad5e58f9b85f2b591f723adf497e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/24.woff2",
+          "sha256": "e1639e7e491d4fac62b197fa145a991ce2ba8ebb8dfc2efac132d3a640f2c995"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/25.woff2",
+          "sha256": "d71e275c433741cface01d66464aeb79d0b9eb627fea41695f076e46c33ebc92"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/26.woff2",
+          "sha256": "efd0e52fe2b26ebb741c0ee4184716a8854bdc7fd5881682af5ad8dab2ce06f2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/27.woff2",
+          "sha256": "e4e61fa019ea822f0a751faefa5a1829c2b9590fd832d608324bf1b24ce83b27"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/28.woff2",
+          "sha256": "b7ee8e2cb5be2569fe62824a92dbea2ce31e854197caa8ab8710bd63259e576b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/29.woff2",
+          "sha256": "26c23c0d46d313e92f878fe7fd3ab7af78ef955a7e1e38e9cdb7895dea2c3ab7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/3.woff2",
+          "sha256": "ab15c93101469d26d27508720eecf2049fd3bba795af35de0271d9447dcbdc57"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/30.woff2",
+          "sha256": "a2c71066a9e3c3d32cc9f3816b2c9de1aa9002ff98710ba06484e798c03f4be5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/31.woff2",
+          "sha256": "482979a5ca214d1d8c9a776c89210cf4032bd95c8a3aa2f5aa5cb204ca2c0866"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/32.woff2",
+          "sha256": "1569d7c30f4782a39e03fee3fa03494e115b193239831c1768ca18b75fa7a86d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/33.woff2",
+          "sha256": "05383ea51b1ad50a1151c26aa2f07cbc217d7fea787b770c7c2662e92d348436"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/34.woff2",
+          "sha256": "a0779b5c2d7f6d9a99e405333a6873051eac00c47943b269693f3ae9d54aff7c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/35.woff2",
+          "sha256": "36ef9e22801c19f2253661aadae228aee7bf28372f0bd35307dbaa5365d4a45a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/36.woff2",
+          "sha256": "277206a3f846ade3397d389d6650b2a129f29334e801dd992e52e90bcae0813b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/37.woff2",
+          "sha256": "7b90f6293c2e3021fe931ebf51c36fc41bcbe3662c6dfbdc3aa895f8009264a5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/38.woff2",
+          "sha256": "869c00baafa8c4146732009138034d5c87173d4caded91d42f26902398c53423"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/39.woff2",
+          "sha256": "33ed92d49678808fdb4ca41a043deb5e9506c0b95f8394155650801c74e8559b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/4.woff2",
+          "sha256": "12279e697eb438ab1c3d814d898df0c09538a74273fc4cb00e1ce0fa81081cc2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/40.woff2",
+          "sha256": "c97e1cc28c198675241c9add2c4b5294d18804d1fb6a57b705a34ae72d60f6e9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/41.woff2",
+          "sha256": "f60b9f69e709f0b945bd42fa1d56319446441fdd8ee178eb389a1cd6cc88b392"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/42.woff2",
+          "sha256": "c373231223ab2ade836aec843edd7b479b6f5d66ff16c8cd743196ac32f9f782"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/43.woff2",
+          "sha256": "7ffe9ae6dbb25d615a9789b6dcc6074f92d844af82e0cb3c92fafda717678763"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/44.woff2",
+          "sha256": "7d825c0d4e792cce9b6f70a01f01a7ba0110b6398a1fe6c91aec1a96c5fe2727"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/45.woff2",
+          "sha256": "326563406d944acad01c2e24a3504a8b46b804793b1a733be7b9082ada90f28e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/46.woff2",
+          "sha256": "8fc8ec62d6177582bd6cf9fc9669c2476893d398e9cc7b78f19017ad7954c7ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/47.woff2",
+          "sha256": "22c4792ffbdf37347c0a1210a85baba326a56be5729adbef54e05b6a63eaf8f7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/48.woff2",
+          "sha256": "f0692dfa48c43c60cfa8dbe2a149a6d3c4b9e034a6f4cc192b9b7cbcb0ac470c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/49.woff2",
+          "sha256": "3e8fd425f41ab3077d5c14396d65ba7c6a0ab91e6a3b3af952717d3c65ab4485"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/5.woff2",
+          "sha256": "75cc327227e9bc773256f1daa2d273da0e86e0233cbeb6ec9185eedba265b162"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/50.woff2",
+          "sha256": "985ed4f548c7bf03be1752869497af9a7dfd5657a3a0750974324f3794105d5d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/51.woff2",
+          "sha256": "3c7b52e5ae1ca1dc6d9a64e4a205df4570c54ed353a4a531c9cd9caf7f333f60"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/52.woff2",
+          "sha256": "afb0b137135bd9be6df4997c194dd7e2f68ff17dd4f8a60ca0091e80841668de"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/53.woff2",
+          "sha256": "1c59f7bd424532f8a5c73563d4b7bc6e80c69e7b30990c91e8ee168ecaf60190"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/54.woff2",
+          "sha256": "5921f3e47225ded29c4caa23fe849c0a59ff98629a29f4c10e9506ee0e3a6bd9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/55.woff2",
+          "sha256": "dc97a21430fb81e394b8643bdaf7b7170c426eca396d6930f209b64ab6a5d6cf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/56.woff2",
+          "sha256": "5811de9f293dde25c22f8d18b9b3ddf06e1b83bc5bf22418f37cf7ea1253ad51"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/57.woff2",
+          "sha256": "2f6086b193a0aadb401493af839d468f5921246a3d8bbcd324a6145e44510a9f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/58.woff2",
+          "sha256": "f9d6aed285cc57166de10063fb5bb08841727341a513008b7622ef998d55969c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/59.woff2",
+          "sha256": "1433bddbfbfb8b1da02d5b8fe6e0ec15f43e15fa03a52a4a79a2be0c3988ade7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/6.woff2",
+          "sha256": "266d48d682d754c7dec12f029aac8500e3cee223334c623f40207452ab0811c6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/60.woff2",
+          "sha256": "fe3c181e39697d16749942151dbf870f427083988cc0510f09a87767f3c35656"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/61.woff2",
+          "sha256": "09f27f9dd2a23b9db22d4e57ac5c0df0b88be2d1361118608bbf6e789f817de8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/62.woff2",
+          "sha256": "ed955d0e404cbe5de411b3c62b0b0d48f233be508a0554e801273d30f09a5b8e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/63.woff2",
+          "sha256": "98a4aeb480a9ef1a58bf0b478b0c908ed55b2702dbaf07b2f66d92ebc35d5ced"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/64.woff2",
+          "sha256": "7149b21205617bb3c0b60f31538be759fe28793316a179adaf01d74bd9cca7eb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/65.woff2",
+          "sha256": "97e16eb0aa0472952a53d322a17d97d55a6568eb8f16ded89fa5fa362db4aa3a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/7.woff2",
+          "sha256": "00c446bf6371052699935e52d39782f57f6232123c7a9830a39febc8874fce11"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/8.woff2",
+          "sha256": "c4fbfbf68cff4eac34ba629b361622bbd2cc157e1de8e41ea0c2cf8e2eef2393"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/9.woff2",
+          "sha256": "7b6e97cfdb9b9bcb01b1202ad0a1a860479bc09ebeaede9fbcfca4b3952be097"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/93.woff2",
+          "sha256": "045c83ecc64584b13e8efeb4556a9ae3fe8b82b0c635e79280e234d292ce9b15"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/94.woff2",
+          "sha256": "1b06e5a468532e806d4e2aeb175a3037e9eef5db366af97c6d34294083da35ac"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/95.woff2",
+          "sha256": "6546856cabdee58a103dff3b997629c18f3c9c1b2d4139c1f33560976820e6aa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/96.woff2",
+          "sha256": "77c602f84bf31886bb920ec051fbcc5c1303aa7042fc00c4dd277cfd75d2e81e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/97.woff2",
+          "sha256": "487b29abfb40d77fa25d220b14d117d7fc5def4b3ebb520bc7b2f6261e7efafe"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/98.woff2",
+          "sha256": "f59e6b7184ab5f76de4127c74e815925bf480686e052732539db3d55833ba904"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/semibold/99.woff2",
+          "sha256": "221fed1ab672198e78d0870b8fd31fd95df5d84e1c685dd0e8c217cdfb5feddb"
+        }
+      ]
+    },
+    {
+      "weight": 700,
+      "asset": "TossProductSans-700.ttf",
+      "sha256": "5e544540711ebf37789f7e47c7371281591b1cce47eb05adf6a3d37cb7eb5229",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/0.woff2",
+          "sha256": "f804e75a5a79108354e913c54bc3696478443279dc9a8ba7c21e0325ad856506"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/10.woff2",
+          "sha256": "c55d1b11b2008e0157bc97a2a6437d01a9a6b096a02e6edee39f527712782435"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/100.woff2",
+          "sha256": "b9bebf36a1311b3aa470089ed365ec6663c9767bf6b0fa583ab4b382192ce451"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/101.woff2",
+          "sha256": "c9e31f7c761cf120dce585bac763b5bedce70a0c1a848a95ec195ba55d5fbf22"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/102.woff2",
+          "sha256": "163ccec328a24206d1455a8720dd2b3c39a58cea72138bef22fd7b3fa3613ff6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/103.woff2",
+          "sha256": "a93c1fe318d5b72e39de4da9733b41a479181dfd1a8c043fe36c832ff73f0dd3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/104.woff2",
+          "sha256": "a2eeb2c699fe29d79071bb1f133975cbbf42012f0f06148963b7840d7308ebec"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/105.woff2",
+          "sha256": "00d23689645a9e96c0bd04a7b6506007acd3d7567347b1358cc8f1c14b1130c9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/106.woff2",
+          "sha256": "76cb849403fc5275c15eaec085627a21d983fa47ae4b84763309ad4f71849918"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/107.woff2",
+          "sha256": "87f6fbaf78bccd75188375dc58fdd73ac676130f392e0a7c820c363eb1fa0a55"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/108.woff2",
+          "sha256": "c524502b36ee4b1930930f39ef78d6447d98a72422970ef1c067800a5cb4f411"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/109.woff2",
+          "sha256": "96a6576be913c715510ce3290b658f9be0e52e6f42cfb5463a8702027b87ff60"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/11.woff2",
+          "sha256": "ea4ff22ec095c81f1e302d490823291c6c9d4966c47815b876c97380f2390bb8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/110.woff2",
+          "sha256": "d4439777f0c6e55ebaef9df1bbae463e7c3dcb289f900e239b1a2592d2716a61"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/111.woff2",
+          "sha256": "c33e314770623d3785787e18240388a962de91a82fac054995d82f8740f51f1e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/112.woff2",
+          "sha256": "e6c4b7a02ce52d892477d2e68b0facd2736df05ee7e0ca9b7b476a1b9e82e0d8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/113.woff2",
+          "sha256": "50f971e98d88928f4b25408b07df5885067a05743c53c00a8dde4381cb4e2fbf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/114.woff2",
+          "sha256": "7d83494ffc4dabbad2ad95e40ea41113c4f3035a7c333732786359f9c94dd886"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/115.woff2",
+          "sha256": "576b7cb23091c8b76da666af190aee3dc5c27bee46d49138b75f7e554d4fa048"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/116.woff2",
+          "sha256": "afa4be76fa2ad22d773a486f825ee51cb7ffda04917e53a4f42930c7afd38bcd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/117.woff2",
+          "sha256": "e8c82b603751afe6343240b009f62d1875ee8b70a56cd54be2666be38de5fa5d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/118.woff2",
+          "sha256": "4235b6058bbcbdc850b938af4ad3e848b018a2894850ae96c84f2eaef748c3b0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/119.woff2",
+          "sha256": "1beb046bcf30ac43e08d0bf87e76ea5f6ee6ef14ee798cbada848a8951eb30c9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/12.woff2",
+          "sha256": "af2a7dfebadc681dc926c08ad5908e60623b006cc7a3ec6261cbecd60b3cb809"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/120.woff2",
+          "sha256": "ae9df08bc582e6928d1dc97e607f0263d7814babe9a142b4a169985b27de5797"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/121.woff2",
+          "sha256": "6f9fd825d7caec40cc80b14ff19663fd9a8423765e8a07a9595925d5669f79a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/122.woff2",
+          "sha256": "fff144b5598873f680270e9477a8c72a90684b2e9a237052f5efce120a06ad3e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/123.woff2",
+          "sha256": "23ce063ca1cb6afe50329c9ef115e7ea08bb47e6fd003fe8b324d0ecaf94f452"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/13.woff2",
+          "sha256": "23701a80635bd2db2743917b37e77cbb2a3c99cce519d19e58ce6dc0dedaf13c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/14.woff2",
+          "sha256": "02b9c8a1f88b740ec6a968ecf185ea96b8c337860d800bbbdf1072140a134801"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/15.woff2",
+          "sha256": "9e92719456c980b37347cadf19e7533a87e05eaaf86c274b9f11e5eef7bd4ea9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/16.woff2",
+          "sha256": "ba824494c61ce1093141fd25c54c58e8239ef19353d680c032db7f44d7b10d3a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/17.woff2",
+          "sha256": "2809ec824ad4c7de1471507afc88916dee1a2409288dccf7021d3c60276201b7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/18.woff2",
+          "sha256": "e89e6a5ee1523262734b3626f3aa854342502eaaad76dd8930b9a17760c73121"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/19.woff2",
+          "sha256": "ac1e57cc752679329338dc9d1e1d7ee4526e60e02976f703b0fbd6f824f14347"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/2.woff2",
+          "sha256": "05eee9a2529150e1724797a57d21fead0d83a166abdf9757563766f149f4ed74"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/20.woff2",
+          "sha256": "5ebeb8d8bf85fd00f01174ebe600293affe59b8fde9d8e90f61af17aa7f509cc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/21.woff2",
+          "sha256": "43d9a6e689c95d3f2f3bcb1b5e32f2d6bc7ae7cf62eb009028fd1822246d0d21"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/22.woff2",
+          "sha256": "846e5be4d7783a1a8e548bd187260fba7332a32be393c6b97b648fe17f6b2671"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/23.woff2",
+          "sha256": "4f65b9c458989c57ad325667f3cd034fbcdabeb69f78dd87711e3ee2f6920768"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/24.woff2",
+          "sha256": "869864a3ceeba799907ee2c025510e98074d9d56445b09b453e8de6a001e7d72"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/25.woff2",
+          "sha256": "c92a2a521375fe3070b0ac7e9c2aeb3d214f364a2583f8fa1509cb8ff3f32ff9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/26.woff2",
+          "sha256": "cc62bcf3f18a708d69dcc132e0addbd1d80ee90cc6fa92df59611a2ad828781c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/27.woff2",
+          "sha256": "3a708a3c0c3a6d3d8e350ea1b385ed49a7b2ab26bfa3003254f2bc4b8f0827f9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/28.woff2",
+          "sha256": "77d85af80cf9f870b0ff27160c0b782b131582e2234a591e09a7e204a66965a4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/29.woff2",
+          "sha256": "953752ce7db1319ec2f305fd3c3e4200c757f1ad1a05ffaa7d4f53e3c7d0c5ce"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/3.woff2",
+          "sha256": "3dd50a88f637f8ddbf07df779f1e2495e62220ae20ace5842072385665134849"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/30.woff2",
+          "sha256": "ea17f5fbcec2c88f213afc51364c8af68c79450a2b7ae2770c096e5e191b0998"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/31.woff2",
+          "sha256": "55463bc804dad141fab229da9d80c12909035c7880fb79e5dba8ded5be72d964"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/32.woff2",
+          "sha256": "fb67a27bc13a91c43a32192fe3eccf85765d594af7d573e44fc6803824a53c23"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/33.woff2",
+          "sha256": "27b5e48ced22293b203aec290215e815eaf20f3328fe02a19f379803e5f2599f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/34.woff2",
+          "sha256": "456dae6c4a8653322ed5179e4f6ba6887842d173509aa6bd86a55c60887622bb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/35.woff2",
+          "sha256": "8583acd0e95c414d6dcf790dd5ed7f06a2a8c8e5fe79ff7c1d718773a955c457"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/36.woff2",
+          "sha256": "f809c0fc3c5b095057b0efad0ec936adf43dd54cfb6efbbe94066d56b7793bc2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/37.woff2",
+          "sha256": "40dc8eacf141e44a042326d6ba089559a90c5df9c2fb017e85be411f2a4f4de1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/38.woff2",
+          "sha256": "591b0937d641fd5f9ba7326ef7a3efe1d0c60a5e820d4880f5daac06e09fea5c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/39.woff2",
+          "sha256": "4d4dcd176bb88d96bb374ca9b9d0952c5c82cf1906a80046a58d24138ea051dc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/4.woff2",
+          "sha256": "f9e1208a8f9e941cb72dc97518289b5ad15aef24ffda13f6d50794b1de11c688"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/40.woff2",
+          "sha256": "76293ee4d9bcaec4a7582f4a97093f0f8d5ce94f694be2c4bb79fb5e0ae0269c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/41.woff2",
+          "sha256": "739929f8e4845774b33a0f1751e5a087829960d2759fa9320df22bd8d65e5209"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/42.woff2",
+          "sha256": "c50045b7c69be4cd91a100a14c214ea05bd19931009d82f73ef66e193a7dfa92"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/43.woff2",
+          "sha256": "34d44fa0e67061ff1ac0898f00575004b2c337ea756cb5509f4dac72baa970df"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/44.woff2",
+          "sha256": "9e8ef89233f7a4e93a578c8e015fa14416d4357f06f842eb92d037b46f8fa791"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/45.woff2",
+          "sha256": "4318131bf23b4750b682e3fd5d083031843e170647c76e188b1888174cd31a3d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/46.woff2",
+          "sha256": "39a795b525be4bd118ab46bc63f5dc0e60ca6a0ac96e8634904d56a62b896226"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/47.woff2",
+          "sha256": "6feba1d56af492c1805bb7dd82203e13d3f059f8bd9c1c09493e15d6033fa8df"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/48.woff2",
+          "sha256": "05ea11797bef7421bf3c2187d32d3aa0e6dc08ba961f5501ed01ff672cd00bc6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/49.woff2",
+          "sha256": "34fdc8ba6cb99789b5de8562a1e5d87a44221a43d4560c73096aa0f63636a007"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/5.woff2",
+          "sha256": "65fb98d0691406a5d4daeabe4312876c1e573af90137f130a2cfa9178998bb4d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/50.woff2",
+          "sha256": "c9bbe44b8381042a576e00e2cc93fe60c07575fa172b36d01093b9969a764dd7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/51.woff2",
+          "sha256": "68dd1b76e4e87121ec7a66caccef2d08a487d93851b7bddbf923c93cf921a3db"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/52.woff2",
+          "sha256": "8cc87170fa29962dec0040799dd76e3fdb080984aba769199c8ef2678886d478"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/53.woff2",
+          "sha256": "2324dc55c02aca5fc799a5ccf80282cbd7245a13a860fd1d7d93d8175c41d3de"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/54.woff2",
+          "sha256": "9a83d139388607155934f53de36c9fefc820d86f48c31f76b17aadd5ab900d6d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/55.woff2",
+          "sha256": "28583490bc306ccc596c3322786074ea424b9c4a633273c1be8f27ce49d96eec"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/56.woff2",
+          "sha256": "c2cabad2d5d4a2fb2d4a676130ce221bc5111f5fabc138843bacae1c3d9587ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/57.woff2",
+          "sha256": "74cf486c95bf9cc8b40efe9edb86a25f52e56a1a4f9177b9e96adb1402130cff"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/58.woff2",
+          "sha256": "67df63e56913b43e1aa289812eae8ed8adadd5b44df97ae72e9a1012cd5e80f1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/59.woff2",
+          "sha256": "ee2ec4446c19902b8271b02d38dd6668ab4ff85767ec79d6e13247d2c855e5d6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/6.woff2",
+          "sha256": "076a89f7b55cc9acca6ed0520175b988acdbf258cf72d4d4daed8a50848803d0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/60.woff2",
+          "sha256": "4e978d06d80ef3978043b29da279c85720511bc5767e8adfc5b9dc9d668975a7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/61.woff2",
+          "sha256": "e5b0170b389589578324dc29b4d16136782a6ab2516749033ff0bbd8922e59ad"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/62.woff2",
+          "sha256": "f29e9c5a0f5641621d724c6e640bd08321ca52650257f6747b2e92168e22bc2c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/63.woff2",
+          "sha256": "3f862075958fdeb277eb1b7e05540f1d97d88c1f2157bef978db9453eb37853b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/64.woff2",
+          "sha256": "0f12dae93aa9195ff0b168a73803c9a75c18e3a9acb045c6a2f63605804714a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/65.woff2",
+          "sha256": "0df5fde78bdc34da7eed759f5540acd7afbfaf6e5cfd5bcb09653684da9a1b2e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/7.woff2",
+          "sha256": "6beaea159559714ce33f60ad1542ea0f4bad28d4f250f58f4da5b839562d07cc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/8.woff2",
+          "sha256": "c9cca36f822851c18eeb1f270c8f3a46e1f40063c3892ad37e85b31f430f8bde"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/9.woff2",
+          "sha256": "aa14d8edf9d467ec6553482c456125e95e99afd37723d10eed4c6ab4822820b7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/93.woff2",
+          "sha256": "c4c4139c8e417ac5776fd5c7666fe86b207e110b7e7f7d5c4862d7c19ddb6812"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/94.woff2",
+          "sha256": "f4f3beb70f90b2529cb43881818a3e1cb316a8cd72e04babee0e6365c9fc0fd2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/95.woff2",
+          "sha256": "d7cae599c4438773be40d26d60a29a48b7e439e25667173faa73bdf4cc5c7ef2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/96.woff2",
+          "sha256": "28d6713d49f66fb745835e83dad86261915e1ae42b983e4c111bff32daf85fa7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/97.woff2",
+          "sha256": "a5379b4626c3ca23c92dd06465c8343e99962ad52e3b20ba63e67dd02d2d9265"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/98.woff2",
+          "sha256": "089b97a3ca205af741e20b8f22703a3cc4320e3de627bb76a4abd2b7b630304c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/bold/99.woff2",
+          "sha256": "9392c1a652c7d8eded7d0a30a1fc8f9e487da4d9f609531d2f6ea053ac8ee0b9"
+        }
+      ]
+    },
+    {
+      "weight": 800,
+      "asset": "TossProductSans-800.ttf",
+      "sha256": "6f3f3daf88309dd4ea895968c14631845806e0ad09468c7cca5ee25063577692",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/0.woff2",
+          "sha256": "c52ae0ebde6d6bcc7e5ae3baf2eba6b38dcf956ac300bc1f715e96db8a19e9a5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/10.woff2",
+          "sha256": "dc5fbc0344004aad37e8a8f14ba073a3df2b4df6752a5ccc53635ea440e2f023"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/100.woff2",
+          "sha256": "0272fdb0f7d9effd3fb9a0d365b48e700dbdd0c906d38664cbc9859dd36d09ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/101.woff2",
+          "sha256": "9530ef6f0f9ccc88a4344543890818646dde71c5521321923382ff7ba34a857a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/102.woff2",
+          "sha256": "f759050adca1e13d6b849108bd9e6dbc155baa4198e5f4af20eb80f7b02cdb53"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/103.woff2",
+          "sha256": "fbf584af3de04f98b48878af396c4f660d235a600f5a891e2694fb645af9c1b9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/104.woff2",
+          "sha256": "0461c3818ec75f112e46ec26a61063a4cb828329185ce5fb35f8ace797acdf91"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/105.woff2",
+          "sha256": "1f58d04a93b50ea7203c35bb667e02cb00fd8e079fe62bf8cb5f0ec1a6c8d49e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/106.woff2",
+          "sha256": "4647b4940c4520efad51396bd051b2c8d65b155ec5f816b74adba7b30a456d41"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/107.woff2",
+          "sha256": "ac51842a2ee4fe68cf680367c661fd8fe164a425f8537467c243493d068a4017"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/108.woff2",
+          "sha256": "8a16e2257e6b84c9c8499109c275f99c574ac8e26494891ae57e824bf3c71e90"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/109.woff2",
+          "sha256": "ebeca301950bd7cb08a80a0e8a7837750b23f8da2aac13da26db50e09dd346c3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/11.woff2",
+          "sha256": "3bfbfe05d859cd82927c8f25f59de692990f2c319032d66837fed216747eef81"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/110.woff2",
+          "sha256": "476597ff19705f0de0f446b57f4cbef111b184157218ce0181a46fc46460535c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/111.woff2",
+          "sha256": "f7545b6c146cbeb882b4634c161f44588710a6d3edad4450e6a1dd500b418bbe"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/112.woff2",
+          "sha256": "3e4b651b4ebc49d0fed2c22a083de6475cef8e8e5d7f980a956e7a630dfef51a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/113.woff2",
+          "sha256": "6074d84f4e6a5fd35e8e329ea99bd62ff943dfce822e80f7a28ae5b99cbb32a0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/114.woff2",
+          "sha256": "a549c669660b52b3652b706048e1ad98466f27cb46a73a9e187728d7bffbc49a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/115.woff2",
+          "sha256": "c24bb45fa08b9509a0ed533bb3a4b0c119a6cc589fac1bd1c29526e31686f816"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/116.woff2",
+          "sha256": "719bf29af3f94a37b55b0a727acbe4a842750133043b15f9fb116ddb7c04dada"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/117.woff2",
+          "sha256": "d6458641a6cc29e0c08121a60b2ab5763a5f9f0683e6590b3639b15d13ce6b3d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/118.woff2",
+          "sha256": "6a8e2c46508ff77cefb56576fa76b4f6eb4619c8b6fe3f3e47f72261a7674d62"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/119.woff2",
+          "sha256": "9fb905934f4d779b8b4275b86347ba859f83862be5a723aad6dc5ef9ce282980"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/12.woff2",
+          "sha256": "dce749967922461d249d5d430221b22d8287fca0b2a655dee4e3205d9b694626"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/120.woff2",
+          "sha256": "27a980c943126b9f1fb55fa061304983b382f3d7cbb6ad069424c7e30a6d18d5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/121.woff2",
+          "sha256": "c3df17c04ca7f2dc6eb9b1843d2c0ec963f104dadf945238bd98d4c0948b89fb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/122.woff2",
+          "sha256": "2781dde24010046ea97b01d47911d8af0c84d9352a5eef87df08b917a9af580e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/123.woff2",
+          "sha256": "fd97e146aafb2cb24f7da9a1d6a36a8199348790f63a2e1e25e38d4c79c24b23"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/13.woff2",
+          "sha256": "0948668a615f58d0d898ba320f97dbefd2514b9cbeb1027d70a6dd967a7f1d59"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/14.woff2",
+          "sha256": "1f3e3ac31fad42a1e7a23048868ae836ed09299fd66a7d3f88200064bcdb6f83"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/15.woff2",
+          "sha256": "7fe97a5fcd137a690d32144b8d9176828a8cb33cd1d61d7726c6c980865a4c9d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/16.woff2",
+          "sha256": "d9f4efd61ced78357afd2f013a9d90c0c90149ccbd47c79f8822f258b81051a1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/17.woff2",
+          "sha256": "b0019f158b6f142b448a57f0137f03772d138f3e0b463ed582fd9749bc8ef8fe"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/18.woff2",
+          "sha256": "bdfc38ce0933f74c305ef88e58f2a9e98f9a177455cbeef9a2c03827f11332a2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/19.woff2",
+          "sha256": "7242897fbca68ae69a42336d4ee707736e9cef8f5396a35bab78fb34539de86d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/2.woff2",
+          "sha256": "580372265dd5424ea605ef57975c13c5948304b795b457c0f664521cdd6ac80c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/20.woff2",
+          "sha256": "cecc4a6968b617ee5b97674fd6b627de12f3adc7e0d1f8edf6fcd6968d744198"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/21.woff2",
+          "sha256": "e78df4d662ce83e7fc793d7ad8867dc97b60f967e9a1a31c7f9f5623936aef07"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/22.woff2",
+          "sha256": "64232c417d729a417c153f022a8ce40644d302d69f37fc37f68526df6e993c23"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/23.woff2",
+          "sha256": "638caf95b67f2e16e6986b6d71d2e12734dbdb8e72360a3c79cb90a2f9534f1f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/24.woff2",
+          "sha256": "3cc2b6dc86cf4b5f9ca350170961e63beac01cab11388d84f9c3e3dc51176e6b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/25.woff2",
+          "sha256": "d94edf62e68e9ce8c68d9b625fc9a0dc156dede473c34e7bd4d8257bb52bb6a5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/26.woff2",
+          "sha256": "917f72d1a9dbe6ad6bcd3d03d0f89e707a0e7971079021359e2564c788551dc1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/27.woff2",
+          "sha256": "54593022b4c45b0df3c0011fedda5184b5f0bebb66e98f750eb6255066266904"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/28.woff2",
+          "sha256": "e97b8e1e088d707fbf5492ea2c6e32344aab3074d57a11db1e812fc05567629d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/29.woff2",
+          "sha256": "ad731c58ad4311c729cc78b33bba10693fc0ad64cd93a4d3eb49c16cbd9b7ded"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/3.woff2",
+          "sha256": "9d02fd1893ad1805b8e76fa5a3bd2d4744ac0beddf436cdd3be9ab8d811993d0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/30.woff2",
+          "sha256": "946241029496cb87a68d6d96a87799a5428c9bf61cfd78c651fb275fda92bcb6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/31.woff2",
+          "sha256": "3a95a1180c51a9fe21994ba9d881d9f858a5a9d475dd022dfc0b3c74372214b3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/32.woff2",
+          "sha256": "bd73deb2da804dcbc730f4d1debbebe538932ab5bf31a0a07143ffafcdf97257"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/33.woff2",
+          "sha256": "7c739883a5a79ff191561452a0a064c2ce26ede55d0a085a1723a1706d0a5576"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/34.woff2",
+          "sha256": "fb27b14102c4efdf008380bfb6414ed525e344dbe04b482a7df2ab30f7ddd5f8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/35.woff2",
+          "sha256": "3d8bc3f607d610876598d363594db45a2a11e2663c3bd651622750b5758b7e5e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/36.woff2",
+          "sha256": "aa3faa0324354ab271753c54af5068acefecb4d5fb3c77b4ddf8f30f0fcce06d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/37.woff2",
+          "sha256": "2235641fa997a48be084e90170f61c3ced233e5f6dc9508cbad403e2884eaf15"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/38.woff2",
+          "sha256": "2f638ddf45abae05a9db6f3ff91c5f664505c3633c77743773c80171a02f0258"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/39.woff2",
+          "sha256": "7ee8a0b90d515970189a0b3cb5cb2b259644efb6edafff31ee1a0318befafb8c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/4.woff2",
+          "sha256": "175a099d77b4cf109b82f46d32579ad14f25f75e656a760a76dac1fa8181c4e2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/40.woff2",
+          "sha256": "0533a184cbf744b8f690b6eb9a178eb54fd0dc92d5281126004b6048bf77446e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/41.woff2",
+          "sha256": "cdedfdf39f9c111b85ada5bb76552fe7ee4cb93a8ab375e6251c89f0c926e846"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/42.woff2",
+          "sha256": "9662b42529e2128899b7308f9247f86efc248d1d5f321351a91276e3e3c2b8d7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/43.woff2",
+          "sha256": "62b51c28c51786a5fe0074d48bb0e9eb5f638f9aba0c368ec202b11aed41e85e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/44.woff2",
+          "sha256": "794627f9e5a867c1bb7cdd8a92d2cba11294a6947261aa39ede418a2650672d5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/45.woff2",
+          "sha256": "3a5c846ae9cd984d7eeb8440f555dd1f349590a135df663304e8f8bc2f6ae798"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/46.woff2",
+          "sha256": "961ee5477194a025e63bb0aaff6323e75e33afb88177c4aa174ee6b852889c75"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/47.woff2",
+          "sha256": "92e398e70771ac147e721fc538501a8a65b4fee4c34fef689d57d97ef06d55c2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/48.woff2",
+          "sha256": "263736a21f8211cece4f6936ac9fa4f3c47d2702d6cd1d2a8e11f93e6706dec7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/49.woff2",
+          "sha256": "b63524d3c47173cbd5ef641ca7e22b5a8615eb13a12c261cfe466142df278ce6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/5.woff2",
+          "sha256": "74e8951276b2ba518e8a0cb1b70984e0ab8fcc049d92c62d87369db3c7c7ec48"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/50.woff2",
+          "sha256": "53d89dcc38a0cef210a2300e259906b9eb1a0aa7c2fea9f4370b0469b088e849"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/51.woff2",
+          "sha256": "433482f7947a843a195a2f0e73b0553751e696590968356f741395a51ad7d220"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/52.woff2",
+          "sha256": "2b4e7b8364291b2ce4deb4c6bbf39fd759e6d0cf1c5aca4c3973828e358566cb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/53.woff2",
+          "sha256": "5500ade91859580abf8d7d7bd763bd2273262877b43406e8e80dca4aa878c88b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/54.woff2",
+          "sha256": "6aab929c4226dbd4070966dea605ddd23f9c6ce4866a710558c1b7b5f0b74e9f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/55.woff2",
+          "sha256": "fe61bde1bbb00f35ddba61f87401e26714b7b5f88a892c4cc008fc7832c1c0de"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/56.woff2",
+          "sha256": "92e41ca7a4755d2c741d45c65870ae18179f556796c7f2f6d3531828143e1f15"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/57.woff2",
+          "sha256": "42a387ecebe6cdb83e283216ae1c559c9f8a5e51ee1537b14fe012a02fbd94b1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/58.woff2",
+          "sha256": "bd4781aecd3d6a81b7118e5e07c9464e80e323862a412a58d0fcc84fbe6960bf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/59.woff2",
+          "sha256": "446a9a67003acfc9336adaaed5da7ce7b7931847c43a1e90071e598f19e07178"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/6.woff2",
+          "sha256": "aeb8d583ff2a51f95add76c4a976654649db9cf4cf4dab7d733e79f86d280c16"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/60.woff2",
+          "sha256": "29a54429293809a3ac2115797519d3b3d9f4139b7d12c11d8fe6cc97351d453c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/61.woff2",
+          "sha256": "14467555ae92e31921f9c6f02bbe75cb23a494b519bc1b179bff8167146e90f2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/62.woff2",
+          "sha256": "fd44b85b7d6b793ba2109473f2013d5c7fea773b5c5abcbbde0598ef0a7b12d4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/63.woff2",
+          "sha256": "14ea30800ad37b7ed1e5289e6a12dabe6140e4a1ea6a25af763430c866e8bb7d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/64.woff2",
+          "sha256": "7a4b7da8b187dadd3483921e9c97d84f22a6349e3f05ae4548c1baa0cb94bcf8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/65.woff2",
+          "sha256": "8abc14ab3449fa37f24e9434a213c67cde233dffd913026661060f48ff5536b2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/7.woff2",
+          "sha256": "189312657ea7928fb5aeef0ed7729ce6ff2fdf63e99b0a10363940b7dab586ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/8.woff2",
+          "sha256": "df3e131cab88068772b7d0c1c244b8bc1e19cfddbe69d12e1d232bd5d12f31e9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/9.woff2",
+          "sha256": "862a5d6d6a74b028fb4e6c67d5c6198d07480cd62b19bc31e32538fa4305bb5b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/93.woff2",
+          "sha256": "1f3dafdc426cf216065700649ae1fdd5f3c229b04e248b19c5ec254ddc9d15c9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/94.woff2",
+          "sha256": "c2b1f644113aa40c42a8e7562549e92653d5249ee5287118fb9d0307eacaa050"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/95.woff2",
+          "sha256": "c7259f5958ea00b96e029c5474e51196079fbc6def47dcb714b12471520de7ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/96.woff2",
+          "sha256": "4a2860d8905e25e36b401704670197dc3dd3ddb1ec7e31ea79cab4ff506d6a1f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/97.woff2",
+          "sha256": "eba16282be2cb4d41ba39f5ae65ed1dafa35e5ffe09cb22bf4c4fdae2b1cd828"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/98.woff2",
+          "sha256": "5cad1eb480b1f58f870f1d1f37e2c02cd581804603ac76b47b627f0781459c5b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/extrabold/99.woff2",
+          "sha256": "5d6eb0e130f76c4acea39b6a6bb7c143fc310d401c2ca1ec991721c4a0906416"
+        }
+      ]
+    },
+    {
+      "weight": 900,
+      "asset": "TossProductSans-900.ttf",
+      "sha256": "16b56211133bcaa5084292f8ad8eb8f468c37b2a364606f2cb43a6686c34ce88",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/0.woff2",
+          "sha256": "c5697e6474d829d99a3d81dc9686dd7a43714e6c832c4de3dcf4b944441b2344"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/10.woff2",
+          "sha256": "b7bde186733520f798a69e4055c93aa7cb1899037778ab11c9b2e36ee3a06f00"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/100.woff2",
+          "sha256": "4c0c22fbc8544b308cce205e479f0b4fa0712982c19611008d2fdd652459dd28"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/101.woff2",
+          "sha256": "a73aca629a64cd45070e1a7bcd4863215caf1c5cda1cd78e9cf885076cbe2c1d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/102.woff2",
+          "sha256": "41021d3c53a586caf8df91c4fc37d9b30f614be2bd3f697b3cde5159c99a0a63"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/103.woff2",
+          "sha256": "7a3bd324d0a11723f85b7792db35e5600b219f4e49c58d349369479ac4714ce8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/104.woff2",
+          "sha256": "19eae91722fb4bbbaedf2977a7522f65337be3c2336480e509627df61b832b4a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/105.woff2",
+          "sha256": "72a3627161a35e84e6665d7b7370a5631bc24bbae5f55a75de7c13ad1512ee3a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/106.woff2",
+          "sha256": "a7c03899a6f5b7794cde392bc1beef0df3df4e6549b6004ea97c153ca8255302"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/107.woff2",
+          "sha256": "aa28ed4fe6de77ce852074dcb52a7ba5fd6e5624b6c5c18a0f9bbdc73b5b04eb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/108.woff2",
+          "sha256": "693e785c74093377e68f44f540779c96b9f6a2cdcf06dc3a5dfd6b041d632a61"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/109.woff2",
+          "sha256": "9fc71c3100ec222742536d9e8c2650a0b97e71e4d4f5257dc1e38be3102c0d64"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/11.woff2",
+          "sha256": "1b7ff6850121cb256d7bbd467d917a0c0fad250ebba918431479f133e9aed257"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/110.woff2",
+          "sha256": "a6744920c9478ade86c499c6996c57ba38b470ae187f91f16eaa77a4ca7381b2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/111.woff2",
+          "sha256": "91bad6da7101a011107784ed402d3287b498d1b40bda2850bf8bc78ec02f4475"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/112.woff2",
+          "sha256": "f0ffe9a0a100b9bc0bdb1898dd9136e28506af1e0da37b1e0df18acd531faada"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/113.woff2",
+          "sha256": "6356e86e3bf65a3ac23436a2afe40b38bee3d4a2b3bdc6446290ea5af2bb7f2b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/114.woff2",
+          "sha256": "1808976c5e06e19aced37fedfe0e52ce4f990283fa2d3c6921dc68a68d3f515f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/115.woff2",
+          "sha256": "5eaf9563bd80a91b1745bb5fac576c6c450fe7ab5596a31c0f5eeb487c305bed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/116.woff2",
+          "sha256": "e729f4de68102767c51fe3a57fb6179d76f8084c9acfdca76a4545e077a0f58e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/117.woff2",
+          "sha256": "96155099bc70a622c1964d0843c84aadbdef4763f581eb268a337217d25086e8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/118.woff2",
+          "sha256": "c3c03a9b4376385e038a6cb4e73385aba3357b1bdd687907aa40537cd85ee967"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/119.woff2",
+          "sha256": "fba41e0d8458b150eeedbc63bb3f83581fdc460be78bf81676d2d2937c7f0ecb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/12.woff2",
+          "sha256": "224aebcf9315d4c2138dbe3c2f306291527e6b8094b7aa04f23e2ae0acafbe23"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/120.woff2",
+          "sha256": "c70c085fab72b57396015fdd907b598be5eafb923beba5cbd3c9aec586b2db4d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/121.woff2",
+          "sha256": "3753dc8129cb4f2ad812995796b382be8803b154a4024e2c9af51aa3f0b1e90f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/122.woff2",
+          "sha256": "d508e704c666407489802ffd07c82f6e36734c403a11f6c46ef69682a1fcbe88"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/123.woff2",
+          "sha256": "64cdb42f64ae2494a7d1f32d1b3f7ec835eca4d329e693848fd4148101bd8726"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/13.woff2",
+          "sha256": "911d7044804fb252c3446fc477de9bd706d59753fe893bef76eda0dace9c80ed"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/14.woff2",
+          "sha256": "1ea75724a0ca3ae889ba703afd4eeaa5721e9d4e8734108d27ec173114111481"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/15.woff2",
+          "sha256": "e2b148f12982e8654f7d47ee24c81257b942700f760838fa2ba672479c4a8b3a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/16.woff2",
+          "sha256": "1e7e51480f5d7c3bda5181623f6427a7bac5e9ebf2c77f73ab4774ae14b0e40f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/17.woff2",
+          "sha256": "8228b855a97025b18a75704a7d3cde66fb487e6d2d05c51353837ddffb24c045"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/18.woff2",
+          "sha256": "eb22cab02cbf73082ab76447a578a7f47379e7deb3a51e0d8adec380ecc7f865"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/19.woff2",
+          "sha256": "c7806b46c3380293b09602e53d01664857c2599cedfc83fa0b9f0f2e21a0878b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/2.woff2",
+          "sha256": "f155fd2ce65999b4f538f44bbf91c947ddae81cd3cf5b7bd2252cbd2ac77caac"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/20.woff2",
+          "sha256": "b3ec7225a7dc76fd8809e6b427a7a07ba331c8af9107b9a2db87f0bf2229c41d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/21.woff2",
+          "sha256": "d394532dc41423be52ddae4c228efac1a94ce693cd355e2c1cfbe77b5faa8580"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/22.woff2",
+          "sha256": "00b8ff19488a05aba44b1944273a107661124436d042cff21aadaf59af3c307c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/23.woff2",
+          "sha256": "58290525cec70964367d5af5380e899ea9f04ffa5f605336449af3a4577698b0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/24.woff2",
+          "sha256": "8a5508c8ced912d758c50ce6946e1176979cd3d0053d0811d7f6a4384f68eea0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/25.woff2",
+          "sha256": "5f82d4b888ef0f072ddd053ec985ce8fb606b5ea628463890d75e60e7a07e368"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/26.woff2",
+          "sha256": "0323ab500f56e58e50432af17a8bb17692ffd0ec48a6620e8aa20cb0f3d36ae1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/27.woff2",
+          "sha256": "054fbeb732322242542baa132e379f55b7229c6b7289839c75af21ff956b504a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/28.woff2",
+          "sha256": "c8ca63da010ccf4c64eb8c588157e6758e41ca7a3a26921d87808f24aaee3e0a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/29.woff2",
+          "sha256": "768c768a271562cc3390e6239b0e319a4ac6c23827df9cfc927da5f224dbe63f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/3.woff2",
+          "sha256": "8a059c899de06c4e7f383559eae40b3244e2cbe27f7a3123771a1859fd484828"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/30.woff2",
+          "sha256": "41906b55c2238ab3c19178ecee90cd65de1a578f655bfee714fe37ecd239890b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/31.woff2",
+          "sha256": "7602fdc910da256dc51996d43442ca36ec350b4d0f2801220587ae9c8e314c51"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/32.woff2",
+          "sha256": "945e089ac8d0d0095b17606a28b712e3fd561ab29415b69d12bd9896924d9820"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/33.woff2",
+          "sha256": "6afa4c475e9854d5721a875f6d18af6d702e8668085d814487f409fec22d8176"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/34.woff2",
+          "sha256": "32d113d0f8dd4db3455a8cb86f02792b2b2b9dd22bbae16032fe643d687dbd5a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/35.woff2",
+          "sha256": "819e7d7ccacfbbf0622aad2bcd5725b95b327ac16fec0b842ebc03ed72b51912"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/36.woff2",
+          "sha256": "e950b33e417f372633b2b5bcaf65233acb945ba764e5b96bcebe2535b79e7b8a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/37.woff2",
+          "sha256": "1a526025b6c128360247c1c1ba9e948cdeda77e815e844a4001ee40c41190b92"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/38.woff2",
+          "sha256": "7747c8aaebc7fce4d4cbbd4c4b0f7361f256e31805729df045a245c9f648cb0f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/39.woff2",
+          "sha256": "bb47fe1efb9e5b162a151ce08938edd88480050e24257f26a56171b4e420a97d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/4.woff2",
+          "sha256": "b584bce6a437bd29708f0f942a8c398b144ba58e792a7683f2de1e74461480d6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/40.woff2",
+          "sha256": "d4d7862332693dbe2c1edb1c162bd5bec0f84451d72461b86adb2f68d03bc428"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/41.woff2",
+          "sha256": "73f4e1fd831d476c7bf2e239a21f7ef939573b53c562109c81c9713b8bbf2ebd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/42.woff2",
+          "sha256": "5a7eec37af9800264c6be07e4e8c280d66d97e8d2d292b6145be08f46f974259"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/43.woff2",
+          "sha256": "c7e6879e0405fd925dc61cd13bd838d52f9464bce60e9d6094815eabc22f0d14"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/44.woff2",
+          "sha256": "7e1f48e63b48a4706e0e09bcdd2ffabaa3e19ed6b03d81a6e56ff9a7f3508dba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/45.woff2",
+          "sha256": "67b49aaba67cbef092e684d1ac80bdeab2eb371c46730f857a862f3cfbe69c8d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/46.woff2",
+          "sha256": "1cdecde1eaec38af443457146eca0078410af2cf311e14b3c3dee171c67a5dcb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/47.woff2",
+          "sha256": "16aee86c5c5c5fdcf4fe2cbd58840506efba4912df5e6ef04a8df3be7f1cfe9f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/48.woff2",
+          "sha256": "8de5949d4f36542a001426fc6c856d90c2fa292eccf5ecf4003e7b1197977d52"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/49.woff2",
+          "sha256": "492ec2d1344f77136e692a0c6709b4da839f195a226e2c335da1c12bd510f77e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/5.woff2",
+          "sha256": "c33d08b4b25fa2c5ba9f6f4a755385c6f3841d240e54f551eafa943d52fae2a0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/50.woff2",
+          "sha256": "9ddc1f34508d3c3c5fcd3242fea461f107c0b2d4ed7ae9d951215b66b8c72351"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/51.woff2",
+          "sha256": "3ff32ee49caaa3b56cad986afca7145c3aabd6e1bfb18749954618615a98601f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/52.woff2",
+          "sha256": "056e7a43497e529a4ae20e929304a69af3ad83b1e1d4c49e1388d063d3e895c2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/53.woff2",
+          "sha256": "83522230ff0db55728be4b42a2147f3a079b63e703bc2bf4906ac88591ada15e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/54.woff2",
+          "sha256": "8ca5a64dc310561389d964d95d9daabd25525014f88a9a3924396eca2b96b95e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/55.woff2",
+          "sha256": "cc212ebe827323ef657f2894e52503001b59ee21a636c89f1d0cd1e35ec1553c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/56.woff2",
+          "sha256": "38e126514c91165424c1bb357d01e8e7c78f0b753dc0f083f6ba2a5ec0e7d994"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/57.woff2",
+          "sha256": "0c4fa93f314bc21b3d2f76255b5ea896b976efe31856690983f6c4b837ed8ae1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/58.woff2",
+          "sha256": "d12fc8fa9ed881c46f7b9c60c6879adbdfda3bc4e4c1bda0e4ba47fe2d8c511a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/59.woff2",
+          "sha256": "862fdca4983ed4e087f4178aa881bd4b0bb968880c4e2dce0dc435b1ce038895"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/6.woff2",
+          "sha256": "2e7d504e807b8fdff1e9b4d4cb4cbeed03ea1aa5b05461f07c3c8721f6ce9fda"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/60.woff2",
+          "sha256": "8a50566cc2553551c85e9c6c3f7cf07084619ab333f3c5a3e717823606f256fc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/61.woff2",
+          "sha256": "608c6372b6e4371232bfa080b3fa2eb5908af2b69f97b6602d111c715045457b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/62.woff2",
+          "sha256": "6728f8dbdbefe0ba028dc0a866b9af29370125028aafcfe22e3e7a5f7b45e538"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/63.woff2",
+          "sha256": "1d3577f2e68a4d85d58f63fcbcda20c96a385dca471eb9e9cc88207002d6d80e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/64.woff2",
+          "sha256": "ca52d49f822ac6a7c93e6838addcf40073bffccf813b7120d44138d32049f9eb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/65.woff2",
+          "sha256": "5c88207047edff080f948a28cfaa77bc6c20f97bc6795a62d909fec023f1842d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/7.woff2",
+          "sha256": "0a36a514fbc08d2c5c885cf25bd3e2b35323c6a09d2c39fe437517aee2579ce9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/8.woff2",
+          "sha256": "cd384ad9dd0a5cc85d215efcea5388744fe54e8180acfeb1acc0bd4ed73215e7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/9.woff2",
+          "sha256": "02103857504dab8a5c0211c59daa7cfbd6b89833197882778be84954a7a7dfaf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/93.woff2",
+          "sha256": "0059c4296113f81e53d32d31408cb9f3e5808316a2f515689575cee6fb14ea60"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/94.woff2",
+          "sha256": "2e63d6c8af340ec5402249ab09c8356b4be07d6143e83c3ce10be2c055a08379"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/95.woff2",
+          "sha256": "65e261246dcde1c9e62556a0e0e6f620c741710e09908379888d268bf5c56fd6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/96.woff2",
+          "sha256": "16a3dcce1eab31b75df94458dc7bada547aee54bca010b1c0ad3efd13c4f59c9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/97.woff2",
+          "sha256": "bf96bfba939de4a99296cce5d82d68fdd309a8102a3205a5840de8c827e8fc2c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/98.woff2",
+          "sha256": "71851167b8f78c799c76bc1c9479f6a12b249b5287f397ec93df5afe888902ea"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/heavy/99.woff2",
+          "sha256": "454c7c18e5eae6dd77001818caaba00cd86acd0d5a52d9391bb32c84e7ea59ce"
+        }
+      ]
+    },
+    {
+      "weight": 950,
+      "asset": "TossProductSans-950.ttf",
+      "sha256": "31bb9e53a325da86088e85544ab6568bea8dba7ab5e5b8b90f046441206b8eff",
+      "codepoints": 12605,
+      "verifiedGlyphOutlinesAndMetrics": 12605,
+      "unitsPerEm": 2048,
+      "sources": [
+        {
+          "url": "https://static.toss.im/tps/20260223/black/0.woff2",
+          "sha256": "a3238a89e1c24105f9f9440e5e33f7e3a13963422625fd80f3f8c09a98c3cf13"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/10.woff2",
+          "sha256": "0a9f790b5bb612e01fdf5d9541e1efd98213cf59960d800b7a602083b7a5d72a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/100.woff2",
+          "sha256": "3de4b4b9191e93b786f890ab52a4afd18fdd7c9bc231f1a262c9ca08beb07e5c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/101.woff2",
+          "sha256": "212b6b1c2a83fc0b27674d58832818aac4462c4d0b6fcbc46b84cdfb74cec0cd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/102.woff2",
+          "sha256": "9fe21ea1d59c1fe4f3193721ee123fea664d2d3a093aad962e0eb90c97de2653"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/103.woff2",
+          "sha256": "bfd2f2f9ba42f083c04ec129f786868c1dfb950b3876278510338c23620e575b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/104.woff2",
+          "sha256": "0b8fec91fbcd5e4d44a48f9347f2dfb9c4d5634bf217cbc3dc23d36ccdf3982a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/105.woff2",
+          "sha256": "b68cf1c131b2c9a12a0e61caeba92b16cd989077e75df6250f15cd69e7d4d4e4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/106.woff2",
+          "sha256": "5fc97d9f1117a903f389254aae4c5f2caed0602502cfd4c75bc94631111ab9ab"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/107.woff2",
+          "sha256": "4ecd0ecae9e16ca8f6edb7054d5cdc1b12647726e0148e69d373e2a3412c72bb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/108.woff2",
+          "sha256": "19bf4b0b29561599d9113409ee61cbbdf9ebdea74a0405bd916d86494dc1a12e"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/109.woff2",
+          "sha256": "d31c3a39ffd11ec9c1a7aeff8f6009c1c379e4cec2a5c19cea71c818bbb628c0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/11.woff2",
+          "sha256": "fd1d629ad2901fb30271d71b74a12038dc5bd8347d403ad6fe761ceb102e83d1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/110.woff2",
+          "sha256": "5f83e7f12affb7b15856f836cd5ec6d554c11489ef2045c787056581852272a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/111.woff2",
+          "sha256": "f9cb97f21433b1b1117283967753419306868f86aeee445ea2b1e22f1208c967"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/112.woff2",
+          "sha256": "f7888c7e57b48597d99fd23d5a8cf70b6913f2225dddd142bb96109d85217c09"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/113.woff2",
+          "sha256": "c2728c26e1b6dca441f59c37a38779f4bf70e5e1523ad14947c624cc97ca4457"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/114.woff2",
+          "sha256": "ff4e157f86e727c0b96dd55af67ba070999755dd4c2489030cc86ca3a70a9def"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/115.woff2",
+          "sha256": "573f17dc5e6aa3adf24c839c7e6905e7e614a3bc80180a89769c9cc220d94b51"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/116.woff2",
+          "sha256": "e4d2988b7500ff8635358726e19704ce6b22b4b56789a742a769021cdc3fd0a6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/117.woff2",
+          "sha256": "278efa712764a070cbcddae1689f752840651696ea5501577386c33a07e076bf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/118.woff2",
+          "sha256": "61c98956402ae5100c4533059659e1af67c0fba34b9ab05ef2ae3f1c8a9ff97a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/119.woff2",
+          "sha256": "0d65fa45867c9aa17f2b8b0d4cb4f6ec1ee706feb69379e055eb0e2fc7766945"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/12.woff2",
+          "sha256": "aa6de829ae0dfd7acc1357b84e8bb983022291191fb08cee51b30839c498a416"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/120.woff2",
+          "sha256": "2e592a2d6204ca58befc0125ef5471da9b52432e87264b747d7c2150e1de896f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/121.woff2",
+          "sha256": "8871a423238b66ecaf5ec67ec88b88367eb675411c12608ccca582ff24911a64"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/122.woff2",
+          "sha256": "6ecbc2b231f8e62049e68b5e604d71272590a1dfbc664734eba15bb5e22752b6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/123.woff2",
+          "sha256": "d85d886d22d8bf842051e389e4e2b71fc7239c6ad6d130f31bd609aeafc8a9f3"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/13.woff2",
+          "sha256": "dd4ca75bf5f1740fc990ce682dc12ecb6ee3e84cea2cf9e8c5b90bf0f5ec2c8b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/14.woff2",
+          "sha256": "ef93e34b57539c5104833b3cc9c7c0b2b1f388924f7a8bbb31fbc14da9298868"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/15.woff2",
+          "sha256": "150a26cce36c959723d1484a992ab87ddc8a91dd4cab88024c44983a05b3c141"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/16.woff2",
+          "sha256": "f6b87eb4d544016d91306d8135637e917eca749622f5410194f19294b81e7971"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/17.woff2",
+          "sha256": "7955fa67ed4c458cf72e0cb4779fd3191c6f5ec420222165681ea0e02ed60c3b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/18.woff2",
+          "sha256": "a486e249538940b30e9ff6dde2bfe569f874c3fdfc412f6656a234d21a9e4edc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/19.woff2",
+          "sha256": "d73733e088a2fb3465caee27c8954809e70edc9dca25fd72bd223ea36c5e5a84"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/2.woff2",
+          "sha256": "2bdd66263de1ed3e86a8eb7256a55d71baa586fb8534253bd23762909822aadf"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/20.woff2",
+          "sha256": "aeb864cbdcd9cf074033b00054b942e9f114dd3c3a5231e77e374cdf831816b5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/21.woff2",
+          "sha256": "5442b4c396d0d68cb9de99e50754cbc71fbcfe5b342552ecf458bc58408f266c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/22.woff2",
+          "sha256": "c26c6fcbf50f6c0effc73e25b9fc43c2d2c167623c15ddcebb38ceac8862dbc1"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/23.woff2",
+          "sha256": "5cb1190f157211cb659b25f414d5e77fa02abca0aec33ada1f1215a061ea0a0d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/24.woff2",
+          "sha256": "c490b2620da917ddc6fe2a2dec143e1cc8bbaadc7b9ebd5e31e90d8b3cb30326"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/25.woff2",
+          "sha256": "14ed5c64fda28e8f93b7ba65cc14588f576539678f4d26cb713371d00356543b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/26.woff2",
+          "sha256": "cbc5f72e3e66fea601dafb290247ee46b0886b34fe8dff80d925f31a898adbcd"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/27.woff2",
+          "sha256": "9bb646b95554bddc33532ca17d36dd09bd64290325364bf2928ec2cc61815ddb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/28.woff2",
+          "sha256": "981f7dfcb8f0c2500be678f8cde32175fb75989a69a124bad6a6379d322b6e61"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/29.woff2",
+          "sha256": "8949b64d4260abe65f073d6a7c56692a0c584ecef3a5d6b14ab965aea1c7e34c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/3.woff2",
+          "sha256": "a98f380477418a78c6f0774df5bef87ae3c99f7dccca1b27be87727047c7bb4b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/30.woff2",
+          "sha256": "6654987d335fa91afba725525aff0210e96e03bbca621d9f409a43fc0748417b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/31.woff2",
+          "sha256": "512b3bb15547ec44f76b2d952e2d72d2d5a279bea0859a42bb9ba4344d57dd2c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/32.woff2",
+          "sha256": "aed8c0fb46e109a12f1549274ae7a3503d0553d14f9ced09e6be6e2ca848b7fc"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/33.woff2",
+          "sha256": "7250c65191f3e1bcbf7eaaa287334c6c29ab83b5c7ca055f925dd6477841be8c"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/34.woff2",
+          "sha256": "fffbfe67d4e1e773e6a1c1ec50c9086290c6e686cd3fa7c71415a54623923eb2"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/35.woff2",
+          "sha256": "eea6dc9a30339d3bca738d4779f9515951887c1b585d7086198b7e82ca14cf7a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/36.woff2",
+          "sha256": "b0950daaca22d950dff095edce8719e95e8044217235f61e0a115688bc5066d6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/37.woff2",
+          "sha256": "fd1171af62d72fade0dd948aa272087787429071e98656cbaaf54c2e6c6d7b23"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/38.woff2",
+          "sha256": "c70ccaa1aa26c5528a4e69822b70b77293722228b996b7deea48e0f07e31a47d"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/39.woff2",
+          "sha256": "d9eb6459115de0270e014862410815710a6332a1a43e39b523104e539a99df0a"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/4.woff2",
+          "sha256": "ba883b12f0f1885c8b3e693cc7a881c3e442913861a3deef4c74513389c7cff9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/40.woff2",
+          "sha256": "8ed6e30310a8a94c81bcb8a321f5af0836a022bb3f1fcc936e95bd4d92576616"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/41.woff2",
+          "sha256": "fded91f8cec02083bb34c9082649a63dd9c0595f35943a1a7353025d7733ed91"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/42.woff2",
+          "sha256": "75301178419614fc2b9b6c7e162ccacab8b7b2a85352c30cc0d079eeb96fa0a8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/43.woff2",
+          "sha256": "7dbb3800fc3515867700afe2bde62f5467452378854433cb8d4dcd3c3a34e08b"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/44.woff2",
+          "sha256": "5be4e98b3e63cc3abe39b2aa1126df68efa5ff7c63589b47991e0f0798dfe459"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/45.woff2",
+          "sha256": "9e2ec20728c025fc2b5ac6feebeaf0cae9582fbfc04c91ed9604a72d9d269aba"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/46.woff2",
+          "sha256": "e65977c46ce49947c11118cbef0136786ce8326bfb7d23d81d0a9fc71233df03"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/47.woff2",
+          "sha256": "5acbe85f259a1f407403b901a4d1ad2eaee4652fa8b8dd1ccc70725a3849b986"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/48.woff2",
+          "sha256": "a834fce57baf1dbb25ed0dd34aec005a59d6eb7e963f7f7ce8abef263e973e98"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/49.woff2",
+          "sha256": "75b58a905862a5e535308c08d9b4c6f3f20a06f1444a9958f6eebc23eefaeb43"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/5.woff2",
+          "sha256": "0729e11874bdc8ed3e1b39213bf6f9f22f5ca1bf52123386617a654a2fc50df4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/50.woff2",
+          "sha256": "9524406e9e92495ecc86c5fa65d5311dac4804b85a8995a002f020535922a2ae"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/51.woff2",
+          "sha256": "7cf95e44f787d2f2878f14f454f1e54c9a302474f6d9a5b9dc11441670af1251"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/52.woff2",
+          "sha256": "ad5d9be502c4b9cc486114e77367b2b2c97cc3fbbc0dae3a261107549b8a1f57"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/53.woff2",
+          "sha256": "930ce828620944b92221b27856f172a91480da415457f9feecf28bc14ebea214"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/54.woff2",
+          "sha256": "e73a97aa762cfdbcae2b5162d6d9bc54a035988747bf0b4308ab1341c04a21e5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/55.woff2",
+          "sha256": "ed54d3cd204f215472fa1cf8c8f5ee94d61c82a7762393f7cb1df8569ee5afe7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/56.woff2",
+          "sha256": "3cb6047d369c591ad7c72e0fd6d675685644ea9b2a032406a864c4bfbc6624a0"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/57.woff2",
+          "sha256": "1b5f2984e0aed2466cd529eb5f32905eafaf837cef8dd358f44e6a7ba71fe7be"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/58.woff2",
+          "sha256": "d6ff5974e1fd7e47deb4bf82f16c300e6ca24a9d725e09ab48ff35335ed26ea7"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/59.woff2",
+          "sha256": "ce8e7a38f0cab634224574043fd0db6ba3d82484e4868b4cd277330de23f1bc5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/6.woff2",
+          "sha256": "5df773379c954a3a1ce2e2dfb9221abd67ccb3086dff5aa90baf958f8da740fa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/60.woff2",
+          "sha256": "d56f0eb0eba5e030e5c424324978cc4c63ff2a78060efb343ab67dbdb5167af6"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/61.woff2",
+          "sha256": "ccb7b5d742cfb54c4543fdcd884b5d559be4ba2a9809aac20ae6b372f17cb501"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/62.woff2",
+          "sha256": "f96882ce25661d5eda39dca9142bd1c39b47c3dd1657ce8f87441757987500f8"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/63.woff2",
+          "sha256": "74cce1c6890da4d4ac1cb4628253defad1b939ae079e6a0dbf3371f02889f6b5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/64.woff2",
+          "sha256": "1da231bccf7848923bbd8dacb6269b1a61abf07f6e21e06cea170a7ceec30498"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/65.woff2",
+          "sha256": "e56debf9357af546246e478395c5048b79ef6ae07c3c6168f75d7606439ab91f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/7.woff2",
+          "sha256": "93ad06a6c2e60afcb6cad9eb90234ac40365c0a2b10dfd9e82f9e2432da2f0c4"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/8.woff2",
+          "sha256": "47c35dc8ceb11ca00be593e26323360d78c0be23aca7eea656316d5f15e6a8aa"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/9.woff2",
+          "sha256": "e7c5ee4172cfe93a5497b1edaa7cf742e8c93ad5013deabcec5ffaa2934376c9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/93.woff2",
+          "sha256": "cf50a52e8850e9f01a0597d2fed82d54a4e3fafa93bf7dca941dccf12dc43b6f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/94.woff2",
+          "sha256": "0c1d4a4053e0c00057dc5fc0eeea0e96e93bdceaf6f1cd3836a21a4c58f1318f"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/95.woff2",
+          "sha256": "d66c389d19d42810693093cbe2a97eea502cf8ed8c1bd6d36cebbc7e3d81a4eb"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/96.woff2",
+          "sha256": "664e8f3d03b8e95dbfee970176a251fa32e5b22c4c5b7fbe084607fd3e14dbc5"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/97.woff2",
+          "sha256": "90543d682d672f35edecc8b27436465a3c2d7e46108f4a6a7313d8fcd71a30b9"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/98.woff2",
+          "sha256": "6c582afbccc73a546010848347a985123761808c0775781ab07f5674fc359a16"
+        },
+        {
+          "url": "https://static.toss.im/tps/20260223/black/99.woff2",
+          "sha256": "e1f421d2af7e3ea8195b156a760bd8b3f57fb2adf97699f4762e42c591850aac"
+        }
+      ]
+    }
+  ]
+}

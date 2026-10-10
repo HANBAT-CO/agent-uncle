@@ -1,0 +1,27 @@
+[
+  {
+    "name": "point-spot.json",
+    "url": "https://static.toss.im/3d-common/point-spot.json",
+    "sha256": "e9468ae6d34c83c2f21d2cc02378561cc8fb2ee5061d5a9944dbcf3a8f9b8366"
+  },
+  {
+    "name": "point-blue2.png",
+    "url": "https://static.toss.im/lotties/point-blue2.png",
+    "sha256": "52bf046b3cd253e38935c31662fa80651af8583ade7d103a00c25167f2c1ced2"
+  },
+  {
+    "name": "point-green2.png",
+    "url": "https://static.toss.im/lotties/point-green2.png",
+    "sha256": "5a6a7583bdd39dacfeaa6049257ab6839eb2f9a50deac27675eeb4c36ddaae53"
+  },
+  {
+    "name": "point-purple2.png",
+    "url": "https://static.toss.im/lotties/point-purple2.png",
+    "sha256": "25bedea783e02ad75a7074f851f8e40e550ddb78e9ee79db5e5a7e6baae2269e"
+  },
+  {
+    "name": "icon-point-circle-mono.svg",
+    "url": "https://static.toss.im/icons/svg/icon-point-circle-mono.svg",
+    "sha256": "b8832fa7db27a8c17a5502e40a556bb3940effe8394604fa655ab1e6f5ec6b5c"
+  }
+]

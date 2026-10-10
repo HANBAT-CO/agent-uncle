@@ -1,0 +1,404 @@
+{
+  "CircleXSmall": {
+    "width": 24,
+    "height": 24,
+    "radius": 9999,
+    "acc": {
+      "width": 10,
+      "height": 10,
+      "x": -2,
+      "y": -2
+    },
+    "overlap": {
+      "x": 4,
+      "y": 6,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CircleSmall": {
+    "width": 30,
+    "height": 30,
+    "radius": 9999,
+    "acc": {
+      "width": 11,
+      "height": 11,
+      "x": -2,
+      "y": -2
+    },
+    "overlap": {
+      "x": 4,
+      "y": 6,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CircleMedium": {
+    "width": 36,
+    "height": 36,
+    "radius": 9999,
+    "acc": {
+      "width": 12,
+      "height": 12,
+      "x": -2,
+      "y": -2
+    },
+    "overlap": {
+      "x": 5,
+      "y": 7,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CircleLarge": {
+    "width": 40,
+    "height": 40,
+    "radius": 9999,
+    "acc": {
+      "width": 14,
+      "height": 14,
+      "x": -2,
+      "y": -2
+    },
+    "overlap": {
+      "x": 6,
+      "y": 8,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CircleXLarge": {
+    "width": 52,
+    "height": 52,
+    "radius": 9999,
+    "acc": {
+      "width": 18,
+      "height": 18,
+      "x": -3,
+      "y": -3
+    }
+  },
+  "Circle2XLarge": {
+    "width": 60,
+    "height": 60,
+    "radius": 9999,
+    "acc": {
+      "width": 20,
+      "height": 20,
+      "x": -3,
+      "y": -3
+    }
+  },
+  "SquircleXSmall": {
+    "width": 24,
+    "height": 24,
+    "acc": {
+      "width": 10,
+      "height": 10,
+      "x": -2,
+      "y": -2
+    }
+  },
+  "SquircleSmall": {
+    "width": 30,
+    "height": 30,
+    "acc": {
+      "width": 11,
+      "height": 11,
+      "x": -2,
+      "y": -2
+    }
+  },
+  "SquircleMedium": {
+    "width": 36,
+    "height": 36,
+    "acc": {
+      "width": 12,
+      "height": 12,
+      "x": -2,
+      "y": -2
+    }
+  },
+  "SquircleLarge": {
+    "width": 40,
+    "height": 40,
+    "acc": {
+      "width": 14,
+      "height": 14,
+      "x": -2,
+      "y": -2
+    }
+  },
+  "SquircleXLarge": {
+    "width": 52,
+    "height": 52,
+    "acc": {
+      "width": 18,
+      "height": 18,
+      "x": -3,
+      "y": -3
+    }
+  },
+  "Squircle2XLarge": {
+    "width": 60,
+    "height": 60,
+    "acc": {
+      "width": 20,
+      "height": 20,
+      "x": -3,
+      "y": -3
+    }
+  },
+  "SquareSmall": {
+    "width": 40,
+    "height": 40,
+    "radius": 10,
+    "acc": {
+      "width": 14,
+      "height": 14,
+      "x": -3,
+      "y": -3
+    },
+    "overlap": {
+      "x": 5,
+      "y": 5,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "SquareMedium": {
+    "width": 52,
+    "height": 52,
+    "radius": 12,
+    "acc": {
+      "width": 16,
+      "height": 16,
+      "x": -4,
+      "y": -4
+    },
+    "overlap": {
+      "x": 6,
+      "y": 6,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "SquareLarge": {
+    "width": 40,
+    "height": 40,
+    "radius": 12,
+    "acc": {
+      "width": 14,
+      "height": 14,
+      "x": -2,
+      "y": -2
+    },
+    "overlap": {
+      "x": 7,
+      "y": 7,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "SquareXLarge": {
+    "width": 52,
+    "height": 52,
+    "radius": 12,
+    "acc": {
+      "width": 18,
+      "height": 18,
+      "x": -3,
+      "y": -3
+    }
+  },
+  "Square2XLarge": {
+    "width": 60,
+    "height": 60,
+    "radius": 12,
+    "acc": {
+      "width": 20,
+      "height": 20,
+      "x": -4,
+      "y": -4
+    }
+  },
+  "RectangleMedium": {
+    "width": 80,
+    "height": 54,
+    "radius": 10,
+    "acc": {
+      "width": 20,
+      "height": 20,
+      "x": -5,
+      "y": -5
+    },
+    "overlap": {
+      "x": 6,
+      "y": 6,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "RectangleLarge": {
+    "width": 100,
+    "height": 68,
+    "radius": 10,
+    "acc": {
+      "width": 22,
+      "height": 22,
+      "x": -5,
+      "y": -5
+    },
+    "overlap": {
+      "x": 7,
+      "y": 7,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CardXXXSmall": {
+    "width": 12,
+    "height": 18,
+    "radius": 2
+  },
+  "CardXXSmall": {
+    "width": 13,
+    "height": 20,
+    "radius": 2
+  },
+  "CardXSmall": {
+    "width": 20,
+    "height": 30,
+    "radius": 3,
+    "acc": {
+      "width": 10,
+      "height": 10,
+      "x": -2,
+      "y": -2
+    }
+  },
+  "CardSmall": {
+    "width": 24,
+    "height": 36,
+    "radius": 3,
+    "acc": {
+      "width": 11,
+      "height": 11,
+      "x": -3,
+      "y": -3
+    },
+    "overlap": {
+      "x": 5,
+      "y": 5,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CardMedium": {
+    "width": 28,
+    "height": 42,
+    "radius": 3,
+    "acc": {
+      "width": 12,
+      "height": 12,
+      "x": -3,
+      "y": -3
+    },
+    "overlap": {
+      "x": 5,
+      "y": 5,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CardLarge": {
+    "width": 32,
+    "height": 48,
+    "radius": 4,
+    "acc": {
+      "width": 14,
+      "height": 14,
+      "x": -3,
+      "y": -3
+    },
+    "overlap": {
+      "x": 6,
+      "y": 6,
+      "blur": 0,
+      "spread": -1
+    }
+  },
+  "CardXLarge": {
+    "width": 42,
+    "height": 63,
+    "radius": 6,
+    "acc": {
+      "width": 18,
+      "height": 18,
+      "x": -4,
+      "y": -4
+    }
+  },
+  "Card2XLarge": {
+    "width": 48,
+    "height": 72,
+    "radius": 6,
+    "acc": {
+      "width": 20,
+      "height": 20,
+      "x": -4,
+      "y": -4
+    }
+  },
+  "CleanW16": {
+    "width": 16
+  },
+  "CleanW20": {
+    "width": 20
+  },
+  "CleanW24": {
+    "width": 24
+  },
+  "CleanW30": {
+    "width": 30
+  },
+  "CleanW32": {
+    "width": 32
+  },
+  "CleanW36": {
+    "width": 36
+  },
+  "CleanW40": {
+    "width": 40
+  },
+  "CleanW60": {
+    "width": 60
+  },
+  "CleanW100": {
+    "width": 100
+  },
+  "CleanW250": {
+    "width": 250
+  },
+  "CleanWFull": {
+    "width": "100%"
+  },
+  "cleanH20": {
+    "height": 20
+  },
+  "CleanH24": {
+    "height": 24
+  },
+  "CleanH28": {
+    "height": 28
+  },
+  "CleanH32": {
+    "height": 32
+  },
+  "CleanH60": {
+    "height": 60
+  },
+  "CleanH100": {
+    "height": 100
+  }
+}

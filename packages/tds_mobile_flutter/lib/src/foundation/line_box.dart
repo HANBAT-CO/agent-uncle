@@ -60,8 +60,23 @@ class _RenderLineBox extends RenderShiftedBox {
     markNeedsLayout();
   }
 
-  double _height(double original) =>
-      (original / _lineHeight).round() * _lineHeight;
+  double _height(double original) {
+    // SkParagraph rounds each uniform line's advance, not just the paragraph's
+    // total height. Dividing by the fractional CSS height accumulates that
+    // difference and eventually loses/invents whole lines in long labels.
+    // Recover the line count in native units before restoring CSS flow units.
+    final nativeLineHeight = _lineHeight.roundToDouble();
+    if (nativeLineHeight == 0) return original;
+    if (nativeLineHeight > _lineHeight) {
+      // Native glyph baselines also advance by the rounded-up height. Shrinking
+      // long text to its true CSS height without moving those baselines would
+      // introduce overlap with following content. Keep this path's existing
+      // flow until per-line paint, selection and hit testing can move together.
+      return (original / _lineHeight).round() * _lineHeight;
+    }
+    return (original / nativeLineHeight).round() * _lineHeight;
+  }
+
   @override
   Size computeDryLayout(BoxConstraints constraints) {
     final s = child!.getDryLayout(

@@ -26,7 +26,24 @@ String tdsKeepAllText(String text) {
 
 class TdsKeepAllText extends Text {
   TdsKeepAllText.from(this.source, {this.after = const []})
-    : super(source.data ?? '', key: source.key);
+    : super(
+        source.data ?? '',
+        key: source.key,
+        style: source.style,
+        strutStyle: source.strutStyle,
+        textAlign: source.textAlign,
+        textDirection: source.textDirection,
+        locale: source.locale,
+        softWrap: source.softWrap,
+        overflow: source.overflow,
+        textScaler: source.textScaler,
+        maxLines: source.maxLines,
+        semanticsLabel: source.semanticsLabel,
+        semanticsIdentifier: source.semanticsIdentifier,
+        textWidthBasis: source.textWidthBasis,
+        textHeightBehavior: source.textHeightBehavior,
+        selectionColor: source.selectionColor,
+      );
   final Text source;
   final List<InlineSpan> after;
   @override
@@ -48,6 +65,7 @@ class TdsKeepAllText extends Text {
     textScaler: source.textScaler,
     maxLines: source.maxLines,
     semanticsLabel: source.semanticsLabel ?? source.data,
+    semanticsIdentifier: source.semanticsIdentifier,
     textWidthBasis: source.textWidthBasis,
     textHeightBehavior: source.textHeightBehavior,
     selectionColor: source.selectionColor,

@@ -2,8 +2,25 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// Flutter rounds paragraph outer heights up to a logical pixel; CSS preserves
-/// fractional line boxes. This wrapper adjusts flow/centering, never the glyphs.
+/// Blink stores used CSS dimensions in 1/64px layout units. Use the same value
+/// for text/shape geometry. SkParagraph can still round its painted line advance;
+/// quantizing a TextStyle alone does not correct every later glyph baseline.
+double tdsCssLineHeight(double height) => (height * 64).floorToDouble() / 64;
+
+/// First-line baseline for the bundled Toss Product Sans faces. Their hhea
+/// ascent/descent are 2030/-534 at 2048 units/em. Chromium rounds those metrics
+/// to px, splits leading evenly, then floors the first baseline within a line.
+/// Do not apply this to arbitrary replacement fonts or mixed-size spans.
+double tdsCssTextBaseline(double fontSize, double lineHeight) {
+  final ascent = (fontSize * 2030 / 2048).round();
+  final descent = (fontSize * 534 / 2048).round();
+  return (ascent + (tdsCssLineHeight(lineHeight) - ascent - descent) / 2)
+      .floorToDouble();
+}
+
+/// Flutter rounds native line advances to logical pixels; CSS preserves
+/// fractional line boxes. This wrapper adjusts flow/centering and optionally
+/// the first baseline, never glyph scale or each later line's paint position.
 /// Use only for uniform text with a known line height (not mixed-size spans).
 class TdsLineBox extends SingleChildRenderObjectWidget {
   const TdsLineBox({

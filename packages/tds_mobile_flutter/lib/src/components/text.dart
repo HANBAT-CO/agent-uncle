@@ -5,6 +5,7 @@ import '../foundation/theme.dart';
 import '../foundation/tokens.g.dart';
 import '../foundation/pressable.dart';
 import '../foundation/touch_inset.dart';
+import '../foundation/word_break.dart';
 import 'asset.dart';
 
 class TdsText extends StatelessWidget {
@@ -29,21 +30,29 @@ class TdsText extends StatelessWidget {
   final String? semanticsLabel;
   @override
   Widget build(BuildContext context) {
-    final resolved = TdsTheme.of(context)
+    var resolved = TdsTheme.of(context)
         .textStyle(typography: typography, fontWeight: fontWeight, color: color)
         .merge(style);
+    final lineHeight = tdsCssLineHeight(resolved.fontSize! * resolved.height!);
+    resolved = resolved.copyWith(height: lineHeight / resolved.fontSize!);
     return TdsLineBox(
-      lineHeight: resolved.fontSize! * resolved.height!,
-      child: Text(
-        data,
-        style: resolved,
-        textAlign: textAlign,
-        maxLines: ellipsisAfterLines,
-        overflow: ellipsisAfterLines == null
-            ? TextOverflow.clip
-            : TextOverflow.ellipsis,
-        textScaler: TextScaler.noScaling,
-        semanticsLabel: semanticsLabel,
+      lineHeight: lineHeight,
+      baseline:
+          resolved.fontFamily == 'packages/tds_mobile_flutter/Toss Product Sans'
+          ? tdsCssTextBaseline(resolved.fontSize!, lineHeight)
+          : null,
+      child: TdsKeepAllText.from(
+        Text(
+          data,
+          style: resolved,
+          textAlign: textAlign,
+          maxLines: ellipsisAfterLines,
+          overflow: ellipsisAfterLines == null
+              ? TextOverflow.clip
+              : TextOverflow.ellipsis,
+          textScaler: TextScaler.noScaling,
+          semanticsLabel: semanticsLabel,
+        ),
       ),
     );
   }

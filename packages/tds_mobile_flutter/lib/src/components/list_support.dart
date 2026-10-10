@@ -9,6 +9,7 @@ import '../foundation/raw_press_region.dart';
 import '../foundation/theme.dart';
 import '../foundation/tokens.g.dart';
 import '../foundation/touch_inset.dart';
+import '../foundation/word_break.dart';
 import 'asset.dart';
 import 'list.dart';
 import 'text.dart';
@@ -1161,16 +1162,24 @@ class _TdsListFooterTextState extends _FooterColoredState<TdsListFooterText> {
   @override
   Widget build(BuildContext context) {
     final theme = TdsTheme.of(context);
-    final style = theme
-        .textStyle(
-          typography: TdsTypography.t5,
-          fontWeight: widget.fontWeight,
-          color: ink(context, widget.color, widget.colorToken),
-        )
-        .copyWith(height: 1.252);
+    var style = theme.textStyle(
+      typography: TdsTypography.t5,
+      fontWeight: widget.fontWeight,
+      color: ink(context, widget.color, widget.colorToken),
+    );
+    final lineHeight = tdsCssLineHeight(style.fontSize! * 1.252);
+    style = style.copyWith(height: lineHeight / style.fontSize!);
+    final child = widget.child;
+    final uniform = child is Text && child.data != null && child.style == null;
     return TdsLineBox(
-      lineHeight: style.fontSize! * 1.252,
-      child: DefaultTextStyle(style: style, child: widget.child),
+      lineHeight: lineHeight,
+      baseline: uniform
+          ? tdsCssTextBaseline(style.fontSize!, lineHeight)
+          : null,
+      child: DefaultTextStyle(
+        style: style,
+        child: child is Text ? TdsKeepAllText.from(child) : child,
+      ),
     );
   }
 }

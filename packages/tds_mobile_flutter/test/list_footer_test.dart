@@ -4,6 +4,18 @@ import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'collections_feedback_test.dart' show testApp;
 
 void main() {
+  test('shadow percentage width uses CSS layout units before centering', () {
+    const painter = TdsListFooterShadowPainter(color: TdsPalette.grey100);
+    expect(
+      painter.bounds(const Size(342, 120)),
+      const Rect.fromLTWH(-34.1953125, -171, 410.390625, 342),
+    );
+    expect(
+      painter.bounds(const Size(333.25, 120)),
+      const Rect.fromLTWH(-33.3203125, -166.625, 399.890625, 333.25),
+    );
+  });
+
   testWidgets(
     'hairline inherits indentation, explicit zero and negative offsets override it',
     (tester) async {

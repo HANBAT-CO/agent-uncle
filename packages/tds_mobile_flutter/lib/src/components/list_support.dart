@@ -357,12 +357,19 @@ class TdsListFooterShadowPainter extends CustomPainter {
   final Color color;
 
   /// Qne is 120% wide and padding-bottom:100% of the containing width.
-  Rect bounds(Size parent) => Rect.fromLTWH(
-    -parent.width * .1,
-    -parent.width / 2,
-    parent.width * 1.2,
-    parent.width,
-  );
+  Rect bounds(Size parent) {
+    // The percentage width is resolved to a layout unit before translateX(-50%).
+    // Keeping 120% as an unrounded double shifts both ellipse edges at fractional
+    // widths (342px -> 410.390625px, not 410.4px).
+    final width = tdsCssLineHeight(parent.width * 1.2);
+    return Rect.fromLTWH(
+      tdsCssLineHeight(parent.width / 2) - width / 2,
+      -parent.width / 2,
+      width,
+      parent.width,
+    );
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
     if (size.isEmpty) return;

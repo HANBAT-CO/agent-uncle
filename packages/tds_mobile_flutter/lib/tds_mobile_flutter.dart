@@ -55,5 +55,6 @@ export 'src/components/menu.dart';
 export 'src/components/highlight.dart';
 export 'src/components/point.dart';
 export 'src/components/wiki_text.dart';
+export 'src/foundation/api_adapters.dart';
 export 'src/foundation/overlay_controller.dart';
 export 'src/foundation/list_row_controller.dart';

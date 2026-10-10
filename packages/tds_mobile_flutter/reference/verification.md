@@ -1,4 +1,4 @@
-# Native verification checkpoint — 2026-10-10
+# Native verification checkpoint — 2026-10-11
 
 Scope: native Flutter (Android/iOS/Web), original Toss Product Sans, reference
 packages pinned at 2.5.1. This is an **incomplete migration checkpoint**, not a
@@ -27,7 +27,7 @@ See `native-coverage.json` for individual outstanding work.
 - `flutter analyze`: clean at the final checkpoint.
 - Root `flutter test`: Google OAuth launch regression test passed; no real OAuth
   credentials/browser authorization or Supabase data changes performed.
-- Package `flutter test`: 448 tests passed. Includes all typography categories;
+- Package `flutter test`: 463 tests passed. Includes all typography categories;
   control activation/disabled/loading; spinner hold/drag/disposal; field raw vs
   display values, formatting and IME; tab/segment keyboard and semantics;
   intrinsic-width dialog footer wrapping; modal dimmer/Escape lifecycle;
@@ -1004,6 +1004,194 @@ No pass threshold is approved. Current captures do not validate complete
 pressed/hovered/disabled animation timelines, every font scale, full multiline
 behavior or pixel equality on physical iOS/Android devices.
 
+### Long uniform paragraph flow (2026-10-11)
+
+The follow-up fixes a safely expandable accumulated **layout-height** error in
+`TdsLineBox`. It previously divided a native paragraph's height by the fractional
+CSS advance when recovering its line count. Native height is already the sum of
+individually rounded advances, so this eventually lost or invented a whole line.
+For example, 40 Footer.Text lines at 100% occupy 840 native pixels; the old
+calculation inferred 39 lines and returned 829.96875px instead of the original
+851.25px. A regression failed with those exact values before the change.
+For native advances that round down, the wrapper now divides by the rounded
+native advance before restoring the larger CSS flow height.
+Dry layout, intrinsic height and the following sibling's position use the same
+correction. A zero rounded advance is handled without division by zero.
+
+`line_box_test.dart` adds ten tests. Its long Text matrix has 480 native cases
+(20 types × four weights × three scales × 40/100 lines), using the original
+single-line measurements already recorded in `visual-geometry.json`. It checks
+exact expanding CSS flow and preservation of the pre-existing rounded-up path,
+not CSS parity for all 480 cases. It adds no new original-browser specimens.
+Footer cases cover 1/2/40/100 lines
+at 100/160/200%; further cases cover soft wrapping after width/scale changes,
+ellipsis, native empty/trailing lines, tight constraints and dry baseline/paint
+offset agreement. Empty/trailing-line preservation is a native regression, not
+a claim of CSS whitespace equivalence. Full package tests pass (458), as does
+the root OAuth-launch regression. No credentials or backend data are used.
+
+The engine cause is verified against Flutter 3.44.5's pinned Skia revision
+`e9ed4fc9f1544c58d8a9347c1fc9471d8dd7c465`:
+[`InternalLineMetrics::height()`](https://github.com/google/skia/blob/e9ed4fc9f1544c58d8a9347c1fc9471d8dd7c465/modules/skparagraph/src/Run.h#L480)
+unconditionally rounds the line height;
+[`TextWrapper`](https://github.com/google/skia/blob/e9ed4fc9f1544c58d8a9347c1fc9471d8dd7c465/modules/skparagraph/src/TextWrapper.cpp#L378)
+accumulates that advance. Flutter already disables SkParagraph's separate
+`applyRoundingHack` flag, which does not disable this height rounding. The
+shared SDK was not changed.
+
+An unconditional correction was **rejected after screenshot inspection**.
+At 160% and 100 Footer lines, the native paragraph occupies 3400px. Shrinking
+flow to the true CSS height of 3379.6875px made the tail overlap the following
+marker. This path therefore retains its pre-change 3413.484375px flow, with an
+explicit regression guard. Native advances that round up still have inaccurate
+long-paragraph CSS flow. The 40-line/100% expanding case is corrected; the
+100-line/160% case is deliberately not claimed as corrected.
+
+The separate `test/tds_line_box_web_test.dart` exercises the foundation in Chrome
+with the runner's Ahem test face. It is intentionally skipped by the VM runner;
+original Toss faces are loaded in the package and device suites. Flutter 3.44.5's
+browser test server intercepts URLs containing `host.dart.js`, including this
+package's host-adapter module, and does not serve bundled fonts. The test uses a
+narrow foundation import and no asset loads, without changing the application,
+renaming its host module or patching the SDK. This browser engine check is not
+an original-font visual comparison.
+
+This is still a uniform-line adapter, not a general rich-text renderer. The
+painted-baseline discrepancy above remains and grows with line count: restoring
+flow alone cannot make every glyph align or guarantee clipping/hit-test parity
+for a long paragraph. No per-line clipping/repainting or glyph scaling was added.
+
+Final focused Android emulator and iOS Simulator runs passed
+`integration_test/text_visual_geometry_test.dart` after the guard was applied.
+Each checks normal/multiline typography, Footer presses/arrows/shadows and
+40/100-line flow in light/dark at 100/160%. The earlier full native runs passed
+12 scenarios per platform on the unconditional candidate, but screenshot review
+rejected that candidate; those earlier runs are not evidence for the final guard.
+Final 16 long-tail captures were inspected through
+`.context/tds-multiline-final-tail-{android,ios}-{40,100}.png`; resized review
+sheets are not used for pixel measurements. Rejected raw captures remain in
+`.context/tds-multiline-candidate-{android,ios}-{40,100}-{light,dark}-{100,160}.png`.
+
+Final logs: `.context/tds-multiline-safe-{package,root}-{tests,analyze}.log`,
+`.context/tds-multiline-safe-web-tests.log` and
+`.context/tds-multiline-safe-{android,ios}-drive.log`. Production targets were
+restored to `lib/main.dart`; Android debug APK, ARM64 iOS Simulator and Web
+builds passed sequentially. Build logs use the
+`.context/tds-multiline-main-*` prefix. No physical device was used.
+Reproduce the focused checks with:
+
+```sh
+cd packages/tds_mobile_flutter
+flutter test --no-pub test/line_box_test.dart
+cd ../..
+flutter test --no-pub --platform chrome test/tds_line_box_web_test.dart
+flutter drive --no-pub --driver=test_driver/tds_native_driver.dart \
+  --target=integration_test/text_visual_geometry_test.dart -d <emulator-or-simulator-id>
+```
+
+### Multiline TextButton underline indices (2026-10-11)
+
+`RenderTdsTextUnderline` used to discard zero-width selection boxes before
+grouping lines. Flutter emits those boxes for explicit empty lines, so a label
+such as `토스 Ag\n\n끝 gyp` painted its second underline in the empty middle
+line. Leading empty lines shifted every underline up. The Android before-run
+failed with a second-underline top of 42.8245616224649px instead of
+64.1030616224649px at the medium/100% setting.
+
+Empty line boxes now retain their line index but do not paint a stroke. A
+zero-width box does not widen an existing visible run, including centered/RTL
+labels. Nonempty range extents, native glyph shaping/painting, layout,
+semantics and activation are unchanged. Underline advances now use the same
+1/64px used CSS height as the outer line box, rather than accumulating the raw
+`fontSize * 1.252` value. This does **not** correct the native glyph advances
+described above.
+
+The original browser check uses the pinned TextButton's existing label slot
+with text and `BR` nodes, without modifying package code or CSS. Its computed
+`white-space` is `normal`, so literal React string newlines collapse; they are
+not equivalent to the explicit-break native stress fixtures. A leading BR and
+two intervening BRs preserve line indices 1/3, while two intervening BRs alone
+preserve indices 0/2. This distinction also applies when interpreting the
+earlier native Footer newline stress tests: those tests do not establish
+literal-string CSS whitespace parity.
+
+`.context/tds-underline-long-source.json` records 36 original-only long-label
+specimens: six button sizes × 100/160/200% × 40/100 explicit lines. Every
+last-minus-first baseline advance equals `(count - 1) * usedLineHeight`.
+For example, medium/160% uses 33.796875px; 100 lines have first/last baselines
+26px and 3371.890625px. These measurements are separate from the existing
+480-specimen `visual-geometry.json`; that original fixture is unchanged.
+The content-only measurement scripts are
+`.context/tds-underline-source-probe.js` and
+`.context/tds-underline-measure.mjs`.
+
+Five new package tests cover all six button sizes at 100/160/200%, leading and
+intervening blank lines, blank-only/trailing lines, centered/RTL range extents
+and semantics, ellipsis range preservation and 40/100-line used advances.
+An exploratory ellipsis-width assertion was discarded: native
+`LineMetrics.width` and selection range extents differ for trailing blanks and
+ellipsis. The fix deliberately retains the existing range extents rather than
+substituting that metric. The package suite passes 463 tests; both package and
+root analyzers are clean. The root OAuth regression passes, and the two
+browser-only tests are intentionally skipped on VM. Both Chrome foundation
+checks pass using the Ahem test face, not original-font pixel comparison.
+
+Focused Android/iOS original-font captures cover hard breaks, leading empty
+lines, natural wrapping and activation in light/dark at 100/160%. All eight
+captures were inspected through `.context/tds-underline-review-{android,ios}.png`.
+The Android before/after raw-image differences occupy only the changed stroke
+rows, with unchanged glyph pixels in this specimen. The compact review is
+`.context/tds-underline-before-after.png`; cropped/resized sheets are for visual
+review, not source/native pixel measurements. The original source crops are
+`.context/tds-underline-source-{100,160}.png` and
+`.context/tds-underline-source-leading-160.png`.
+
+Fresh full native suites pass all 12 scenarios per platform on the retained
+line-box guard plus this underline fix. The expanded focused suite passes two
+scenarios per platform, including 100-line tail captures at 100/160%. The four
+tails are reviewed in `.context/tds-underline-long-tail-review.png` and explicitly
+marked unresolved: across 99 advances, native glyphs and CSS decoration differ
+by 27.84375px at 17px font size and 20.109375px at 27px. Those tail assertions
+record the current difference; they are not parity passes. After scrolling,
+the fixture waits for a painted frame before capturing and checks that the
+following blue marker is present in each raw screenshot used by the review.
+
+An independent original-font Flutter Web fixture is built from
+`.context/tds_underline_gallery.dart`, with four inspected light/dark/100/160%
+captures at `.context/tds-underline-web-{light,dark}-{100,160}.png`. It has no
+application, probe or font-fetch errors; only the known headless CPU-rendering
+warning remains. This is a rendered smoke check, not a source/native pixel
+threshold. Its entrypoint and build artifacts are confined to `.context/`.
+Native logs are `.context/tds-underline-full-{android,ios}-drive.log` and
+`.context/tds-underline-final-{android,ios}-drive.log`; the failing-before Android
+run remains at `.context/tds-underline-before-android-drive.log`.
+
+Final application builds pass sequentially from `lib/main.dart`: Android debug
+APK, unsigned arm64 iOS Simulator debug build (Flutter configuration followed by
+`xcodebuild`) and Flutter Web. `ios/Flutter/Generated.xcconfig` again records
+`FLUTTER_TARGET=lib/main.dart`, so the native integration target is not left as
+the application entrypoint. Build logs use the `.context/tds-underline-main-`
+prefix (`android`, `ios-config`, `ios-build`, `web`). These are build checks,
+not physical-device or real Toss-host validation. The auxiliary Web fixture
+server was stopped after verification; the existing original-reference server
+was left running.
+
+This is a scoped underline correction, not a new text renderer. Long native
+labels can still have separated/crossing glyphs and underlines because glyph
+advances remain integer-rounded while the decoration follows CSS. Mixed-font
+fallbacks, arbitrary rich spans and source whitespace behavior remain outside
+this uniform-font adapter. No glyph scaling, clipped per-line repaint or shared
+SDK change was introduced. The rounded-up `TdsLineBox` overlap guard is retained.
+No export is newly marked parity-verified.
+
+Reproduce the focused checks from the repository root:
+
+```sh
+flutter test --no-pub --platform chrome test/tds_line_box_web_test.dart
+flutter drive --no-pub --driver=test_driver/tds_native_driver.dart \
+  --target=integration_test/text_underline_test.dart -d <emulator-or-simulator-id>
+```
+
 ## Next required work
 
 1. Finish existing public prop/compound contracts, motion interruption,
@@ -1026,8 +1214,9 @@ behavior or pixel equality on physical iOS/Android devices.
    sizes, all scales, dark/light and frame-by-frame motion. Establish reviewed
    golden tolerances per component, not an aggregate similarity percentage.
    All 20 typography types now have source-backed first-baseline/flow checks;
-   correct each later native line advance without breaking selection, semantics,
-   glyphs/diacritics or mixed spans, then expand the measured visual matrix.
+   correct each later native line advance together with rounded-up multiline
+   flow without breaking selection, semantics, glyphs/diacritics or mixed spans,
+   then expand the measured visual matrix.
 5. Extend Bubble to custom ancestor/mixed-span cases; expand WikiText observer
    timing, transformed/nested-scroll and rich-font/RTL matrices; finish other
    anchor/ancestor clipping, third-party menu trigger adapters and ListRow's

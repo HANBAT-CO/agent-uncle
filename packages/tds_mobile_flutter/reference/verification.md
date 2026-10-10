@@ -1,0 +1,952 @@
+# Native verification checkpoint — 2026-10-10
+
+Scope: native Flutter (Android/iOS/Web), original Toss Product Sans, reference
+packages pinned at 2.5.1. This is an **incomplete migration checkpoint**, not a
+whole-library parity certificate.
+
+## API coverage
+
+| Export kind | Original | Partial native mapping | Pending |
+| --- | ---: | ---: | ---: |
+| Runtime components/providers | 108 | 108 | 0 |
+| Hooks | 27 | 27 | 0 |
+| Utilities | 22 | 22 | 0 |
+| Types | 259 | 259 | 0 |
+| Total top-level exports | 416 | 416 | 0 |
+
+Recursive members add 622 entries: 559 partial, 63 pending. Combined ledger:
+975 partial, 63 pending. These entries include properties, wrapper metadata
+and namespace types, not just visual components. No export is parity-verified.
+The generator validates source names,
+mapped file existence, native symbol presence and referenced test-file paths.
+It does not infer success from an existing file: all mappings remain partial.
+See `native-coverage.json` for individual outstanding work.
+
+## Automated checks
+
+- `flutter analyze`: clean at the final checkpoint.
+- Root `flutter test`: Google OAuth launch regression test passed; no real OAuth
+  credentials/browser authorization or Supabase data changes performed.
+- Package `flutter test`: 434 tests passed. Includes all typography categories;
+  control activation/disabled/loading; spinner hold/drag/disposal; field raw vs
+  display values, formatting and IME; tab/segment keyboard and semantics;
+  intrinsic-width dialog footer wrapping; modal dimmer/Escape lifecycle;
+  async dialog duplicate/failure/replacement; toast timer/replace/drag/disposal;
+  all 25 ListRow.Texts presets; list disabled/reflow behavior; host scopes,
+  luminance, insets and scroll throttling. Additional families cover sheets,
+  navigation, grids/board rows, date/wheel, sliders/rating, agreement/keypad,
+  post/chart, code/pin input, overlay adapters and native type composition.
+- New focused coverage: tooltip strong overshoot/reversal/reduced motion;
+  WikiText bottom-anchor flip, Escape and keyboard-focus return; agreement
+  immediate semantics with delayed color and timer disposal; fit-content menus;
+  Top compound sizing; ListRow effect-controller lifecycle; video defaults,
+  externally owned controllers, replacement and shared in-flight initialization.
+- `list_assets_test.dart`: all 30 icon shape/size/variant combinations, fixed
+  circle/square image frames, six fixed AssetText font sizes in light/dark,
+  accessory positions/masking hierarchy, all 25 content presets' first-line
+  alignment, FillIcon/Lottie geometry and four header icon-button sizes.
+- Number/Alphabet keypad uses fixed 30px text, source 64px line plus 1px table
+  cell padding per edge (66px row), and the original 20px back arrow SVG.
+  Tests assert immediate press-start dispatch, no duplicate on release/cancel,
+  native keyboard/semantics activation and fixed geometry at 200% scale.
+- `bottom_cta_test.dart`: 13 tests cover nullable slots, min-width freezing and
+  intrinsic flex growth, odd viewport gap, reverse wrapping, RTL stacked layout,
+  50px hide/show interruption, scroll threshold/throttling/reset/disposal,
+  all three delayed entrances, reduced motion, keyboard and measured spacers.
+  Both full and no-background paths are exercised. Visibility exclusions from
+  native focus and semantics are deliberate adaptations, not literal DOM parity.
+- FontScaleLimit: independent Web/Mobile scopes, nested inheritance, every iOS
+  category and Android boundaries. Typography limits leave host hooks unchanged.
+- Bubble: source font strut union tested for 12/24/48/72px children and 100/200%
+  text scaling. Original regular face metrics derive the 1.796875px offset,
+  replacing the previous missing line-box height. Custom ancestor font, mixed
+  spans and platform rasterization remain unverified.
+- `compound_constants_test.dart`: all paragraphVariables leaves and ListRow's
+  four Typography names match a new AST-extracted compound-constants.json.
+  CTA wiggle keyframe positions (four linear 87.5ms segments) and Button's
+  fractional text line-box height at 160% have separate regression tests.
+- Portal tests cover nullable context shadowing, actual root/nested target
+  migration, visibility/unmount cleanup and inherited theme/direction/media.
+  Toast lifecycle tests cover route-independent retained state/timer, ownership,
+  provider replacement, root teardown and controller reattachment. Host tests
+  cover context overrides, web bypass, action/icon/lottie unions and exact
+  nullable position offsets (bottom17, above-CTA81, Android top26/iOS top46).
+- All 44 asset frame records and 176 accessory placements are checked, including
+  structural clean-frame matching and masking without an accessory. All 15
+  text-button inset/radius combinations are compared to AST-extracted literals.
+- Paragraph tests cover rich text/asset/badge/link metric inheritance; badges
+  retain 1.5em line boxes at four sizes and 100/160/200 percent. Dialog footer
+  tests now distribute free space before freezing minimum widths, including RTL.
+- `secure_keypad_test.dart`: six tests cover fixed text/row/control dimensions,
+  all action dispatch at pointer down, keyboard/semantics deduplication, source
+  blank insertion distribution, shared case layout, deferred reorder, disabled
+  colors/SVG sizes, announcement delay/cleanup and unmount. OS protection is
+  still an injected capability, not implemented by the widget.
+- `menu_lifecycle_test.dart`: zero-gap and edge/RTL flipping, retained spring
+  enter/exit/reversal, initial close-control focus, Tab cycle, click dismissal,
+  controlled close rejection and accepted focus restoration. Actual React
+  browser dispatch confirmed that the fixed backdrop closes on click, not down.
+  `menu_geometry_test.dart` covers borders, gaps, blur, header and scroll fades.
+- `skeleton_motion_test.dart`: initial opacity, 1s show/400ms hide, interruption
+  without curve-switch jumps, click forwarding, invisible stagger, original
+  600ms alternate easing and timer disposal.
+- `tooltip_geometry_test.dart`: all 18 size/clip/side SVGs compared to original
+  extracted paths/widths/offsets; 21 ratio/clamp cases; fractional text heights;
+  static CSS radius/2 shadow conversion. No whole-tooltip parity claim.
+- `list_row_motion_test.dart`: 18 tests cover 80/480ms blink delays, 200ms
+  rise/slow return, content-only scaling, retained fade/re-entry, theme-specific
+  gradients, repeat spacing without a final delay, repeated shine calls, stale
+  blink timeout ordering, press blocking and the 30px iOS edge-touch exception.
+  Actual React RAF sampling confirmed quadratic easing: source `easing`/`easings`
+  fields are ignored by the bundled Framer runtime, which reads `ease`. Browser
+  sampling confirms repeated shine calls with an unchanged animation target do
+  not restart or change in-flight repeats. Ten added regressions cover live
+  layout/theme behavior: light translation captures integer client dimensions
+  while its gradient box follows current height; dark geometry remains relative
+  to current dimensions. Theme flips remount the layer, restart its clock and
+  consume the latest requested repeat count. A changed repeat request can
+  invalidate the source memo after resize; if the light X target changes, its
+  motion retargets from the current position and loops from that position.
+  Height-only changes and same-count requests do not retarget. Simultaneous
+  theme/size updates read the pre-commit size, including in a LayoutBuilder;
+  pending blink timers and disposal retain their ordering.
+  Three new regressions failed before the change (both theme directions and
+  width/count retarget) and passed afterward. The browser probes are
+  `tool/tds_source/browser-probes/list-row-{live,retarget}.js`, with traces in
+  `.context/list-row-{live,retarget}-react.json`. These use the untouched pinned
+  package and the fixture's `updateRow(patch)` / `rowEffect(effect, count)` API.
+  The Flutter `?family=list-effects` gallery was also exercised through its four
+  TDS TextButton controls: shine, a two-repeat request, resize and theme flip.
+  Light/100% and dark/160% runs captured initial, resized and opposite-theme
+  states in `.context/list-row-web-*.png`; all six images were inspected.
+  Browser output contained only the headless CPU-rendering fallback warning,
+  not application errors. These interaction smoke checks are not timed golden
+  comparisons or GPU-rendering certification.
+  These tests are not a full motion-parity claim.
+- `list_row_blink_batch_test.dart`: 13 added regressions cover the fixed light
+  blue500 radial gradient versus live themed dimmer, responsive geometry during
+  entry/exit, synchronous shine/blink ordering and final shine repeat counts.
+  Every accepted blink retains its wall-clock timeout, including overwritten
+  blinks and multiple requests before a commit. Timer cleanup and controller
+  replacement remain safe, including a request queued while its ancestor removes
+  the row in the same build. Nine tests failed before the fix and all 13 now
+  pass; the existing 18 ListRow motion tests also pass.
+  The dimmer now exits from its current opacity, so a short blink cannot light
+  it up after cancellation. Interrupted reentry reuses the radius and current
+  opacities, then resumes the two opacity channels after 80/480ms; it does not
+  reset the gradient to full visibility. The earlier immediate-opacity assertion
+  was corrected against actual original-browser behavior, not removed.
+  Probes: `tool/tds_source/browser-probes/list-row-{blink-live,blink-exit,batch}.js`.
+  Their traces are `.context/list-row-{blink-live,blink-exit,batch}-react.json`.
+  The fixture's generation key supplies clean mounts without patching TDS code.
+  Original captures retain layer identity across theme/size changes and blink
+  reentry; a 100ms blink's dimmer stays at zero even 650ms after entry. Both
+  synchronous call orders, two accepted deadlines and a three-repeat shine were
+  replayed. That checkpoint covered synchronous batches only; the later async
+  checkpoint below separates imperative event-task/frame commits from discrete
+  input microtask commits. Arbitrary React concurrent scheduling is still not
+  equivalent. Mixed synchronous input ordering is covered below.
+  Final browser assertions were rerun against an unmodified-package static
+  reference build on port 5182 (`.context/tds-react-static`). The development
+  server's reconnect/reload interrupted earlier probes; the static run passed
+  all three probes without console errors. Build log:
+  `.context/tds-react-reference-build.log`.
+  The Flutter gallery now has nine TDS controls, including both effect orders,
+  short blink/reentry and a batched repeat-count request. Light/100% and dark/160%
+  browser smoke runs exercised both orders, live resize/theme changes and
+  interrupted reentry. All six `.context/list-row-blink-web-*.png` captures were
+  inspected; `.context/list-row-blink-web-smoke.log` contains the interaction
+  record and only the headless CPU-rendering fallback warning.
+- `list_row_input_order_test.dart`: 23 new regressions cover child/ancestor
+  down/up mixed with blink/shine, the committed blink guard and click-after-end
+  boundary, touch cancellation/disposal, feedback suppression, disable-while-held,
+  Enter/Space keydown/repeat, secondary mouse buttons, the 300ms compatibility
+  mouse window and the first active iOS touch. Eleven of the initial 18 failed
+  before implementation. `TdsRawPressRegion` separates raw input from gesture
+  recognition; touch end bubbles locally and mouse end uses a global route after
+  ancestor listeners. The entire child/ancestor activation chain is deferred,
+  preserving nested Menu callback order (one added Menu regression). The source
+  probe `tool/tds_source/browser-probes/list-row-input.js` passed 49 state samples:
+  `.context/list-row-input-react.json`. Native pointer cancellation has no DOM
+  mousecancel equivalent and is an explicit safe-cleanup adaptation. Stylus,
+  every host gesture recognizer and arbitrary concurrent React scheduling remain.
+- `list_footer_color_test.dart`: 16 new tests cover independent ordered Text/Icon
+  registration through wrappers, nearest-footer scope, initial-only parent
+  props, retention after descendant removal, static palette versus adaptive
+  token identity, unknown literals and text-colored string icon shorthand.
+  Initial eight regressions all failed before implementation. Press/release
+  uses a shared rapid clock with linear RGB interpolation; a deterministic
+  60ms sample and interrupted release are asserted. Theme-keyed subtree remount
+  resets inline animation while retaining raw registered colors. Touch cancel
+  deliberately retains the source pressed appearance. Target selectors are
+  captured per timeline, so a later same-color child does not join an existing
+  animation until dependencies change.
+  Two added cleanup regressions failed before the motion-context fix: source
+  contexts revert press then release, restoring old pressed text/scale/shadow
+  after a completed cycle, but CSS/base geometry during the first held press.
+  A further icon assertion failed before separating custom-property cleanup:
+  GSAP removes `--icon-color` on reversion instead of restoring the saved ordinary
+  `color` style. The asserted original probe now covers 36 samples, including
+  this text/icon difference, in `.context/list-footer-colors-react.json`.
+  Run `tool/tds_source/browser-probes/list-footer-colors.js` on
+  `?family=list-footer-colors`; the fixture exposes `updateFooter(patch)`.
+  Both final probes passed against `.context/tds-react-static` with no browser
+  console errors. This is ListFooter registration, correcting the earlier
+  checkpoint's mistaken attribution to ListRow. Repeated partial interruption
+  is expanded in the following checkpoint; nested footer DOM selectors remain.
+- `list_footer_replay_test.dart`: 19 additional regressions distinguish an
+  uninitialized zero-playhead timeline from an advanced timeline restarting at
+  zero. First-frame down/up does not leave a fabricated press snapshot; a lazy
+  release starts from each descendant's own CSS color. Repeated down, a complete
+  cycle followed by a same-turn tap, and repeated partial releases keep the
+  source's independently initialized snapshots. Text keeps the latest saved
+  inline color while icon custom-property cleanup returns to CSS. A 20ms partial
+  release found a one-channel rounding mismatch: native interpolation now saves
+  the integer RGB channels and four-decimal alpha written by the source
+  CSSPlugin. A further original-browser intermediate frame showed that an unset
+  icon variable initializes from transparent black, not its SVG fallback; its
+  regression also failed before correction. Touch/mouse
+  up/cancel after disposal is inert even when Flutter retains the old hit-test
+  path, preventing a call into a disposed AnimationController. The original
+  four fresh-tap regressions, unmount case and RGB regression failed before
+  their respective fixes. Original probe `list-footer-replay.js` now asserts
+  63 samples in each theme, including different descendant CSS starts and
+  unchanged resolved adaptive/literal dependencies. Traces:
+  `.context/list-footer-replay-react-{light,dark}.json`.
+- `list_footer_context_test.dart`: 18 added regressions, 16 failing before the
+  fix, distinguish press dependencies (normal plus pressed text/icon colors)
+  from release dependencies (normal colors only). `grey200` to `hairlineBorder`
+  recreates only press. The retained release keeps its saved pressed shape/text,
+  running clock and selector snapshot; a newly added child can join press without
+  joining release. Both text and icon registration paths are tested in light/dark.
+  Semantic aliases `greyBackground` to `backgroundLevelB01` reset press despite
+  equal resolved colors. Dark `opacity800` versus `greyOpacity800` also has equal
+  values but different pressed strings (`rgba(...,1)`/`#ffffff`), while the 900
+  aliases change normal strings too. Light aliases keep identical strings.
+  The new generated `color_motion_dependencies.g.dart` preserves the original
+  `me`/`aa` identities; interpolation still uses native colors. Timelines write
+  rendered styles on each tick so another context can revert them between ticks
+  without destroying the active interpolation. The widget test asserts exact
+  65ms progress after a press-only change during release.
+  Original `list-footer-contexts.js` asserts 30 samples per theme without console
+  errors. Traces: `.context/list-footer-contexts-source-{light,dark}.log`.
+  Package logs: `.context/tds-context-package-tests.log`; the focused 56-test run
+  is `.context/tds-context-tests-after.log`. That checkpoint did not cover nested
+  DOM selectors or undefined next-level adaptive targets; the next checkpoint
+  adds those cases. Exhaustive dependency combinations and arbitrary original
+  CSS color spellings remain unverified.
+- `list_footer_undefined_test.dart`: 16 added tests, 14 failing before the fix
+  with an unknown `disabledBlue600` exception. Original `aa` returns undefined
+  for that next level; `j4` creates a GSAP `from` tween instead of skipping it.
+  Text starts at the registered normal color and ends at each target's current
+  rendered color. Icons with an unset custom property end at transparent black.
+  Release restores the registered normal color; replay rereads the latest inline
+  destination. Light/dark text/icon/both cases, context cleanup/restoration,
+  intermediate rounded channels and same-RGBA static colors are checked.
+- `list_footer_nested_test.dart`: 14 added tests. Ten of the initial twelve
+  failed before ancestor target registration. Providers remain nearest-only for
+  color registration, while selector snapshots include every descendant Footer's
+  text, icon, content and shadow. Actual shape-node lifetimes are now tracked,
+  so removed/reinserted nodes do not silently join an old timeline. Outer-only
+  presses, bubbled touch/mouse, child-only cleanup, late recapture and disposal
+  are checked. TDS accepted clicks bubble inner to outer through activation
+  scopes. Two additional tests use a controlled 5ms first release frame to
+  verify that each overlapping timeline saves the value rendered before it,
+  rather than a shared guessed pressed state.
+  Source probes `list-footer-undefined.js` (27 samples) and
+  `list-footer-nested.js` (19 samples) pass in each theme, with no console errors.
+  Logs: `.context/footer-edges-source-{light,dark}.log` and
+  `.context/footer-edges-package-tests.log`. The original nested probe also
+  records the scheduler-dependent saved intermediate frame after both owners
+  reconfigure. That is not claimed to be an identical wall-clock/native frame.
+  These are scoped contracts, not all nested CSS, rich-text or event semantics.
+- `list_row_async_test.dart`: 13 additional tests cover one/five-microtask
+  imperative batches, a committed-frame blink guard, an overwritten blink's
+  retained deadline, raw touch/mouse commit boundaries, disposal, and an
+  external TDS button's pointer/keyboard/semantics activation followed by await.
+  Three imperative cases failed before the deferred default-priority commit;
+  two button cases then failed until synchronous TDS activation was classified
+  separately. Default work commits on a native event task or before a frame;
+  discrete input upgrades pending work to a microtask commit. The internal
+  dispatch marker does not leak through await. Stale frame callbacks/timers are
+  cancelled on replacement or disposal. Original probe `list-row-async.js` on
+  `?family=list-effects&async=true` distinguishes Promise continuations from
+  React's discrete-event commit. Both light/100% and dark/160% runs asserted
+  15 state samples without console errors, saved in
+  `.context/list-row-async-react.json` and `.context/list-row-async-react-dark.json`.
+  These are scoped event-order comparisons, not
+  emulation of React concurrent lanes, transitions, flushSync or every browser
+  task-queue boundary. The gallery includes both asynchronous command orders.
+- Menu lifecycle coverage now includes nested TDS Button/TextButton/IconButton
+  child-first activation, disabled/null handlers, drag cancellation, semantics,
+  child focus return and Enter-down/Space-up. The invented opacity fade was
+  removed; original Menu.Trigger only scales. Third-party recognizers do not
+  automatically participate in the native activation scope.
+- `wiki_inline_test.dart`: four tests cover original Vpe highlight geometry,
+  per-line fragments/edge flags, inline padding/icon flow, font/width/theme
+  updates and 5px scroll thresholds with 40/80px fades. The four original edge
+  PNGs are bundled without modification. Original font-box rounding is adapted
+  using Toss Product Sans metrics; custom fonts and full bidi/viewport motion
+  behavior remain unverified.
+- `wiki_viewport_motion_test.dart`: 11 added tests cover independent kf spring
+  channels (150/250ms icon delays, exit padding retention, reentry/reset and
+  explicit highlight exit values), the 60% viewport boundary, nested clipping,
+  initial-above guard and document-end latch. Pointer/haptic/keyboard activation
+  is gated outside the viewport; Enter/Space activate on keydown without keyup
+  duplicates. Popup word/box/scale/dimmer clocks are independent and an entry
+  interrupted by dismissal retains its full exit duration. String descriptions
+  normalize CSS whitespace while preserving NBSP, use keep-all CJK wrapping,
+  reveal rendered lines with a 100ms delay/stagger and lock scroll until the last
+  line settles. Custom widget descriptions bypass this animation.
+  Reference trace: `.context/wiki-motion-react.json`. Source `Ppe` captures
+  body height once; the native adaptation uses the outermost scroll content
+  extent once. Browser observer delivery, transformed ancestors, long
+  unbreakable words, custom fonts, RTL and exhaustive interrupted motion remain
+  unverified. These tests do not confer whole-export parity.
+- `list_footer_test.dart`: inherited/explicit zero/negative hairline offsets,
+  minimum height including custom hairlines, centered custom children and
+  clipped light/dark 120%-wide elliptical shadow/rapid press-release. Descendant
+  custom color registration has scoped coverage in the subsequent Footer suites
+  above; the full visual matrix remains incomplete.
+- `slider_tooltip_test.dart`: original progress-origin coordinates and 30px top
+  gap, numeric formatting, live controlled value/anchor updates, native Tooltip
+  option forwarding, close/reopen, scope enforcement and teardown. The previous
+  inline value bubble is replaced by the real Tooltip. Slider labels retain a
+  20px row and thumb shadows use static CSS sigma conversion.
+- Shared anchored-overlay geometry now refreshes after paint-time transforms,
+  fixing a measured stale x-coordinate after slider value changes. A menu test
+  also moves a cached child with an ancestor Transform and asserts tracking
+  without continuously scheduling idle frames. Non-painted/repaint-boundary-only
+  changes and original ancestor clipping still require further verification.
+- `modal_context_test.dart`: open routes preserve/update theme, host toast and
+  global loading callbacks; old back streams unsubscribe without replacing the
+  route. BottomSheet `onEntered` follows the original open effect, once per
+  false-to-true transition, not animation completion. Ignored sheet dimmers no
+  longer start an unused dialog wiggle. Arbitrary application inherited scopes
+  and nested native navigation still need their complete lifecycle matrix.
+- `bottom_sheet_compounds_test.dart`: eight tests cover string/custom/rich header
+  inheritance, source 57.5px Select rows, disabled text, line marks and reserved
+  hidden slots, 80px/800ms expo plus 30ms stagger/delay, repeated checked-change
+  events, disabled press effects, original lack of key activation, measured
+  overflow-driven CTA gradients/34px overlap, 600ms CTA fade and native prop
+  forwarding. The 160% fixture uses the original 27px/36px metric table, not an
+  invented fixed 1.5em override.
+- `sheet_motion_test.dart`: six tests cover literal two-axis logarithmic drag
+  geometry/dimmer thresholds, fixed 150px-plus-gap entrance, forward rapid exit
+  with independent quick dimmer fade, content opacity, touch-only handler
+  callbacks, controlled-close rejection, scrollable touch-body guard versus
+  original mouse behavior, expansion/cancellation and teardown. Original browser
+  drag (+50,-50) produced `matrix(0.98,0,0,0.98,6.9315,-30.7944)` including the
+  -10px bottom gap, matching the source formula. Source closure is displacement-
+  based, not velocity-based. Full transient frame/interruption equivalence,
+  dimmer throttling and device viewport behavior are not yet verified.
+- `bottom_sheet_controller_test.dart`: four tests cover retained controller
+  scope in header/description/body/CTA, string headers, custom async button
+  builders, loading/error/retry/stale completion and close forwarding. Browser
+  owner removal confirms closeOnDestroy=false does not preserve the source
+  overlay, because its useOverlay still defaults exitOnUnmount=true.
+- `global_loading_test.dart`: four tests cover aggregated first-start/final-finish
+  callbacks, default context, latest callback refs, Loader mount/unmount and
+  its 700ms delay/300ms CSS fade. Original browser 2→1→0 loaders emitted
+  start/(none)/finish. Button and standalone LoaderAnimation do not invoke Yoe.
+- `progress_transition_test.dart`: six tests cover 500ms CSS ease-in-out,
+  reversal shortening (including a second reversal), full-duration retargets,
+  unchanged targets, initial-only animate, unclamped out-of-range translation,
+  fractional percentage text and disposal. Browser reversal sampling confirmed
+  duration shortening; a complete frame-by-frame platform matrix remains.
+- `checkable_motion_test.dart`: eight tests cover Checkbox's selection trigger
+  and 150ms return, immediate press and tickWeak calls, selected radio behavior,
+  quadratic disabled wiggle/unchanged label, disabled check color, gamma-mixed
+  line fill, optimistic checked callback vs raw input callback, and no synthesized
+  keyboard click. Switch geometry, independent knob springs, softWeak contract,
+  click-before-change, inert and mount-captured touch options are covered.
+  Original W registers gestures once with TB's initial null rally: root tap
+  motion is dormant in 2.5.1, confirmed with click/mousedown sampling.
+  Full hover/press/controlled-update color and interruption timelines remain.
+- Host self-validation tests cover every platform haptic mapping and the no-op
+  adapter, secure-host replacement ordering while enable is pending, and failed
+  enable followed by queued disable. These validate injected contracts, not
+  Toss-specific vibration patterns or actual OS screenshot protection.
+- `text_button_test.dart`: 11 tests use the original font faces for six sizes,
+  100/160/200% scales, fixed 5px arrow flow frames with overflowing original SVGs,
+  inline x-height alignment, 1/64px line boxes and measured first-line baselines.
+  Korean keep-all preserves whole words, splits oversized words, and wraps a
+  trailing arrow onto its own line. Uniform underlines use normalized typo
+  descent, CSS auto thickness and measured six-size positions without growing
+  layout. Mixed fonts/rich spans and non-unit DPR decoration snapping remain.
+  Immediate tickWeak, rapid scale/quick gamma ink, retained touchcancel press,
+  Enter-down/Space-up without pointer effects, disabled state, color updates
+  and disposal are covered. Original browser sampling confirmed no hover fill
+  after the initial release's inline style and no standalone hit padding.
+  Paragraph ancestry alone supplies inherited padding; custom static palette
+  colors advance one level while unknown literals stay unchanged. Native
+  colorToken retains adaptive-token identity; Color cannot preserve CSS spelling.
+- Re-running `uv run tool/tds_source/fonts.py` produced identical SHA256 hashes
+  for all eight TTFs and provenance.json. All 12,605 codepoints per face and
+  outlines/advance metrics passed validation against 96 original subsets.
+- `highlight_test.dart`: eight tests cover rounded cutout/hit geometry,
+  padding/clamping including zero-padding negative coordinates, exact original
+  SVG arrow, six message alignments and original-font 100/160% multiline metrics.
+  Separate basic opacity/slow expanding exit, 2.2s message keyframes, reduced
+  motion, interruption continuity, captured callback/prop snapshots, delayed
+  cancellation, controlled-close rejection and teardown have scoped tests.
+  Original browser sampling confirmed full Highlight's target is inert and
+  Escape does not invoke onClose; Tab reaches the hidden close button. Standalone
+  HighlightUI is not modal and its hole still passes input through. Android's
+  original filter merges offsetblur directly, bypassing the .1 alpha-transfer
+  result; its full-alpha blur is reproduced. Programmatic React target clicks
+  invoke native/synthetic handlers twice; this DOM-only path is not reproduced.
+- `full_tooltip_test.dart`: 19 tests cover mat's two-contour silhouette and
+  vertical reflection, unclamped arrow ratios, static teal colors, 1.35 line
+  boxes, integer clientHeight rounding, 400/500/700ms inline entrance stages,
+  12px overlap footprint/translation and explicit floating offset precedence.
+  Timers handle controlled callbacks, callback replacement, zero/negative
+  durations, uncontrolled override and disposal. Original browser checks confirm
+  omitted relative placement omits the target, uncontrolled onClose is replaced,
+  and the initial outside callback fires even for a closed tooltip's pointerdown.
+  Seven added regressions cover the two independent 100ms trailing observers,
+  resize bursts/cancellation, held previous heights before the 400ms from:0
+  restart, independent overlap/spacer motion, source integer height rounding,
+  frozen exit props, fresh reopening and mode/timer/callback ownership.
+  The original browser trace is `.context/full-tooltip-motion-react.json`;
+  `window.tdsReference.updateFullTooltip(patch)` in the reference fixture drives
+  repeatable prop transitions without changing the package source.
+  Cold-mount source observers can delay the nominal height timeline by another
+  100ms; native first-layout measurement does not reproduce all such settling.
+  Four more regressions cover eo's interrupted-reopen quirk: both relative and
+  floating children remount without the presence wrapper, so their next close
+  removes immediately. A fresh mount, floating-mode replacement or controlled
+  mode replacement restores retained exits. The sequence was replayed on the
+  original in `tool/tds_source/browser-probes/full-tooltip-presence.js`; traces
+  are `.context/full-tooltip-presence-{relative,floating}.json`. At the sampled
+  second close no message remained by 11ms; a third, clean close retained the
+  message at 60ms. Native unit tests also check intervening open-state updates
+  and cancelled timers. Floating blur has a paired comparison but its
+  filter rasterization still differs. Selector anchors, complete interruption
+  timelines and rich-message metrics remain incomplete.
+- `npm run generate --prefix tool/tds_source`: inventory, 298 palette entries,
+  32 text metric sets, 44 asset frames, 25 list text presets and coverage generated
+  successfully from pinned npm source.
+- `node tool/tds_source/coverage.mjs --check`: current.
+- `git diff --check`: clean for tracked edits.
+
+Automated tests are scoped examples, not exhaustive platform accessibility or
+motion tests. Most widget tests use Flutter's test font; the font geometry test
+loads the actual regular face. Visual fixtures load the bundled font faces.
+
+## Build checks
+
+- Gallery Web build succeeded with `lib/tds_gallery.dart`. Subsequent captures
+  use the separate `.context/tds-gallery-web` output served on port 5181, so
+  rebuilding the gallery does not replace the app at `build/web`.
+- Main Web build succeeded with `lib/main.dart`; `build/web` was left as the
+  main app output, not the gallery.
+- Main Android debug APK succeeded with `lib/main.dart`.
+- Main ARM64 iOS Simulator build succeeded with signing disabled:
+
+  ```sh
+  xcodebuild -quiet -workspace ios/Runner.xcworkspace -scheme Runner \
+    -configuration Debug -sdk iphonesimulator \
+    -destination 'generic/platform=iOS Simulator' \
+    -derivedDataPath .context/ios-derived-data \
+  CODE_SIGNING_ALLOWED=NO ARCHS=arm64 ONLY_ACTIVE_ARCH=YES build
+  ```
+
+After the final native test runs, Android was rebuilt for `lib/main.dart` and
+the iOS generated target was restored to `lib/main.dart` before the successful
+ARM64 build. Run these target-restoration steps sequentially: a concurrent
+Android/iOS preparation attempt failed deleting generated Swift package files;
+the same iOS command passed after Android finished, without manual deletion.
+The independent-context checkpoint repeated this sequence successfully after
+both full native runs and both final scoped capture reruns.
+The undefined/nested checkpoint repeated it again after both full native suites;
+Android, ARM64 iOS Simulator, gallery Web and main Web builds all passed.
+`ios/Flutter/Generated.xcconfig` again points to
+`FLUTTER_TARGET=lib/main.dart`. Latest logs are
+`.context/footer-edges-main-android-build.log`,
+`.context/footer-edges-main-ios-config.log` and
+`.context/footer-edges-main-ios-build.log` (quiet xcodebuild, exit 0).
+The gallery and main Web logs are
+`.context/footer-edges-gallery-build.log` and
+`.context/footer-edges-main-web-build.log`. The final Simulator Runner binary
+was checked with `lipo` and is ARM64; `build/web` contains the main app.
+
+The default Flutter multi-architecture simulator command failed earlier with
+Xcode 27 dependency-graph/architecture handling errors. ARM64-only success does
+not establish x86_64 simulator support. No signing, store/release distribution,
+physical device rendering or device OAuth was validated. No platform settings
+were changed to hide this limitation.
+
+## Native engine self-validation
+
+`integration_test/tds_native_test.dart` passed on the iOS 26.2 iPhone 17 Pro
+Simulator and Android API 36.1 Medium Phone emulator. The scenario covers
+Checkbox/Switch toggling, text entry, progress and BottomSheet opening/closing
+at light/dark and 100/160% text scale. iOS 160% uses the actual A11y_Medium
+category, and the test asserts the resulting font size. A second scenario checks
+TextButton activation, keep-all and underlines in the same four theme/scale
+combinations. Android screenshot-surface preparation is performed per test.
+Two more scenarios cover Highlight's inert target, mask and dismissal lifecycle,
+and FullTooltip's inline reflow, floating blur and pointer callbacks, in the same
+theme/scale combinations. FullTooltip also mutates a two-line message into three
+lines, enables overlap and reopens during exit, asserting the final flow height
+and continued presence. The final expanded run also checks both inline and
+floating interrupted reopen: the next close removes immediately, and a later
+fresh open restores the retained exit (still mounted 60ms after closing).
+Each platform passed these checks in all four theme/scale combinations.
+The 16 controls/sheet, eight TextButton, eight Highlight,
+eight baseline FullTooltip and eight resized/reopened FullTooltip captures are
+smoke evidence. WikiText adds viewport gating, touch activation, entry/exit/reentry,
+definition open/dismiss and string-description captures in all four theme/scale
+combinations on each platform (16 more captures). After the final whitespace,
+keep-all and word-centering corrections, the WikiText scenario was rerun on both
+platforms with `--dart-define=TDS_WIKI_ONLY=true`. The 16 WikiText images are also
+collected in `.context/wiki-native-{ios,android}-contact.png`.
+
+The shine checkpoint added `integration_test/list_row_live_test.dart` on both
+engines. Its four initial-theme/text-scale combinations check captured integer
+shine endpoints, responsive light/dark gradient bounds, width/count retargeting,
+theme-triggered restart and retention beyond one cycle after a two-repeat
+request. Both full runs passed, including the existing scenarios. Eight
+images per platform capture resized and opposite-theme states. Those 16
+are collected in `.context/list-row-native-{ios,android}-contact.png`, with
+top-of-screen details in `.context/list-row-native-{ios,android}-detail.png`.
+
+The latest full runs also passed `integration_test/list_row_blink_test.dart` on
+both engines, preserving all existing scenarios. The added scenario checks
+synchronous shine/blink ordering, live resize/theme updates, cancellation
+before the dimmer's delay and retained exit/reentry in the same four
+theme/scale combinations. A final standalone run of that scenario passed on
+each platform. Eight additional images per platform capture resized and
+reentered blink states. That checkpoint brought the inspected native screenshot
+set to **96**. Its latest 16 are collected in
+`.context/list-row-blink-native-{ios,android}-contact.png`, with details in
+`.context/list-row-blink-native-{ios,android}-detail.png`.
+
+The input/color checkpoint reran the complete suite on both engines and added
+`integration_test/list_input_color_test.dart`. It checks child-down shine yielding
+to touch, ancestor-down/up shine surviving, click-triggered blink after release,
+adaptive Text/Icon registration, press/release colors, independent text/icon
+context cleanup, theme remount, descendant removal and touch-cancel retention.
+All four light/dark ×100/160% variants passed on Android and iOS. Thirty-two new
+captures show press, context reversion, opposite theme/removal and retained cancel
+states, bringing the stored native set to **128**. All 32 new images were
+inspected in `.context/list-input-color-native-{android,ios}-{press,revert,theme,cancel}.png`
+sheets. Held-press images include the Flutter test binding's colored pointer
+crosshair; it is test instrumentation, not an application graphic. Reversion,
+theme and cancelled-pointer captures have no such overlay. The sheets resize
+images for inspection only and are not golden/difference inputs.
+
+Input/color checkpoint logs: `.context/tds-input-color-{android,ios}-drive.log`.
+Its screenshots:
+`.context/tds-native-list-input-color-{press,revert,theme,cancel}-{android,ios}-{light,dark}-{100,160}.png`.
+The theme segment identifies the **initial** theme; `theme` and `cancel` captures
+show the opposite theme. For a scoped rerun use
+`--target=integration_test/list_input_color_test.dart` with the existing driver.
+Android converts its screenshot surface per test and theme mutations receive an
+extra 100ms raster frame before capture. `TDS_WIKI_ONLY` still skips these later
+scenarios. Native runs did not exercise browser mouse compatibility or keyboard
+repeat on physical hardware; those have separate source/widget tests.
+
+The replay/async checkpoint reran the complete suite on both engines, including
+`integration_test/list_replay_async_test.dart`, with all scenarios passing. In
+each light/dark ×100/160% variant, five-microtask imperative shine/blink ends in
+blink, while a TDS button's discrete shine/await/blink preserves the committed
+shine guard. The test also checks a fresh pre-frame tap's intermediate icon
+alpha, descendant color update without stale press snapshots, repeated partial
+press/release cleanup and pointer-up after Footer removal. Exact saved text
+colors and scale are asserted in the running Flutter engines.
+
+Thirty-two additional captures are stored as
+`.context/tds-native-list-replay-{batch,discrete,fast-tap,revert}-{android,ios}-{light,dark}-{100,160}.png`.
+All were inspected in eight
+`.context/list-replay-native-{android,ios}-{batch,discrete,fast-tap,revert}.png`
+contact sheets. That checkpoint brought the platform-labelled integration set
+to **160**; older unlabelled diagnostic images remain separate and were not deleted.
+These sheets are resized for layout/color inspection, not goldens. Effect-state
+assertions identify blink versus shine; the captures alone do not establish
+frame-by-frame animation parity. A test-only AnimatedScale finder was narrowed
+to the Footer after adding a second animated control, then both full runs
+passed. Latest logs: `.context/tds-replay-{android,ios}-drive.log`.
+For a scoped rerun use `--target=integration_test/list_replay_async_test.dart`
+with the existing driver. `TDS_WIKI_ONLY` continues to skip the later scenarios.
+
+The independent-context checkpoint reran both complete native suites, including
+`integration_test/list_footer_context_test.dart`, with all scenarios passing.
+In each light/dark ×100/160% variant, text and icon press-only changes keep the
+release save and let an in-flight release finish. A later normal-color change
+restores the previous release snapshot. Additional assertions check separately
+captured late text, equal-valued semantic aliases, colors, scale, shadow and
+pointer-up after removal. Exact 65ms progress remains a fake-clock widget
+assertion, not a wall-clock device assertion. Full-suite logs:
+`.context/tds-context-{android,ios}-drive.log`.
+
+The 32 new final screenshots are
+`.context/tds-native-footer-contexts-{cleanup,restore,late,alias}-{android,ios}-{light,dark}-{100,160}.png`.
+All were inspected in eight
+`.context/footer-contexts-native-{android,ios}-{cleanup,restore,late,alias}.png`
+sheets, resized for inspection only. That checkpoint brought the
+platform-labelled integration set to **192** PNGs; nine older
+unlabelled/diagnostic native PNGs remain untouched.
+The first Android dark/160% restore capture showed the preceding explicit-blue
+raster frame even though both saved-text assertions passed. The test now pumps
+an additional 100ms stable frame before capture, matching the existing native
+harness pattern. Both targeted platform runs then passed, and all 32 final
+captures were rechecked, including the corrected grey text in that case.
+The old capture is retained separately at
+`.context/footer-contexts-android-dark-160-capture-diagnostic.png`.
+Final scoped logs: `.context/tds-context-{android,ios}-final-drive.log`.
+Use `--target=integration_test/list_footer_context_test.dart` with the existing
+driver for this scenario. `TDS_WIKI_ONLY` still skips it. Neither native set is
+paired with original physical-device screenshots or a motion-golden threshold.
+
+The undefined/nested checkpoint reran both full suites, including
+`integration_test/list_footer_edges_test.dart`, with all scenarios passing.
+The new scenario covers from-only adaptive colors, replay after release,
+outer-only descendant targeting, inner-to-outer activation, removal/reinsertion
+without joining old snapshots, and recapture after an owner dependency changes.
+All four light/dark ×100/160% variants pass on each native engine. Colors,
+shape state and activation order have assertions; the overlapping 5ms first
+release frame is a fake-clock widget regression, not a native timing claim.
+Latest full-suite logs: `.context/footer-edges-{android,ios}-drive.log`.
+
+The 48 new captures are
+`.context/tds-native-footer-edges-{from-only,repress,nested,bubbled,late,recaptured}-{android,ios}-{light,dark}-{100,160}.png`.
+All were inspected using twelve
+`.context/footer-edges-native-{android,ios}-{from-only,repress,nested,bubbled,late,recaptured}.png`
+sheets. These crop/resize for inspection only and are not pixel-comparison
+inputs. The platform-labelled integration set now contains **240** PNGs, plus
+the nine historical unlabelled/diagnostic PNGs. Held-pointer captures include
+Flutter test crosshairs; released `bubbled` captures have no crosshair. These
+markers must not be mistaken for an app graphic or suppressed in production
+input handling. For a scoped rerun use
+`--target=integration_test/list_footer_edges_test.dart` with the existing driver.
+`TDS_WIKI_ONLY` preserves its early return before the added scenarios.
+
+Initial Android resize/100% captures still contained the previous raster frame
+despite the logical theme/width assertions passing. The test now pumps a further
+100ms before taking the resize screenshot; both standalone platform runs were
+repeated successfully. All 16 corrected captures were opened and inspected,
+including the contact sheets and detail sheets. Text stayed within its row at
+100/160% scale, and the corrected images show the asserted size and theme.
+Screenshot acquisition is not frame-synchronized between engines, so different
+shine/blink intensity in individual captures is not evidence of pixel parity
+or a measured timing discrepancy. These successes are not pixel-parity
+certificates.
+
+The initial expanded run failed on both platforms because the native test
+delayed applying a floating reopen: `pumpAndSettle()` waits 100ms before its
+first frame. The diagnostic trace reached 115ms after the first close before
+requesting reopen; another delayed frame completed the 200ms exit before the
+new widget could rebuild. This exercised a clean mount, not an interruption.
+The test now pumps the reopen immediately before settling, asserts that the
+departing surface is still present, and keeps the immediate-removal assertion.
+No production animation duration or expectation was relaxed. The original
+failure is retained in `.context/tds-native-tooltip-diagnostic.log`.
+The latest FullTooltip screenshots are collected for inspection in
+`.context/full-tooltip-native-{ios,android}-contact.png`.
+
+```sh
+flutter drive --driver=test_driver/tds_native_driver.dart \
+  --target=integration_test/tds_native_test.dart -d DEVICE_ID
+```
+
+Logs: `.context/tds-native-{ios,android}-integration.log`. Current screenshots:
+`.context/tds-native-{controls,sheet,text-buttons,highlight,full-tooltip,full-tooltip-resized}-{ios,android}-{light,dark}-{100,160}.png`.
+WikiText: `.context/tds-native-{wiki,wiki-definition}-{ios,android}-{light,dark}-{100,160}.png`.
+ListRow: `.context/tds-native-list-row-resized-{ios,android}-{light,dark}-{100,160}.png`
+and `.context/tds-native-list-row-theme-{ios,android}-{light-to-dark,dark-to-light}-{100,160}.png`.
+ListRow blink: `.context/tds-native-list-row-blink-{resized,reentry}-{ios,android}-{light-to-dark,dark-to-light}-{100,160}.png`.
+Final targeted logs: `.context/tds-native-wiki-{ios,android}-final.log`
+and `.context/tds-native-blink-{ios,android}-final.log`.
+For the blink-only rerun, use the same drive command with
+`--target=integration_test/list_row_blink_test.dart`.
+Earlier filenames without a platform suffix are superseded and not evidence.
+These are native smoke checks, not paired original-device golden comparisons.
+No physical device, VoiceOver/TalkBack, real OAuth or Toss host was exercised.
+The user confirmed no host SDK/test app is available; self-validation proceeds
+without treating mock/Flutter channel success as real host certification.
+
+## Visual evidence
+
+Browser skill workflow: **DONE_WITH_CONCERNS** for the sampled comparisons.
+Screenshots were opened and inspected; this is not a completed full-library QA
+run. Evidence lives in the gitignored `.context/` directory.
+
+The fixture uses the original components without editing npm package source.
+Standalone host safe-area data is explicitly zero. `ColorSchemeArea` supplies
+original adaptive tokens. Because AIT installs light tokens at `:root` and
+motion overlays portal outside the local area, the fixture mirrors the
+original area's CSS variables to the document root for a dark-capable host.
+An earlier dark capture without this setup was invalid and was replaced.
+
+Capture after `#fixture` exists and `document.fonts.ready` resolves, with a
+390px viewport and equal query parameters. Flutter uses headless Chromium's
+CPU fallback renderer here. Browser/Flutter rasterizers and font hinting differ.
+Do not interpret low average pixel error on a mostly empty canvas as parity.
+
+| Sample | Compared area | Pixels with channel delta >16 | Mean max-channel delta (0–255) |
+| --- | --- | ---: | ---: |
+| List/header/footer/table, light 100% | 390×500 | 7,274 | 3.0049 |
+| List/header, dark 160% | 390×700 viewport crop | 10,732 | 2.9231 |
+| Top/bottom action toast, dark 100% | 390×700 | 2,762 | 0.8948 |
+| List assets/header, light 100% | 390×600 | 7,019 | 2.6628 |
+| List assets/header, dark 160% | 390×650 viewport crop | 9,355 | 2.6485 |
+| Top/Bubble/LeftText/Paragraph.Link, light 100% | 390×600 | 6,414 | 2.1417 |
+| Number keypad, light 100% | 390×320 | 920 | 0.5365 |
+| Number keypad, dark 200% | 390×320 | 1,018 | 0.5642 |
+| BottomCTA Single/Double/accessories, light 100% | 390×580 | 6,150 | 2.2060 |
+| BottomCTA Single/Double/accessories, dark 160% | 390×650 | 8,126 | 2.5270 |
+| Rich Paragraph/Top/Badge, light 100% | 390×440 | 9,447 | 4.7237 |
+| Checkbox checked, dark 100% | 390×200 | 0 | 0.0330 |
+| TextButton block arrow, six sizes, light 100% | 390×320 | 1,724 | 0.6722 |
+| TextButton underline, six sizes, light 100% | 390×320 | 2,232 | 0.8185 |
+| TextButton multiline inline arrow, dark 160% | 390×950 | 7,344 | 1.1605 |
+| Highlight left/bottom message, light 100% | 390×650 | 1,187 | 0.2209 |
+| Highlight centered/top message, dark 160% | 390×650 | 2,008 | 0.4362 |
+| FullTooltip multiline relative/bottom, light 160% | 390×450 | 2,548 | 1.1712 |
+| FullTooltip floating/top/overlap, dark 100% | 390×450 | 6,527 | 1.7148 |
+| FullTooltip three-line relative/overlap, dark 160% | 390×450 | 1,379 | 0.6103 |
+| Menu dropdowns, light 100%, before CSS sigma correction | 390×440 | 1,868 | 2.2784 |
+| Tooltip 18 size/clip/side variants, light 100% | 390×1180 | 5,061 | 1.3753 |
+| WikiText multiline highlights, light 100% | 390×140 | 2,042 | 1.6978 |
+| WikiText viewport entry settled, light 100% | 390×650 | 374 | 0.0675 |
+| WikiText string definition, light 100% | 390×650 | 2,630 | 0.9859 |
+| SliderTooltip/default slider, light 100% | 390×220 | 464 | 0.6815 |
+| BottomSheet headers/Select, light 100% | 390×330 | 3,555 | 2.0070 |
+| BottomSheet scrolling/CTA, light 100% | 390×844 | 3,412 | 0.7141 |
+| BottomSheet scrolling/CTA, dark 160% | 390×844 | 5,036 | 0.7480 |
+
+Files: `lists-comparison.png`, `lists-dark-comparison.png`,
+`toast-dark-comparison.png` with matching JSON reports. Image panels are
+original React, native Flutter, absolute difference, in that order.
+New files: `list-assets-comparison.png`, `list-assets-dark-comparison.png`,
+`compounds-comparison.png`, each with a matching JSON report. New captures were
+opened and inspected after the Asset transparent-background and header
+icon-height fixes. The dark list-assets crop does not include the last row.
+Earlier list/toast samples above predate the latest compound changes; they are
+retained as historical evidence, not rerun claims.
+Keypad evidence: `keypad-comparison.png` and `keypad-dark-comparison.png`, with
+JSON reports. These captures were repeated after correcting fixed font sizing,
+row geometry and the back-arrow graphic. Remaining differences include glyph
+rasterization and the inline SVG's baseline positioning.
+
+The paired fixtures caught and corrected Top.LowerCTA stretching, Paragraph.Link
+default styling, Asset transparent backgrounds and header icon flow height.
+The latest compounds capture was repeated after the Bubble strut fix: default
+single-line flow height now matches 49.796875px. It still shows text/inline
+differences and is not a visual parity pass. New bottom CTA fixtures exposed
+incorrect equal-width distribution: CSS grows from the unclamped auto basis,
+then freezes min-width violations and redistributes free space. This is fixed.
+Files: `bottom-cta-comparison.png`, `bottom-cta-dark-comparison.png`, and their
+JSON reports. The latter was captured at 390×1000, then cropped to 390×650;
+all fixture rows are included. Source and Flutter screenshots/diffs were opened.
+
+New evidence: `paragraphs-comparison.png`, `menus-comparison.png`,
+`tooltips-comparison.png`. The badge correction reduced the paragraph sample's
+delta>16 pixels from 19,080 to 9,447; remaining Korean line breaks and baselines
+are visible. Tooltip line-box/shadow correction reduced mean max-channel delta
+from 1.7620 to 1.3753, not to zero. `react-secure-keypad.png` and
+`flutter-secure-keypad.png` were also inspected, but their independently randomized
+blank positions make full-image pixel comparisons invalid. An early tooltip
+capture with 112px row spacing overlapped variants; the final fixture uses 180px
+rows and all 18 variants fit in 390×1180. Menu evidence predates the latest sigma
+correction and is not a rerun claim.
+
+Latest separate-gallery captures: `wiki-comparison.png` and
+`slider-tooltip-comparison.png`, with JSON reports and original/native PNGs.
+All were opened and inspected. WikiText now highlights both lines with original
+edge assets; SliderTooltip is a real original-shaped tooltip at the source
+30px gap. Glyph rasterization, fractional coordinates and slider-track pixels
+still differ. The mostly empty comparison area must not be read as a parity
+percentage or a full state/scale/theme pass.
+
+BottomSheet static comparisons: `sheet-select-comparison.png` and
+`sheet-long-comparison.png` with original/native captures and JSON reports,
+all opened and inspected. These were captured after the compounds/layout fixes
+and before the subsequent drag/transition edits. Text rasterization and
+fractional coordinates still differ; these are not motion comparisons.
+The dark 160% `sheet-dark-large-comparison.png` capture includes the metric-table
+correction (previously 13,729 pixels over delta 16, mean 4.1378). It was opened
+and inspected; the aggregate metrics are not parity percentages.
+
+New checkable/TextButton evidence: `checkbox-dark-checked-comparison.png`,
+`text-buttons-arrow-comparison.png`, `text-buttons-underline-comparison.png`,
+and `text-buttons-inline-dark-large-comparison.png`, with JSON reports. All
+were opened and inspected. Checkbox's ambient plain-string color is fixed to
+the original fixture body's #212529 even in dark mode, not to a component
+token. The previous adaptive-white fixture comparison was invalid. TextButton
+keep-all corrected Korean mid-word breaks and trailing-arrow placement; the
+six-size underline fixture tests exact source under-edge positions. Remaining
+font rasterization/width differences are visible. A cold-start empty Flutter
+capture was discarded; capture only after flutter-view exists and painting
+has settled, not solely after a fixed short delay.
+
+New overlay evidence: `highlight-left-comparison.png`,
+`highlight-center-dark-comparison.png`, `full-tooltip-inline-comparison.png`
+and `full-tooltip-floating-dark-comparison.png`, with paired original/native
+images and JSON reports. All were opened and inspected. Correcting Highlight's
+Android offsetblur reduced delta>16 pixels in the light fixture from 3,041 to
+1,187. FullTooltip's floating blur retains visible kernel/compositing differences;
+the aggregate number must not hide that concern. Temporary browser filter
+overrides were diagnostic only and are not the final reference captures.
+
+`full-tooltip-resized-comparison.png` adds the three-line overlapped dark/160%
+end-state fixture. Its originals, native image, difference image and JSON report
+were inspected. Layout edges align in this sample, while glyph rasterization and
+small color differences remain. The headless Flutter Web renderer reported its
+CPU-only fallback; this sample is not a GPU/browser/device-wide equivalence test.
+
+ListFooter ordered-color evidence uses four 390×100 crops: initial and
+post-release color-change states in light/100% and dark/160%.
+`.context/list-footer-comparison-{light-100,dark-160}-{initial,revert}.png`
+and companion JSON reports compare untouched React with the native gallery.
+The four delta>16 pixel counts are 476, 580, 818 and 989 respectively; mean
+max-channel deltas are 1.0307, 1.7082, 2.1030 and 2.5771. These are sample
+measurements, not parity percentages or passing thresholds. Glyph baseline/
+rasterization and shadow interpolation differences are visible in the inspected
+comparisons; matching color state does not establish pixel equality.
+
+Eight inspected gallery captures in `.context/list-footer-web-*.png` and
+`.context/list-input-web-*.png` exercise footer click delivery, live color/theme,
+removal, registration order/reset and all three row input modes at light/100%
+and dark/160%. Record: `.context/list-input-color-web-smoke.log`. Accessibility
+clicks deliver SemanticsAction.tap without the raw pressed lifecycle, so those
+color-change screenshots alone are not motion-context reversion evidence.
+`tool/tds_source/browser-probes/flutter-footer-pointer.js` separately dispatches
+mouse PointerEvents to the Flutter event surface, verifies exactly one click,
+then the fixture's color-change control triggers context reversion. Its two
+`.context/list-footer-web-raw-revert-*.png` captures supply the native half of
+the paired reversion comparisons. Record: `.context/list-footer-paired-smoke.log`.
+All captures/comparisons were inspected. Browser output contained only the
+known headless CPU-rendering fallback warning, not application errors.
+
+The replay checkpoint adds four unscaled 390×110 paired crops in light/dark
+at 100/160%. `react-footer-fast-tap.js` and `flutter-footer-replay.js` send the
+first down/up before an animation frame and then change the descendant color.
+The original asserts both text colors and unit scale; the Flutter browser probe
+asserts exactly one raw-pointer click and the color-control activation. Exact
+Flutter color/scale and the intermediate transparent icon are asserted in the
+widget and native engine tests, not inferred from the semantics tree.
+All four `.context/footer-replay-paired-{light,dark}-{100,160}.png` comparisons
+were opened and inspected. In light/100, light/160, dark/100, dark/160 order,
+their delta>16 pixel counts are 491, 822, 460 and 735; mean max-channel deltas
+are 1.2651, 2.2120, 0.8223 and 1.3923. Those measurements describe this fixture,
+not a similarity score or a parity threshold. Text baseline/rasterization and
+arrow pixels still differ despite matching the observed color lifecycle.
+Individual images use `.context/{react,flutter}-footer-replay-*.png`; companion
+JSON reports sit beside the comparisons. The remaining three capture pairs are
+logged in `.context/list-footer-replay-web-captures.log`. The browser emitted
+only its known CPU-rendering fallback warning, with no application errors.
+
+`flutter-list-row-async.js` activates both gallery async-order buttons at
+light/100% and dark/160% and verifies that their semantics remain present after
+completion. The two `.context/list-row-async-web-*.png` captures were inspected;
+`.context/list-row-async-web-smoke.log` has no application error. This is browser
+activation/lifecycle smoke evidence only. The internal blink-versus-shine guard
+is asserted by widget/native tests; the canvas semantics tree cannot prove
+which painter ran, and these end-state screenshots are not motion goldens.
+
+The independent-context checkpoint adds sixteen unscaled 390×100 comparisons:
+`cleanup`, `restore`, `late` and `alias` in light/dark at 100/160%. The original
+`react-footer-context-capture.js` asserts saved text/shape and separate late
+targets. `flutter-footer-context-capture.js` delivers raw pointer events and
+asserts exactly one click plus fixture-control/late-text semantics; widget/native
+tests assert the actual Flutter colors, scale and shadow. The original route is
+`list-footer-colors`, while the native gallery uses `list-footer-contexts`.
+Both accept `contextCase=cleanup|restore|late|alias` for the capture probes.
+All 32 source/native crops and all 16 difference panels were inspected, using
+four unscaled overview sheets where useful. The captures and paired reports are
+`.context/{react,flutter}-footer-contexts-{cleanup,restore,late,alias}-{light,dark}-{100,160}.png`
+and `.context/footer-contexts-paired-{cleanup,restore,late,alias}-{light,dark}-{100,160}.{png,json}`.
+Their per-image delta>16 pixel counts range from 48 to 690 of 39,000 pixels,
+and mean max-channel deltas from 0.1255 to 0.9518. These measurements are not a
+similarity percentage or pass threshold; glyph baselines/rasterization, arrows
+and the restored shadow still differ. Logs:
+`.context/footer-contexts-web-captures-{light,dark}-{100,160}.log`.
+No application errors occurred; the known headless CPU-rendering fallback
+warning remains. An initial all-in-one chain hit the browser CLI's 30-second
+request timeout, so the final passing runs are four separate theme/scale chains.
+The incomplete initial log is not passing evidence.
+
+The undefined/nested checkpoint adds twenty-four unscaled comparisons across
+six cases (`from-only`, `repress`, `nested`, `bubbled`, `late`, `recaptured`) in
+light/dark at 100/160%. The first two use 390×100 crops; the four nested cases
+use 390×130. `react-footer-edge-capture.js` asserts original color/shape and
+click ordering; `flutter-footer-edge-capture.js` verifies raw pointer delivery
+and fixture semantics. Widget/native tests separately assert Flutter rendered
+colors, scale, shadow and callback order. Canvas semantics are not treated as
+pixel or painter-state evidence.
+
+All 48 individual crops and 24 difference panels were inspected, with four
+unscaled overview sheets. Paths:
+`.context/{react,flutter}-footer-edges-{case}-{light,dark}-{100,160}.png`,
+`.context/footer-edges-paired-{case}-{light,dark}-{100,160}.{png,json}` and
+`.context/footer-edges-web-{light,dark}-{100,160}-overview.png`.
+Per-image delta>16 counts range from 427 to 1105, with mean max-channel deltas
+from 0.762256 to 2.283412. The crops have 39,000 or 50,700 pixels, respectively;
+these measurements are not a similarity score or a pass threshold. Glyph
+baselines/rasterization, arrows and shadow gradients remain visibly different.
+The eight final capture chains each contain three cases and six images, keeping
+each chain below the browser CLI timeout. Logs:
+`.context/footer-edges-web-{light,dark}-{100,160}-{from-only,bubbled}.log`.
+All final logs have zero probe errors and zero font-fetch warnings; only the
+known headless CPU-rendering fallback warning remains. The runner checks eval
+errors and screenshot counts because the CLI can exit zero despite a failed
+eval. Flutter can combine sibling texts into a newline-separated semantic
+label; the outer nested Footer's button rectangle includes the child, so the
+probe targets the outer text row explicitly.
+
+No pass threshold is approved. Differences remain in text baseline/rasterization,
+Chromium fractional layout quantization, some control geometry and motion.
+Current captures do not validate pressed/hovered/disabled animation timelines,
+every font scale, full multiline/word-break behavior or real iOS/Android pixels.
+
+## Next required work
+
+1. Finish existing public prop/compound contracts, motion interruption,
+   native text selection/context menus and nested modal focus restoration.
+2. Finish remaining compound contracts and the 63 pending recursive entries.
+   BottomCTA compounds, FontScaleLimit Web/Mobile, ListRow.Typography and
+   paragraphVariables and all asset-frame constant descendants now have audited
+   partial mappings. PortalContext Provider/Consumer now have nullable native
+   target adapters; arbitrary React context and wrapper metadata still differ.
+   BottomCTA's DOM containerStyle/ref and remaining Button props, arbitrary
+   child sizing and device keyboard/safe-area behavior are not fully equivalent.
+3. Complete native type/utility/hook adapters with documented DOM-only
+   differences. Real host security and toast integrations remain unimplemented;
+   local toast persistence and an injected host bridge are now tested;
+   native accessory fallback needs its full placement/lifecycle matrix. The user
+   confirmed there is no host SDK/bridge documentation or test app. Self-validation
+   uses injected contract tests, platform haptic channel tests and local engines;
+   it cannot establish real Toss host/security behavior.
+4. Expand paired fixtures to error/disabled/pressed/loading, multiline, all
+   sizes, all scales, dark/light and frame-by-frame motion. Establish reviewed
+   golden tolerances per component, not an aggregate similarity percentage.
+5. Extend Bubble to custom ancestor/mixed-span cases; expand WikiText observer
+   timing, transformed/nested-scroll and rich-font/RTL matrices; finish other
+   anchor/ancestor clipping, third-party menu trigger adapters and ListRow's
+   arbitrary asynchronous event-loop boundaries. Child/ancestor raw input,
+   pointer/controller batches and post-release click ordering now have scoped
+   browser-backed regressions, as do ListFooter descendant registration and
+   lazy/advanced timeline restart, RGB rounding and repeated partial context
+   reversion. Imperative microtask chains versus discrete input also have scoped
+   regressions. Independent press/release cleanup, clocks, target lists and
+   original semantic/serialization identities now have scoped regressions.
+   Undefined next-level adaptive colors, nested Footer selector ownership,
+   overlapping release saves and inner-to-outer activation now also have scoped
+   source-backed tests. Exhaustive nested/context interleavings, live owner
+   replacement/reparenting, arbitrary CSS literal spelling, rich text and
+   React concurrent scheduling remain outside that scope.
+   Blink/shine live size/theme, blink exit/reentry and synchronous imperative
+   batches also have scoped browser-backed regressions. Native
+   multiline WikiText, TDS nested menu activation and source ListRow timelines
+   now have scoped tests.
+   Tooltip clipped paths are now ported;
+   menu typeahead is not an original feature and must not be invented.
+6. Test real Android/iOS touch, keyboard, VoiceOver/TalkBack, safe areas and
+   navigation/OAuth return handling. Repeat-build font hashes are stable in the
+   current environment; other fonttools/platform versions remain unverified.
+
+Google auth is preserved. Kakao stays commented out. No migration commit or
+push was made during this work.

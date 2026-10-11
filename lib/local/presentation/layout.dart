@@ -203,6 +203,8 @@ class PageHeading extends StatelessWidget {
           ),
         ),
       TdsTop(
+        upperGap: eyebrow == null ? 16 : 8,
+        lowerGap: 20,
         title: TdsTopTitleParagraph(title, size: 22),
         subtitleBottom: description == null
             ? null

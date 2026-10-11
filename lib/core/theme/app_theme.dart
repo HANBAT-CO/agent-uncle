@@ -43,13 +43,14 @@ class PaperlogyTheme extends TdsThemeData {
 
 abstract final class AppColors {
   static const primary = Color(0xFF0C483E);
-  static const background = Color(0xFFEFF4E4);
-  static const surface = Color(0xFFF2FFE8);
-  static const charcoal = Color(0xFF07231C);
-  static const secondary = Color(0xFF3D5C50);
-  static const sage = Color(0xFF6B8377);
+  // Restore the original warm whites and charcoal; green is an accent only.
+  static const background = Color(0xFFEDECE3);
+  static const surface = Color(0xFFF5F4EE);
+  static const charcoal = Color(0xFF101010);
   static const lime = Color(0xFFC6FF3A);
-  static const glassTint = Color(0xFFFAFFF2);
+  // Official social provider colors; artwork is preserved in bundled assets.
+  static const googleBorder = Color(0xFF747775);
+  static const kakaoYellow = Color(0xFFFEE500);
 }
 
 /// App branding is resolved here so the TDS reference palette stays reusable.
@@ -74,13 +75,13 @@ class AppThemeData extends PaperlogyTheme {
     if (isDark) return super.color(name);
     return switch (name) {
       'primary' || 'blue500' => primary,
-      'blue50' => AppColors.surface,
+      'blue50' => const Color(0xFFF2FFE8),
       'blue100' => const Color(0xFFD9E9DC),
       'blue200' => const Color(0xFFB6D7C2),
       'blue300' => const Color(0xFF3E9A57),
       'blue400' => const Color(0xFF2E8C6B),
       'blue600' || 'blue700' || 'tBlueBadgeColor' => primary,
-      'blue800' || 'blue900' => AppColors.charcoal,
+      'blue800' || 'blue900' => const Color(0xFF07231C),
       'tBlueBadgeBackground' => primary.withValues(alpha: .12),
       'background' => AppColors.background,
       'floatBackground' ||
@@ -90,20 +91,20 @@ class AppThemeData extends PaperlogyTheme {
       'cardBgWhite' => AppColors.surface,
       'greyBackground' ||
       'backgroundLevelB01' ||
-      'pcScreenBg' => const Color(0xFFE5EDDD),
-      'grey50' => AppColors.glassTint,
-      'grey100' => const Color(0xFFE0E9D9),
-      'grey200' || 'hairlineBorder' => const Color(0xFFCBDBCC),
-      'grey300' => const Color(0xFF9DB4A4),
-      'grey400' => AppColors.sage,
-      'grey500' ||
-      'grey600' ||
-      'grey700' ||
-      'tElephantBadgeColor' => AppColors.secondary,
-      'grey800' => const Color(0xFF173E31),
+      'pcScreenBg' => const Color(0xFFE4E3DA),
+      'grey50' => const Color(0xFFF3F2EB),
+      'grey100' => const Color(0xFFE4E3DA),
+      'grey200' || 'hairlineBorder' => const Color(0xFFD7D7D7),
+      'grey300' => const Color(0xFFBFBFBF),
+      'grey400' => const Color(0xFFA3A3A3),
+      'grey500' => const Color(0xFF808080),
+      'grey600' => const Color(0xFF636363),
+      'grey700' || 'tElephantBadgeColor' => const Color(0xFF484848),
+      'grey800' => const Color(0xFF2D2D2D),
       'grey900' || 'black' => AppColors.charcoal,
       'greyOpacity50' ||
       'cardBgGrey' => AppColors.charcoal.withValues(alpha: .02),
+      'opacity100' ||
       'greyOpacity100' => AppColors.charcoal.withValues(alpha: .05),
       'greyOpacity200' ||
       'tElephantBadgeBackground' => AppColors.charcoal.withValues(alpha: .10),

@@ -6,31 +6,14 @@ import '../../core/theme/app_theme.dart';
 
 enum FigmaSurfaceStyle { solid, glass }
 
-/// Stationary color behind the home surfaces; never intercepts input.
+/// One continuous page canvas, including the header and system safe area.
 class HomeBackdrop extends StatelessWidget {
   const HomeBackdrop({required this.child, super.key});
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: AppColors.background,
-      gradient: MediaQuery.highContrastOf(context)
-          ? null
-          : RadialGradient(
-              center: const Alignment(.85, -.7),
-              radius: 1.1,
-              colors: [
-                Color.alphaBlend(
-                  AppColors.lime.withValues(alpha: .14),
-                  AppColors.background,
-                ),
-                AppColors.background,
-              ],
-            ),
-    ),
-    child: child,
-  );
+  Widget build(BuildContext context) =>
+      ColoredBox(color: TdsTheme.of(context).color('background'), child: child);
 }
 
 /// Layout-only surface from Figma 03 / 04 (radius 24). TDS has no card
@@ -38,7 +21,7 @@ class HomeBackdrop extends StatelessWidget {
 class FigmaSurface extends StatelessWidget {
   const FigmaSurface({
     required this.children,
-    this.margin = 24,
+    this.margin = 16,
     this.tinted = false,
     this.style = FigmaSurfaceStyle.solid,
     this.grouped = false,
@@ -73,7 +56,9 @@ class FigmaSurface extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: radius,
           border: Border(
-            bottom: BorderSide(color: AppColors.primary.withValues(alpha: .15)),
+            bottom: BorderSide(
+              color: AppColors.charcoal.withValues(alpha: .15),
+            ),
           ),
         ),
         child: DecoratedBox(
@@ -89,7 +74,7 @@ class FigmaSurface extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: [
                 const Color(0xFFFFFFFF).withValues(alpha: .55),
-                AppColors.glassTint.withValues(alpha: .32),
+                AppColors.surface.withValues(alpha: .32),
               ],
             ),
           ),
@@ -99,8 +84,7 @@ class FigmaSurface extends StatelessWidget {
                 center: Alignment.topLeft,
                 radius: 1.2,
                 colors: [
-                  (tinted ? AppColors.lime : const Color(0xFFFFFFFF))
-                      .withValues(alpha: tinted ? .14 : .24),
+                  const Color(0xFFFFFFFF).withValues(alpha: .24),
                   const Color(0x00FFFFFF),
                 ],
               ),
@@ -118,7 +102,7 @@ class FigmaSurface extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.color(tinted ? 'blue50' : 'cardBgWhite'),
           borderRadius: radius,
-          border: highContrast ? Border.all(color: AppColors.primary) : null,
+          border: highContrast ? Border.all(color: AppColors.charcoal) : null,
         ),
         child: surface,
       );
@@ -131,7 +115,7 @@ class FigmaSurface extends StatelessWidget {
           boxShadow: glass
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: .08),
+                    color: AppColors.charcoal.withValues(alpha: .08),
                     offset: const Offset(0, 8),
                     blurRadius: 24,
                   ),
@@ -144,8 +128,8 @@ class FigmaSurface extends StatelessWidget {
   }
 }
 
-/// Original Figma assets, including the two Material icons referenced by
-/// Figma Code Connect. No replacement illustrations or custom icon drawing.
+/// Original Figma assets and unmodified TDS action icons, bundled for offline
+/// use. Source URLs and hashes live in assets/icons/tds_provenance.json.
 class FigmaIcon extends StatelessWidget {
   const FigmaIcon(
     this.name, {

@@ -22,6 +22,9 @@ flutter run --dart-define=LOCAL_MODE=true
 서버 모드로 로컬 테스트 계정이나 거래를 자동 이관하지 않습니다.
 [서버 구성·배포·검증 안내](docs/supabase.md), [로컬 앱 안내](docs/local-app.md)를 참고하세요.
 화면 배치와 TDS 컴포넌트 대응은 [Figma 적용 안내](docs/figma-layout.md)에 정리했습니다.
+UI는 `tds_mobile_flutter` 컴포넌트만 사용합니다. 규칙과 검사 방법은 [TDS UI 정책](docs/tds-ui-policy.md),
+사용 가능한 컴포넌트는 [TDS 컴포넌트 카탈로그](docs/tds-components.md)를 참고하세요.
+에이전트 작업 규칙은 [AGENTS.md](AGENTS.md)에 있습니다.
 로고·팔레트·유리 표면의 적용 기준은 [브랜드 테마 안내](docs/brand-theme.md)를 참고하세요.
 정식 약관·탈퇴·사업자 검증 정책과 원격 푸시는 별도 작업입니다.
 

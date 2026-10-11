@@ -1,0 +1,51 @@
+{
+  "comment": "Legacy violations of docs/tds-ui-policy.md. Counts may only go down: run `dart tool/tds_guard/tds_guard.dart baseline` after removing violations.",
+  "dependencies": [
+    "cupertino_icons",
+    "file_selector",
+    "flutter",
+    "flutter_lints",
+    "flutter_test",
+    "http",
+    "integration_test",
+    "path",
+    "path_provider",
+    "sembast",
+    "sembast_web",
+    "supabase_flutter",
+    "tds_mobile_flutter"
+  ],
+  "files": {
+    "lib/features/auth/presentation/google_auth_app.dart": {
+      "raw-decoration": 2
+    },
+    "lib/local/presentation/common.dart": {
+      "raw-decoration": 1,
+      "raw-image": 1,
+      "raw-overlay": 3
+    },
+    "lib/local/presentation/home.dart": {
+      "raw-color": 1,
+      "raw-paint": 1
+    },
+    "lib/local/presentation/layout.dart": {
+      "dart-ui-import": 1,
+      "material-import": 1,
+      "raw-color": 11,
+      "raw-decoration": 22,
+      "raw-icon": 4,
+      "raw-paint": 4
+    },
+    "lib/main.dart": {
+      "raw-decoration": 1
+    },
+    "lib/tds_gallery.dart": {
+      "raw-color": 4,
+      "raw-decoration": 6,
+      "raw-gesture": 2,
+      "raw-text-style": 5,
+      "tds-impersonation": 24,
+      "tds-internal-import": 1
+    }
+  }
+}

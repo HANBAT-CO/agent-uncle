@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 30,
+            "statusMessage": "TDS UI 정책 검사"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(dart *)",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 60,
+            "statusMessage": "TDS UI 정책 최종 검사"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart \"$CLAUDE_PROJECT_DIR/tool/tds_guard/tds_guard.dart\" hook",
+            "timeout": 60,
+            "statusMessage": "TDS UI 정책 최종 검사"
+          }
+        ]
+      }
+    ]
+  }
+}

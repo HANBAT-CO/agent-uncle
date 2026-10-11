@@ -1,0 +1,4 @@
+#!/bin/sh
+# TDS UI policy gate (docs/tds-ui-policy.md). Enable once per clone:
+#   git config core.hooksPath .githooks
+exec dart tool/tds_guard/tds_guard.dart check

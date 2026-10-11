@@ -42,6 +42,24 @@ void main() {
     await binding.takeScreenshot('saip-$platform-$name');
   }
 
+  Future<void> selectTab(WidgetTester tester, String label) async {
+    final barFinder = find.byType(TdsLiquidTabBar);
+    final bar = tester.widget<TdsLiquidTabBar>(barFinder);
+    final index = bar.items.indexWhere((item) => item.label == label);
+    expect(index, greaterThanOrEqualTo(0));
+    final fallback = find.widgetWithText(TdsTextButton, label);
+    if (fallback.evaluate().isNotEmpty) {
+      await tester.tap(fallback);
+    } else {
+      // Flutter's synthetic pointers cannot drive UIKit recognizers. Native
+      // taps/holds are covered by the separate XCUITest run; this suite checks
+      // the shared save guard and workflow after an approved selection.
+      expect(await bar.onSelected(index), isTrue);
+    }
+    await tester.pumpAndSettle();
+    expect(tester.widget<TdsLiquidTabBar>(barFinder).selectedIndex, index);
+  }
+
   testWidgets('native onboarding and social entry display the original logo', (
     tester,
   ) async {
@@ -82,6 +100,7 @@ void main() {
     await f.result(request, 2, 1);
     final delivery = await f.deliver(request, 1);
     await f.receive(delivery, 1);
+    await f.request();
     final services = AppServices(
       session: f.session,
       workspace: f.workspace,
@@ -90,6 +109,33 @@ void main() {
     await tester.pumpWidget(AgentUncleApp(services: services));
     await tester.pumpAndSettle();
     await capture(tester, 'retailer');
+    await selectTab(tester, '사입삼촌');
+    await capture(tester, 'connections-tab');
+    await selectTab(tester, '내 정보');
+    await capture(tester, 'profile-tab');
+    await selectTab(tester, '홈');
+    unawaited(
+      openPage(
+        tester.element(find.byType(HomeTabPage).first),
+        const NoticesPage(),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await capture(tester, 'notices');
+    final unreadCount = f.workspace
+        .records('notices')
+        .where((n) => !n.b('read'))
+        .length;
+    await tester.tap(find.text('안 읽음 $unreadCount'));
+    await tester.pumpAndSettle();
+    await capture(tester, 'notices-unread');
+    await tester.tap(find.byType(TdsTopNavigationBackButton));
+    await tester.pumpAndSettle();
+    await selectTab(tester, '채팅');
+    await capture(tester, 'chat-list');
+    await selectTab(tester, '사입');
+    await capture(tester, 'business-list');
+    await selectTab(tester, '홈');
     final homeScroll = find
         .descendant(
           of: find.byType(HomeTabPage).first,
@@ -109,10 +155,13 @@ void main() {
     );
     await tester.pumpAndSettle();
     await binding.takeScreenshot('saip-$platform-detail');
+    await tester.ensureVisible(find.text('요청 관리'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 300));
+    await capture(tester, 'request-actions');
     await tester.tap(find.byType(TdsTopNavigationBackButton));
     await tester.pumpAndSettle();
-    await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
-    await tester.pumpAndSettle();
+    await selectTab(tester, '사입');
     final button = find.text('새로 작성');
     await tester.ensureVisible(button);
     await tester.tap(button);
@@ -150,8 +199,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(f.workspace.request(request)!.acquired, 3);
     expect(f.workspace.request(request)!.available, 2);
-    await tester.tap(find.widgetWithText(TdsTextButton, '업무'));
-    await tester.pumpAndSettle();
+    await selectTab(tester, '업무');
     await tester.tap(find.text('전달할 물품'));
     await tester.pumpAndSettle();
     await binding.takeScreenshot('saip-$platform-delivery');
@@ -196,7 +244,35 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    final chatInput = find.descendant(
+      of: find.byType(ChatPage),
+      matching: find.byType(EditableText),
+    );
+    await tester.tap(chatInput);
+    await tester.enterText(chatInput, '상품 확인했어요. 감사합니다!');
+    await tester.pumpAndSettle();
+    await binding.takeScreenshot('saip-$platform-chat-keyboard');
+    await tester.tap(find.bySemanticsLabel('메시지 전송'));
+    await tester.pumpAndSettle();
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
     await binding.takeScreenshot('saip-$platform-chat');
+    await tester.tap(find.byType(TdsTopNavigationBackButton));
+    await tester.pumpAndSettle();
+    for (final (name, page) in <(String, Widget)>[
+      ('partner', PartnerPage(f.uncle)),
+      ('invite', const AddConnectionPage()),
+      ('profile', const ProfileForm()),
+      ('settings', const NotificationSettingsPage()),
+      ('issue', RequestActionPage(request, 'issue')),
+    ]) {
+      unawaited(openPage(tester.element(find.byType(HomeTabPage).first), page));
+      await tester.pumpAndSettle();
+      await binding.takeScreenshot('saip-$platform-$name');
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byType(TdsTopNavigationBackButton));
+      await tester.pumpAndSettle();
+    }
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await tester.pumpAndSettle();

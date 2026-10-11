@@ -268,7 +268,7 @@ class TdsParagraphLink extends StatelessWidget {
         color ??
         inherited?.color ??
         (type == TdsParagraphLinkType.clear
-            ? TdsPalette.blue500
+            ? theme.fixedColor('blue500')
             : theme.color('grey600'));
     return Semantics(
       link: true,

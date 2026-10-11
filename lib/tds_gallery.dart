@@ -1,3 +1,4 @@
+import 'core/theme/app_theme.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 // Reference-only inline CSS flow, deliberately not part of the public TDS API.
@@ -12,7 +13,7 @@ class TdsGalleryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final parameters = Uri.base.queryParameters;
-    final theme = TdsThemeData(
+    final theme = PaperlogyTheme(
       colorScheme: parameters['theme'] == 'dark'
           ? TdsColorPreference.dark
           : TdsColorPreference.light,
@@ -274,7 +275,7 @@ class _TdsListEffectsReferenceFixtureState
   Widget build(BuildContext context) {
     final inherited = TdsTheme.of(context);
     final isDark = dark ?? inherited.isDark;
-    final theme = TdsThemeData(
+    final theme = PaperlogyTheme(
       colorScheme: isDark ? TdsColorPreference.dark : TdsColorPreference.light,
       platform: inherited.platform,
     );
@@ -436,7 +437,7 @@ class _TdsListFooterColorsReferenceFixtureState
   Widget build(BuildContext context) {
     final inherited = TdsTheme.of(context);
     final isDark = dark ?? inherited.isDark;
-    final theme = TdsThemeData(
+    final theme = PaperlogyTheme(
       colorScheme: isDark ? TdsColorPreference.dark : TdsColorPreference.light,
       platform: inherited.platform,
     );
@@ -820,8 +821,8 @@ class TdsFullTooltipReferenceFixture extends StatelessWidget {
                 child: Text(
                   '대상',
                   style: TextStyle(
-                    fontFamily: 'Toss Product Sans',
-                    package: 'tds_mobile_flutter',
+                    fontFamily: 'Paperlogy',
+
                     fontSize: 16,
                     height: 1.5,
                     color: Color(0xff212529),

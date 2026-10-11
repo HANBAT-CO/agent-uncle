@@ -1,11 +1,11 @@
 {
-    "name": "agent_uncle",
-    "short_name": "agent_uncle",
+    "name": "사입삼춘",
+    "short_name": "사입삼춘",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#EDECE3",
+    "theme_color": "#EDECE3",
+    "description": "사입 요청부터 상품 수령까지 함께 기록해요.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

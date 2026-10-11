@@ -63,7 +63,7 @@ class TdsParagraphBadge extends StatelessWidget {
     final background = variant == TdsBadgeVariant.weak
         ? theme.color('t${name}BadgeBackground')
         : switch (color) {
-            TdsBadgeColor.blue => TdsPalette.blue500,
+            TdsBadgeColor.blue => theme.fixedColor('blue500'),
             TdsBadgeColor.teal => TdsPalette.teal600,
             TdsBadgeColor.green => TdsPalette.green600,
             TdsBadgeColor.red => TdsPalette.red500,

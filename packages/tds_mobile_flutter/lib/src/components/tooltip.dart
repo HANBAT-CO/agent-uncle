@@ -8,7 +8,6 @@ import '../foundation/line_box.dart';
 import '../foundation/css_shadow.dart';
 import '../foundation/theme.dart';
 import '../foundation/motion.dart';
-import '../foundation/tokens.g.dart';
 
 enum TdsBubbleBackground { blue, grey }
 
@@ -32,7 +31,7 @@ class TdsBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final blue = background == TdsBubbleBackground.blue,
         theme = TdsTheme.of(context);
-    final color = blue ? TdsPalette.blue500 : theme.color('grey200');
+    final color = blue ? theme.color('blue500') : theme.color('grey200');
     return Padding(
       padding: EdgeInsets.only(left: blue ? 0 : 5, right: blue ? 5 : 0),
       child: Stack(

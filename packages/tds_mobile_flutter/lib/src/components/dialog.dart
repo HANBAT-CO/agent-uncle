@@ -2,7 +2,6 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import '../foundation/theme.dart';
-import '../foundation/tokens.g.dart';
 import 'button.dart';
 import 'modal.dart';
 import 'text_button.dart';
@@ -165,7 +164,7 @@ class TdsAlertDialogButton extends StatelessWidget {
     child: TdsTextButton(
       size: TdsTextButtonSize.medium,
       fontWeight: TdsFontWeight.bold,
-      color: TdsPalette.blue500,
+      color: TdsTheme.of(context).fixedColor('blue500'),
       disabled: disabled,
       onPressed: onPressed,
       child: child,

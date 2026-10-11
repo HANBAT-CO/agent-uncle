@@ -157,6 +157,13 @@ class TdsThemeData {
   final Color primary;
   final TdsPlatform platform;
 
+  /// Optional exact brand fill. Null keeps the original TDS contrast adjustment.
+  Color? get primaryButtonBackground => null;
+
+  /// Resolves a fixed light token while allowing application palette overrides.
+  Color fixedColor(String name) =>
+      copyWith(colorScheme: TdsColorPreference.light).color(name);
+
   bool get isDark => colorScheme == TdsColorPreference.dark;
 
   Color color(String name) {

@@ -323,7 +323,9 @@ class _TdsTextFieldState extends State<TdsTextField> {
           builder: (context, p, h, f) => TdsAssetIcon(
             name: _visible ? 'icon-eye-on-mono' : 'icon-eye-off-mono',
             size: iconSize,
-            color: _visible ? TdsPalette.blue500 : theme.color('grey400'),
+            color: _visible
+                ? theme.fixedColor('blue500')
+                : theme.color('grey400'),
           ),
         ),
       );
@@ -353,9 +355,11 @@ class _TdsTextFieldState extends State<TdsTextField> {
                 controller: _controller,
                 focusNode: _focus,
                 style: style,
-                cursorColor: TdsPalette.blue500,
+                cursorColor: theme.fixedColor('blue500'),
                 backgroundCursorColor: theme.color('grey400'),
-                selectionColor: TdsPalette.blue400.withValues(alpha: .3),
+                selectionColor: theme
+                    .fixedColor('blue400')
+                    .withValues(alpha: .3),
                 selectionControls: widget.selectionControls,
                 readOnly: widget.readOnly || widget.disabled,
                 autofocus: widget.autofocus,
@@ -480,7 +484,7 @@ class TdsTextFieldContainer extends StatelessWidget {
     final labelColor = hasError
         ? TdsPalette.red600
         : focused
-        ? TdsPalette.blue600
+        ? theme.fixedColor('blue600')
         : theme.color('grey800');
     return Padding(
       padding: EdgeInsets.only(top: paddingTop, bottom: paddingBottom),
@@ -574,7 +578,7 @@ class TdsTextFieldSurface extends StatelessWidget {
         : hasError
         ? TdsPalette.red600
         : focused
-        ? TdsPalette.blue400
+        ? theme.fixedColor('blue400')
         : theme.color('grey100');
     final background = !box
         ? const Color(0x00000000)
@@ -584,7 +588,7 @@ class TdsTextFieldSurface extends StatelessWidget {
         : hasError
         ? TdsPalette.red900.withValues(alpha: .05)
         : focused
-        ? TdsPalette.blue900.withValues(alpha: .05)
+        ? theme.fixedColor('blue900').withValues(alpha: .05)
         : const Color(0x00000000);
     return ClipRRect(
       borderRadius: BorderRadius.circular(box ? 14 : 0),

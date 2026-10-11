@@ -83,6 +83,7 @@ class TdsButtonColors {
             text = TdsPalette.white;
           }
         }
+        fill = theme.primaryButtonBackground ?? fill;
       case TdsButtonColor.danger:
         fill = TdsPalette.red500;
         text = TdsPalette.whiteOpacity900;

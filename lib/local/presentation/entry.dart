@@ -6,6 +6,7 @@ import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
 import 'home.dart';
+import 'profile_avatar.dart';
 
 class SessionGate extends StatelessWidget {
   const SessionGate({super.key});
@@ -281,6 +282,12 @@ class _RolePageState extends State<RolePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    FigmaIcon(
+                      role == AppRole.retailer ? 'store' : 'bag',
+                      selected: selected == role,
+                      size: 40,
+                    ),
+                    const TdsSpacing(12),
                     TdsText(role.label, fontWeight: TdsFontWeight.semibold),
                     TdsText(
                       role == AppRole.retailer
@@ -554,107 +561,125 @@ class _ProfileFormState extends State<ProfileForm> {
               onPressed: () => saver!.flush(),
             ),
           ],
-          if (show(0)) ...[
-            if (!widget.signup) const Section('담당자 정보'),
-            field('name', retailer ? '매장명·쇼핑몰명' : '활동명·업체명'),
-            field('contact', '이름·담당자명'),
-            field('phone', '연락처'),
-            AttachmentField(
-              label: '프로필 사진',
-              ids: photo.isEmpty ? [] : [photo],
-              onChanged: (ids) {
-                photo = ids.firstOrNull ?? '';
-                changed();
-              },
+          if (show(0))
+            FigmaSurface(
+              children: [
+                if (!widget.signup) const Section('담당자 정보'),
+                field('name', retailer ? '매장명·쇼핑몰명' : '활동명·업체명'),
+                field('contact', '이름·담당자명'),
+                field('phone', '연락처'),
+                Inset(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ProfileAvatar(a, photoId: photo, large: true),
+                  ),
+                ),
+                AttachmentField(
+                  label: '프로필 사진',
+                  ids: photo.isEmpty ? [] : [photo],
+                  onChanged: (ids) {
+                    photo = ids.firstOrNull ?? '';
+                    changed();
+                  },
+                ),
+                if (retailer) ...[
+                  const Section('판매 채널 (선택)'),
+                  Choices(
+                    options: const ['온라인', '오프라인', '온라인·오프라인 병행'],
+                    value: salesChannel,
+                    onChanged: (v) {
+                      salesChannel = v;
+                      changed();
+                    },
+                  ),
+                ],
+              ],
             ),
-            if (retailer) ...[
-              const Section('판매 채널 (선택)'),
-              Choices(
-                options: const ['온라인', '오프라인', '온라인·오프라인 병행'],
-                value: salesChannel,
-                onChanged: (v) {
-                  salesChannel = v;
-                  changed();
-                },
-              ),
-            ],
-          ],
-          if (show(1)) ...[
-            if (!widget.signup) const Section('사업자 정보'),
-            field('businessName', '사업자명'),
-            field('businessNumber', '사업자등록번호', numeric: true),
-            AttachmentField(
-              label: '사업자등록증 (필수)',
-              document: true,
-              ids: document.isEmpty ? [] : [document],
-              onChanged: (ids) {
-                document = ids.firstOrNull ?? '';
-                changed();
-              },
+          if (show(1))
+            FigmaSurface(
+              children: [
+                if (!widget.signup) const Section('사업자 정보'),
+                field('businessName', '사업자명'),
+                field('businessNumber', '사업자등록번호', numeric: true),
+                AttachmentField(
+                  label: '사업자등록증 (필수)',
+                  document: true,
+                  ids: document.isEmpty ? [] : [document],
+                  onChanged: (ids) {
+                    document = ids.firstOrNull ?? '';
+                    changed();
+                  },
+                ),
+                const Info('사업자등록증 사진 또는 PDF를 첨부해 주세요. 서류 제출과 사업자 검증은 별개예요.'),
+              ],
             ),
-            const Info('사업자등록증 사진 또는 PDF를 첨부해 주세요. 서류 제출과 사업자 검증은 별개예요.'),
-          ],
-          if (show(2)) ...[
-            if (retailer) ...[
-              if (!widget.signup) const Section('기본 배송지'),
-              field('address', '주소'),
-              field('addressDetail', '상세주소'),
-              field('deliveryNote', '배송 참고사항', multiline: true),
-              if (!widget.signup) const Info('변경한 기본 배송지는 새 요청부터 적용돼요.'),
-            ] else ...[
-              if (!widget.signup) const Section('활동·운영 정보'),
-              field('pickupArea', '도매 픽업 구역'),
-              const Info('시장·상가·건물·층까지 입력해 주세요.'),
-              field('deliveryArea', '소매 배송 지역'),
-              field('deadline', '요청 마감시간'),
-              field('holiday', '휴무·안내사항', multiline: true),
-              field('intro', '소개', multiline: true),
-              Toggle(
-                '업무 중',
-                value: working,
-                onChanged: (v) {
-                  working = v;
-                  changed();
-                },
-              ),
-              const Info('휴무로 바꾸어도 이미 수락한 요청은 유지돼요.'),
-            ],
-          ],
-          if (show(3)) ...[
-            multiChoice('사입 시장 (선택)', const ['동대문', '남대문'], markets),
-            if (!retailer) ...[
-              const Section('이동 수단 (선택)'),
-              Choices(
-                options: const ['도보', '오토바이', '승용차', '화물차', '기타'],
-                value: transport,
-                onChanged: (v) {
-                  transport = v;
-                  changed();
-                },
-              ),
-              const Section('활동 시간대 (선택)'),
-              Choices(
-                options: const ['주간 09–18', '야간 22–06', '일정에 따라 달라요'],
-                value: activityHours,
-                onChanged: (v) {
-                  activityHours = v;
-                  changed();
-                },
-              ),
-              field('activityStart', '활동 시작 (HH:mm, 선택)'),
-              field('activityEnd', '활동 종료 (HH:mm, 선택)'),
-              const Info('종료가 시작보다 이르면 다음 날 종료예요. 요청 마감과 휴무 안내는 별도로 적용돼요.'),
-              multiChoice('활동 요일 (선택)', const [
-                '월',
-                '화',
-                '수',
-                '목',
-                '금',
-                '토',
-                '일',
-              ], activityDays),
-            ],
-          ],
+          if (show(2))
+            FigmaSurface(
+              children: [
+                if (retailer) ...[
+                  if (!widget.signup) const Section('기본 배송지'),
+                  field('address', '주소'),
+                  field('addressDetail', '상세주소'),
+                  field('deliveryNote', '배송 참고사항', multiline: true),
+                  if (!widget.signup) const Info('변경한 기본 배송지는 새 요청부터 적용돼요.'),
+                ] else ...[
+                  if (!widget.signup) const Section('활동·운영 정보'),
+                  field('pickupArea', '도매 픽업 구역'),
+                  const Info('시장·상가·건물·층까지 입력해 주세요.'),
+                  field('deliveryArea', '소매 배송 지역'),
+                  field('deadline', '요청 마감시간'),
+                  field('holiday', '휴무·안내사항', multiline: true),
+                  field('intro', '소개', multiline: true),
+                  Toggle(
+                    '업무 중',
+                    value: working,
+                    onChanged: (v) {
+                      working = v;
+                      changed();
+                    },
+                  ),
+                  const Info('휴무로 바꾸어도 이미 수락한 요청은 유지돼요.'),
+                ],
+              ],
+            ),
+          if (show(3))
+            FigmaSurface(
+              children: [
+                multiChoice('사입 시장 (선택)', const ['동대문', '남대문'], markets),
+                if (!retailer) ...[
+                  const Section('이동 수단 (선택)'),
+                  Choices(
+                    options: const ['도보', '오토바이', '승용차', '화물차', '기타'],
+                    value: transport,
+                    onChanged: (v) {
+                      transport = v;
+                      changed();
+                    },
+                  ),
+                  const Section('활동 시간대 (선택)'),
+                  Choices(
+                    options: const ['주간 09–18', '야간 22–06', '일정에 따라 달라요'],
+                    value: activityHours,
+                    onChanged: (v) {
+                      activityHours = v;
+                      changed();
+                    },
+                  ),
+                  field('activityStart', '활동 시작 (HH:mm, 선택)'),
+                  field('activityEnd', '활동 종료 (HH:mm, 선택)'),
+                  const Info('종료가 시작보다 이르면 다음 날 종료예요. 요청 마감과 휴무 안내는 별도로 적용돼요.'),
+                  multiChoice('활동 요일 (선택)', const [
+                    '월',
+                    '화',
+                    '수',
+                    '목',
+                    '금',
+                    '토',
+                    '일',
+                  ], activityDays),
+                ],
+              ],
+            ),
           if (widget.signup && step == 4) ...[
             FigmaSurface(
               children: [
@@ -743,8 +768,12 @@ class PolicyPage extends StatelessWidget {
   const PolicyPage(this.title, this.description, {super.key});
   final String title, description;
   @override
-  Widget build(BuildContext context) =>
-      PageFrame(title: title, children: [Info(description)]);
+  Widget build(BuildContext context) => PageFrame(
+    title: title,
+    children: [
+      FigmaSurface(children: [Info(description)]),
+    ],
+  );
 }
 
 class NotificationSettingsPage extends StatelessWidget {
@@ -759,27 +788,31 @@ class NotificationSettingsPage extends StatelessWidget {
         const Info(
           '알림 배지에 표시할 종류를 선택해요. 설정과 관계없이 알림함에서 전체 이력을 확인할 수 있어요. 원격 푸시는 아직 연결하지 않았어요.',
         ),
-        for (final e in {
-          'connection': '거래처 연결',
-          'request': '사입 요청·처리·미송',
-          'delivery': '전달·수령·문제',
-          'chat': '새 메시지',
-        }.entries)
-          Toggle(
-            e.value,
-            value: settings[e.key] != false,
-            onChanged: (v) async {
-              try {
-                await app.session.saveProfile({
-                  'notificationSettings': {...settings, e.key: v},
-                });
-              } catch (error) {
-                if (context.mounted) {
-                  await confirm(context, '저장하지 못했어요', error.toString());
-                }
-              }
-            },
-          ),
+        FigmaSurface(
+          children: [
+            for (final e in {
+              'connection': '거래처 연결',
+              'request': '사입 요청·처리·미송',
+              'delivery': '전달·수령·문제',
+              'chat': '새 메시지',
+            }.entries)
+              Toggle(
+                e.value,
+                value: settings[e.key] != false,
+                onChanged: (v) async {
+                  try {
+                    await app.session.saveProfile({
+                      'notificationSettings': {...settings, e.key: v},
+                    });
+                  } catch (error) {
+                    if (context.mounted) {
+                      await confirm(context, '저장하지 못했어요', error.toString());
+                    }
+                  }
+                },
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -790,25 +823,169 @@ class MyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), a = app.session.current!;
+    final theme = TdsTheme.of(context);
+    final retailer = a.role == AppRole.retailer;
+    final address = a.s('address').trim().isEmpty
+        ? a.s('addressDetail')
+        : a.s('address');
+    final notifications = mapOf(a.data, 'notificationSettings');
+    final enabledNotifications = [
+      'connection',
+      'request',
+      'delivery',
+      'chat',
+    ].where((key) => notifications[key] != false).length;
+    void editProfile() => openPage(context, const ProfileForm());
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        const TdsSpacing(16),
         FigmaSurface(
           children: [
-            Item(a.name, subtitle: '${a.role!.label} · ${a.s('contact')}'),
-            if (a.s('photoId').isNotEmpty)
-              AttachmentPreview(a.s('photoId'), compact: true),
-            Item(
-              '기본·사업자·운영 정보 수정',
-              onTap: () => openPage(context, const ProfileForm()),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TdsBadge(
+                          size: TdsBadgeSize.small,
+                          color: TdsBadgeColor.blue,
+                          variant: TdsBadgeVariant.weak,
+                          child: Text(a.role!.label),
+                        ),
+                        const TdsSpacing(12),
+                        TdsText(
+                          a.name,
+                          typography: TdsTypography.t2,
+                          fontWeight: TdsFontWeight.bold,
+                        ),
+                        if (a.s('contact').isNotEmpty) ...[
+                          const TdsSpacing(4),
+                          TdsText(
+                            '${a.s('contact')} · 담당자',
+                            typography: TdsTypography.t6,
+                            color: theme.color('grey600'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ProfileAvatar(a, large: true),
+                ],
+              ),
+            ),
+            Inset(
+              child: TdsButton(
+                display: TdsButtonDisplay.block,
+                size: TdsButtonSize.large,
+                variant: TdsButtonVariant.weak,
+                onPressed: editProfile,
+                child: const Text('프로필 수정'),
+              ),
             ),
           ],
         ),
-        const Section('업무 정보'),
+        const Section('내 업무 정보'),
+        FigmaSurface(
+          children: [
+            TdsListRow(
+              onPressed: editProfile,
+              withArrow: true,
+              contents: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TdsText(
+                    retailer ? '기본 배송지' : '활동 지역',
+                    typography: TdsTypography.t7,
+                    color: theme.color('grey600'),
+                  ),
+                  const TdsSpacing(8),
+                  TdsText(
+                    retailer
+                        ? (address.isEmpty ? '배송지를 등록해 주세요' : address)
+                        : (a.s('pickupArea').isEmpty
+                              ? '픽업 구역을 등록해 주세요'
+                              : a.s('pickupArea')),
+                    typography: TdsTypography.t5,
+                    fontWeight: TdsFontWeight.semibold,
+                  ),
+                  if (retailer &&
+                      a.s('address').trim().isNotEmpty &&
+                      a.s('addressDetail').trim().isNotEmpty) ...[
+                    const TdsSpacing(4),
+                    TdsText(
+                      a.s('addressDetail'),
+                      typography: TdsTypography.t6,
+                      color: theme.color('grey600'),
+                    ),
+                  ] else if (!retailer && a.s('deliveryArea').isNotEmpty) ...[
+                    const TdsSpacing(4),
+                    TdsText(
+                      '${a.s('deliveryArea')} 배송',
+                      typography: TdsTypography.t6,
+                      color: theme.color('grey600'),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24),
+              child: TdsBorder(),
+            ),
+            Inset(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  if (retailer) ...[
+                    TdsText(
+                      '사입 시장',
+                      typography: TdsTypography.t7,
+                      color: theme.color('grey600'),
+                    ),
+                    TdsText(
+                      a.list('markets').isEmpty
+                          ? '등록 전'
+                          : a.list('markets').join(' · '),
+                      typography: TdsTypography.t6,
+                      fontWeight: TdsFontWeight.medium,
+                    ),
+                  ] else ...[
+                    TdsBadge(
+                      size: TdsBadgeSize.small,
+                      variant: TdsBadgeVariant.weak,
+                      color: a.b('working')
+                          ? TdsBadgeColor.blue
+                          : TdsBadgeColor.elephant,
+                      child: Text(a.b('working') ? '업무 중' : '휴무 중'),
+                    ),
+                    TdsText(
+                      a.s('deadline').isEmpty
+                          ? '마감시간 등록 전'
+                          : '요청 마감 ${a.s('deadline')}',
+                      typography: TdsTypography.t6,
+                      color: theme.color('grey700'),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+        const Section('설정'),
         FigmaSurface(
           children: [
             Item(
               '사업자 서류',
+              leading: const FigmaIcon('document'),
               subtitle: a.s('documentId').isEmpty ? '미등록' : '제출됨 · 검증 전',
               onTap: () => openPage(
                 context,
@@ -824,15 +1001,17 @@ class MyPage extends StatelessWidget {
             ),
             Item(
               '알림 설정',
+              leading: const FigmaIcon('bell'),
+              subtitle: enabledNotifications == 4
+                  ? '모든 알림 켜짐'
+                  : enabledNotifications == 0
+                  ? '모든 알림 꺼짐'
+                  : '4개 중 $enabledNotifications개 알림 켜짐',
               onTap: () => openPage(context, const NotificationSettingsPage()),
             ),
-          ],
-        ),
-        const Section('계정 관리'),
-        FigmaSurface(
-          children: [
             Item(
               '계정 연결 정보',
+              leading: const FigmaIcon('person'),
               subtitle: app.session.isRemote
                   ? '${a.s('provider')} · ${a.s('email', a.s('label'))}'
                   : '로컬 계정 · ${a.s('label')}',
@@ -846,9 +1025,31 @@ class MyPage extends StatelessWidget {
                 ),
               ),
             ),
-            Item(
-              '탈퇴 안내',
-              onTap: () => openPage(
+          ],
+        ),
+        const TdsSpacing(24),
+        ActionButton(
+          '로그아웃',
+          weak: true,
+          onPressed: () async {
+            if (await confirm(
+              context,
+              '로그아웃할까요?',
+              app.session.isRemote
+                  ? '서버에 저장된 거래 기록은 유지돼요. 같은 소셜 계정으로 다시 로그인하면 이어서 이용할 수 있어요.'
+                  : '이 기기에 저장한 거래 기록은 유지돼요. 다른 계정을 선택하면 상대방 화면을 확인할 수 있어요.',
+            )) {
+              await app.session.signOut();
+            }
+          },
+        ),
+        Center(
+          child: SizedBox(
+            height: 48,
+            child: TdsTextButton(
+              size: TdsTextButtonSize.small,
+              colorToken: 'grey600',
+              onPressed: () => openPage(
                 context,
                 PageFrame(
                   title: '탈퇴 안내',
@@ -870,23 +1071,9 @@ class MyPage extends StatelessWidget {
                   ],
                 ),
               ),
+              child: const Text('탈퇴 안내'),
             ),
-          ],
-        ),
-        ActionButton(
-          '로그아웃',
-          weak: true,
-          onPressed: () async {
-            if (await confirm(
-              context,
-              '로그아웃할까요?',
-              app.session.isRemote
-                  ? '서버에 저장된 거래 기록은 유지돼요. 같은 소셜 계정으로 다시 로그인하면 이어서 이용할 수 있어요.'
-                  : '이 기기에 저장한 거래 기록은 유지돼요. 다른 계정을 선택하면 상대방 화면을 확인할 수 있어요.',
-            )) {
-              await app.session.signOut();
-            }
-          },
+          ),
         ),
       ],
     );

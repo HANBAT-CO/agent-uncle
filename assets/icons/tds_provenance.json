@@ -1,0 +1,66 @@
+{
+  "source": "TDS official icon CDN",
+  "downloadedAt": "2026-10-11",
+  "assets": [
+    {
+      "file": "tds_camera.svg",
+      "source": "https://static.toss.im/icons/svg/icon-camera-mono.svg",
+      "sha256": "39f09835db324cb13f101c408a5da0783df49170b3431b9ecee673aa9535b98a"
+    },
+    {
+      "file": "tds_link.svg",
+      "source": "https://static.toss.im/icons/svg/icon-link-mono.svg",
+      "sha256": "2cd11e67685bf1eff273c57f830bd078fed21de5bdeaee6ae5ab0cc6c0426834"
+    },
+    {
+      "file": "tds_pencil.svg",
+      "source": "https://static.toss.im/icons/svg/icon-pencil-mono.svg",
+      "sha256": "26adde9e5189607f64d42ba2e9dea26c3de131812f6261a4a7e1d1ccc236ab4a"
+    },
+    {
+      "file": "tds_pin.svg",
+      "source": "https://static.toss.im/icons/svg/icon-pin-mono.svg",
+      "sha256": "40970bb8ad2e8d187b44ee203a05edc042a2ed3859846432de3dd776c2214e99"
+    },
+    {
+      "file": "tds_document.svg",
+      "source": "https://static.toss.im/icons/svg/icon-document-mono.svg",
+      "sha256": "d7d8c5fd38aef01f1f729225e21656a2a578d368d423b087743a2b99fa319d26"
+    },
+    {
+      "file": "tds_refresh.svg",
+      "source": "https://static.toss.im/icons/svg/icon-refresh-mono.svg",
+      "sha256": "829909f46ac855511bdc40e5b0df03b18737eabc1c20e446bcd42ac6f88965db"
+    },
+    {
+      "file": "tds_plus.svg",
+      "source": "https://static.toss.im/icons/svg/icon-plus-mono.svg",
+      "sha256": "6a4db865ce32bcb141ca8ac5f4653b64ab510bfbf926e8d21e0a3e4fd8a14f82"
+    },
+    {
+      "file": "tds_truck.svg",
+      "source": "https://static.toss.im/icons/svg/icon-truck-mono.svg",
+      "sha256": "48704c304bdbbcafcd3ae68a461cca65c67c2fceca7608ca2fefebcb4cdfb0a8"
+    },
+    {
+      "file": "tds_phone.svg",
+      "source": "https://static.toss.im/icons/svg/icon-phone-mono.svg",
+      "sha256": "11f38169b8c99f78bf301105ea2981959f218c68f9dba95d1637d8afd39e3e5d"
+    },
+    {
+      "file": "tds_copy.svg",
+      "source": "https://static.toss.im/icons/svg/icon-copy-mono.svg",
+      "sha256": "72f3c148150d13556331cca10fd1841953a10775cbfb2e6c1370f1bb7a2b3fc7"
+    },
+    {
+      "file": "tds_send.svg",
+      "source": "https://static.toss.im/icons/svg/icon-paper-plane-mono.svg",
+      "sha256": "e55960890894fc84326aaa14bf36e2b2c13bcd8405076c173dc57c149009018a"
+    },
+    {
+      "file": "tds_x_circle.svg",
+      "source": "https://static.toss.im/icons/svg/icon-x-circle-mono.svg",
+      "sha256": "fffda604929bbd0f12ae483dc259ad33f025f6dbb1bf27bb1adc9ff2ffb16cdb"
+    }
+  ]
+}

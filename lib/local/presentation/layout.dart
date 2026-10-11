@@ -135,26 +135,49 @@ class FigmaIcon extends StatelessWidget {
     this.name, {
     this.selected = false,
     this.size = 24,
+    this.color,
     super.key,
   });
   final String name;
   final bool selected;
   final double size;
+  final Color? color;
+  static const _tdsIcons = {
+    'camera',
+    'link',
+    'pencil',
+    'pin',
+    'document',
+    'refresh',
+    'plus',
+    'truck',
+    'phone',
+    'copy',
+    'send',
+    'x_circle',
+  };
   @override
   Widget build(BuildContext context) {
-    final color = TdsTheme.of(context).color(selected ? 'blue600' : 'grey600');
-    if (name == 'chat' || name == 'person') {
+    final color =
+        this.color ??
+        TdsTheme.of(context).color(selected ? 'blue600' : 'grey600');
+    if (name == 'chat' || name == 'person' || name == 'bell') {
       return TdsAssetFrame(
         shape: TdsAssetFrameShape(width: size, height: size, transparent: true),
         content: Icon(
-          name == 'chat' ? Icons.chat_bubble_outline : Icons.person_outline,
+          switch (name) {
+            'chat' => Icons.chat_bubble_outline,
+            'bell' => Icons.notifications_none_rounded,
+            _ => Icons.person_outline,
+          },
           size: size,
           color: color,
         ),
       );
     }
     return TdsIconButtonImage(
-      src: 'assets/icons/figma_$name.svg',
+      src:
+          'assets/icons/${_tdsIcons.contains(name) ? 'tds' : 'figma'}_$name.svg',
       color: color,
       size: size,
     );

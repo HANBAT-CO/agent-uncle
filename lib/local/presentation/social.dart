@@ -7,6 +7,7 @@ import '../domain/models.dart';
 import 'common.dart';
 import 'requests.dart';
 import 'delivery.dart';
+import 'profile_avatar.dart';
 
 class ConnectionsList extends StatefulWidget {
   const ConnectionsList({super.key});
@@ -18,39 +19,124 @@ class _ConnectionsListState extends State<ConnectionsList> {
   String filter = '연결됨', query = '';
   @override
   Widget build(BuildContext context) {
-    final app = AppScope.of(context),
-        connections = app.workspace.records('connections').where((c) {
-          final peer = app.workspace.profile(
-            c.s(c.s('from') == app.session.current!.id ? 'to' : 'from'),
-          );
+    final search = query.trim().toLowerCase();
+    final app = AppScope.of(context);
+    final retailer = app.session.current!.role == AppRole.retailer;
+    final all = app.workspace.records('connections').toList();
+    Account? peerOf(Record record) => app.workspace.profile(
+      record.s(record.s('from') == app.session.current!.id ? 'to' : 'from'),
+    );
+    int priority(Record record) {
+      if (record.s('status') == 'pending') {
+        return record.s('to') == app.session.current!.id ? 0 : 3;
+      }
+      if (record.s('status') == 'accepted') {
+        final peer = peerOf(record);
+        return peer?.role == AppRole.uncle && !peer!.b('working') ? 2 : 1;
+      }
+      return 4;
+    }
+
+    final accepted = all.where((c) => c.s('status') == 'accepted').length;
+    final pending = all.where((c) => c.s('status') == 'pending').length;
+    final incoming = all
+        .where(
+          (c) =>
+              c.s('status') == 'pending' &&
+              c.s('to') == app.session.current!.id,
+        )
+        .length;
+    final connections =
+        all.where((c) {
+          final peer = peerOf(c);
           final status =
               filter == '전체' ||
               (filter == '연결됨'
                   ? c.s('status') == 'accepted'
                   : c.s('status') == 'pending');
-          return status &&
-              (peer?.name ?? '').toLowerCase().contains(query.toLowerCase());
-        }).toList();
+          return status && (peer?.name ?? '').toLowerCase().contains(search);
+        }).toList()..sort((a, b) {
+          final order = priority(a).compareTo(priority(b));
+          return order != 0
+              ? order
+              : (peerOf(a)?.name ?? '').compareTo(peerOf(b)?.name ?? '');
+        });
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Inset(
-          child: TdsSearchField(
-            placeholder: '거래처 검색',
-            onChanged: (v) => setState(() => query = v),
+        const TdsSpacing(16),
+        FigmaSurface(
+          children: [
+            TdsListRow(
+              contents: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TdsText(
+                    retailer ? '함께하는 사입삼촌' : '함께하는 거래처',
+                    typography: TdsTypography.t6,
+                    color: TdsTheme.of(context).color('grey600'),
+                  ),
+                  const TdsSpacing(8),
+                  TdsText(
+                    '$accepted${retailer ? '명' : '곳'}',
+                    typography: TdsTypography.t1,
+                    fontWeight: TdsFontWeight.bold,
+                  ),
+                ],
+              ),
+              right: TdsButton(
+                size: TdsButtonSize.large,
+                variant: TdsButtonVariant.weak,
+                onPressed: () => openPage(context, const AddConnectionPage()),
+                child: const Text('새 연결'),
+              ),
+            ),
+            if (incoming > 0) ...[
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: TdsBorder(),
+              ),
+              Item(
+                '받은 연결 요청 $incoming건',
+                leading: const FigmaIcon('bell', selected: true),
+                onTap: () => setState(() => filter = '연결 대기'),
+              ),
+            ],
+          ],
+        ),
+        const TdsSpacing(12),
+        AppSearchField(
+          placeholder: retailer ? '사입삼촌 이름으로 검색' : '거래처 검색',
+          onChanged: (v) => setState(() => query = v),
+        ),
+        TdsTab(
+          semanticLabel: '연결 상태',
+          items: [
+            TdsTabItem(text: '연결됨 $accepted', selected: filter == '연결됨'),
+            TdsTabItem(
+              text: '연결 대기 $pending',
+              selected: filter == '연결 대기',
+              redBean: incoming > 0,
+            ),
+            TdsTabItem(text: '전체', selected: filter == '전체'),
+          ],
+          onChanged: (i) => setState(() => filter = ['연결됨', '연결 대기', '전체'][i]),
+        ),
+        const TdsSpacing(12),
+        if (connections.isEmpty && search.isNotEmpty)
+          const EmptyState('검색 결과가 없어요', '거래처 이름을 다시 확인해 주세요.')
+        else if (connections.isEmpty)
+          EmptyState(
+            filter == '연결 대기'
+                ? '기다리는 연결 요청이 없어요'
+                : retailer
+                ? '아직 함께하는 사입삼촌이 없어요'
+                : '연결된 거래처가 없어요',
+            filter == '연결 대기'
+                ? '보내거나 받은 요청이 생기면 여기서 확인할 수 있어요.'
+                : '새 연결에서 초대 코드를 주고받아 보세요.',
+            icon: 'store',
           ),
-        ),
-        Choices(
-          options: const ['연결됨', '연결 대기', '전체'],
-          value: filter,
-          onChanged: (v) => setState(() => filter = v),
-        ),
-        ActionButton(
-          '상대방 연결하기',
-          onPressed: () => openPage(context, const AddConnectionPage()),
-        ),
-        if (connections.isEmpty)
-          const EmptyState('연결된 거래처가 없어요', '초대 코드를 주고받아 상대방과 연결해 주세요.'),
         for (final c in connections) ConnectionCard(c),
       ],
     );
@@ -72,19 +158,136 @@ class ConnectionCard extends StatelessWidget {
         own = record.s('from') == app.session.current!.id,
         peerId = record.s(own ? 'to' : 'from'),
         peer = app.workspace.profile(peerId);
+    final theme = TdsTheme.of(context);
+    final connected = record.s('status') == 'accepted';
+    final retailer = app.session.current!.role == AppRole.retailer;
+    final status = switch (record.s('status')) {
+      'pending' => own ? '보낸 요청 · 수락 대기' : '받은 연결 요청',
+      'accepted' =>
+        peer?.role == AppRole.uncle
+            ? (peer!.b('working') ? '업무 중' : '휴무 중')
+            : '연결 완료',
+      'withdrawn' => '연결 요청 철회',
+      _ => '연결 요청 거절',
+    };
+    final actions = [
+      TdsButton(
+        display: TdsButtonDisplay.block,
+        size: TdsButtonSize.large,
+        color: TdsButtonColor.dark,
+        variant: TdsButtonVariant.weak,
+        onPressed: () => openPage(context, ChatPage(peerId)),
+        child: const Text('채팅'),
+      ),
+      TdsButton(
+        display: TdsButtonDisplay.block,
+        size: TdsButtonSize.large,
+        variant: TdsButtonVariant.weak,
+        onPressed: () => openPage(
+          context,
+          retailer
+              ? RequestEditor(peerId: peerId)
+              : PageFrame(
+                  title: '${peer?.name ?? '거래처'} 전달',
+                  children: [DeliveryList(peerId: peerId)],
+                ),
+        ),
+        child: Text(retailer ? '사입 요청' : '전달 목록'),
+      ),
+    ];
     return FigmaSurface(
       children: [
-        Item(
-          peer?.name ?? '거래처',
-          subtitle: switch (record.s('status')) {
-            'pending' => own ? '보낸 요청 · 수락 대기' : '받은 연결 요청',
-            'accepted' => '연결 완료',
-            'withdrawn' => '연결 요청 철회',
-            _ => '연결 요청 거절',
-          },
-          onTap: () => openPage(context, PartnerPage(peerId)),
+        TdsListRow(
+          left: peer == null ? null : ProfileAvatar(peer, size: 64),
+          contents: TdsListRowTexts(
+            type: TdsListRowTextType.row2TypeA,
+            top: Text(peer?.name ?? '거래처'),
+            topProps: const TdsListRowTextStyle(
+              typography: TdsTypography.t4,
+              fontWeight: TdsFontWeight.bold,
+            ),
+            bottom: Text(
+              connected && peer != null && peer.s('contact').isNotEmpty
+                  ? '${peer.s('contact')} · 담당자'
+                  : status,
+            ),
+          ),
+          withArrow: true,
+          onPressed: () => openPage(context, PartnerPage(peerId)),
         ),
+        if (connected && peer != null) ...[
+          Inset(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    TdsBadge(
+                      size: TdsBadgeSize.small,
+                      variant: TdsBadgeVariant.weak,
+                      color: peer.role == AppRole.uncle && !peer.b('working')
+                          ? TdsBadgeColor.elephant
+                          : TdsBadgeColor.blue,
+                      child: Text(status),
+                    ),
+                    if (peer.role == AppRole.uncle &&
+                        peer.s('deadline').isNotEmpty)
+                      TdsText(
+                        '요청 마감 ${peer.s('deadline')}',
+                        typography: TdsTypography.t7,
+                        color: theme.color('grey600'),
+                      ),
+                  ],
+                ),
+                const TdsSpacing(12),
+                if (peer.role == AppRole.uncle) ...[
+                  TdsText(
+                    '픽업  ${peer.s('pickupArea').isEmpty ? '등록 전' : peer.s('pickupArea')}',
+                    typography: TdsTypography.t6,
+                    color: theme.color('grey700'),
+                  ),
+                  const TdsSpacing(4),
+                  TdsText(
+                    '배송  ${peer.s('deliveryArea').isEmpty ? '등록 전' : peer.s('deliveryArea')}',
+                    typography: TdsTypography.t6,
+                    color: theme.color('grey700'),
+                  ),
+                ] else
+                  TdsText(
+                    [
+                      peer.s('address'),
+                      peer.s('addressDetail'),
+                    ].where((part) => part.trim().isNotEmpty).join(' '),
+                    typography: TdsTypography.t6,
+                    color: theme.color('grey700'),
+                  ),
+              ],
+            ),
+          ),
+          Inset(
+            child: theme.platform.fontScale > 130
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [actions[0], const TdsSpacing(8), actions[1]],
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: actions[0]),
+                      const SizedBox(width: 8),
+                      Expanded(child: actions[1]),
+                    ],
+                  ),
+          ),
+        ],
         if (record.s('status') == 'pending') ...[
+          Info(
+            own
+                ? '상대방이 수락하면 사입 요청과 대화를 시작할 수 있어요.'
+                : '연결을 수락하면 사입 요청과 대화를 주고받을 수 있어요.',
+          ),
           if (!own)
             ActionButton(
               '연결 수락',
@@ -157,38 +360,54 @@ class _AddConnectionPageState extends State<AddConnectionPage> {
               },
             ),
       children: [
+        const PageHeading(
+          '함께 일할 거래처를 연결해요',
+          description: '초대 코드를 주고받으면 요청과 대화를 시작할 수 있어요.',
+        ),
         const Section('내 초대 코드'),
-        Item(
-          me.s('code'),
-          subtitle: '유효기간 ${displayTime(me.s('codeExpires'))}',
-        ),
-        ActionButton(
-          copied ? '코드를 복사했어요' : '초대 코드 복사',
-          weak: true,
-          onPressed: () async {
-            await Clipboard.setData(ClipboardData(text: me.s('code')));
-            setState(() => copied = true);
-          },
-        ),
-        ActionButton(
-          '코드 새로 발급',
-          weak: true,
-          onPressed: () async {
-            await app.workspace.renewCode();
-            if (mounted) setState(() => copied = false);
-          },
+        FigmaSurface(
+          children: [
+            Item(
+              me.s('code'),
+              leading: const FigmaIcon('store'),
+              subtitle: '유효기간 ${displayTime(me.s('codeExpires'))}',
+            ),
+            ActionButton(
+              copied ? '코드를 복사했어요' : '초대 코드 복사',
+              icon: copied ? 'check' : 'copy',
+              weak: true,
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: me.s('code')));
+                setState(() => copied = true);
+              },
+            ),
+            ActionButton(
+              '코드 새로 발급',
+              icon: 'refresh',
+              weak: true,
+              onPressed: () async {
+                await app.workspace.renewCode();
+                if (mounted) setState(() => copied = false);
+              },
+            ),
+          ],
         ),
         const Section('상대방 코드 입력'),
-        Field(
-          '초대 코드',
-          controller: code,
-          onChanged: (_) => setState(() => found = null),
+        FigmaSurface(
+          children: [
+            Field(
+              '초대 코드',
+              controller: code,
+              onChanged: (_) => setState(() => found = null),
+            ),
+          ],
         ),
         if (found != null)
           FigmaSurface(
             children: [
               Item(
                 found!.name,
+                leading: ProfileAvatar(found!),
                 subtitle:
                     '${found!.role!.label} · ${found!.s('pickupArea')} ${found!.s('deliveryArea')}',
               ),
@@ -213,53 +432,134 @@ class PartnerPage extends StatelessWidget {
     }
     final connected = app.workspace.partners.any((p) => p.id == id),
         retailer = app.session.current!.role == AppRole.retailer;
+    final theme = TdsTheme.of(context);
+    final history = app.workspace
+        .records('requests')
+        .where((r) => r.s(retailer ? 'uncleId' : 'retailerId') == id)
+        .toList();
     return PageFrame(
-      title: a.name,
-      subtitle: a.role!.label,
-      children: [
-        if (a.s('photoId').isNotEmpty && connected)
-          AttachmentPreview(a.s('photoId'), compact: true),
-        Item('담당자', subtitle: a.s('contact')),
-        Item('연락처', subtitle: a.s('phone')),
-        if (a.role == AppRole.uncle) ...[
-          Item('도매 픽업 구역', subtitle: a.s('pickupArea')),
-          Item('소매 배송 지역', subtitle: a.s('deliveryArea')),
-          Item('요청 마감시간', subtitle: a.s('deadline')),
-          Item('활동 상태', subtitle: a.b('working') ? '업무 중' : '휴무'),
-          Item('소개·휴무 안내', subtitle: '${a.s('intro')}\n${a.s('holiday')}'),
-        ] else ...[
-          Item('기본 배송지', subtitle: '${a.s('address')} ${a.s('addressDetail')}'),
-          Item('배송 참고사항', subtitle: a.s('deliveryNote')),
-        ],
-        if (connected) ...[
-          ActionButton(
-            '1:1 채팅',
-            onPressed: () => openPage(context, ChatPage(id)),
-          ),
-          if (retailer)
-            ActionButton(
-              '새 요청',
-              weak: true,
-              onPressed: () => openPage(context, RequestEditor(peerId: id)),
+      title: a.role == AppRole.uncle ? '사입삼촌 정보' : '거래처 정보',
+      bottom: connected
+          ? ActionButton(
+              '1:1 채팅',
+              bottom: true,
+              onPressed: () => openPage(context, ChatPage(id)),
             )
-          else
-            ActionButton(
-              '이 거래처 전달 목록',
-              weak: true,
-              onPressed: () => openPage(
-                context,
-                PageFrame(
-                  title: '${a.name} 전달',
-                  children: [DeliveryList(peerId: id)],
-                ),
+          : null,
+      children: [
+        FigmaSurface(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TdsBadge(
+                          size: TdsBadgeSize.small,
+                          color: TdsBadgeColor.blue,
+                          variant: TdsBadgeVariant.weak,
+                          child: Text(a.role!.label),
+                        ),
+                        const TdsSpacing(12),
+                        TdsText(
+                          a.name,
+                          typography: TdsTypography.t2,
+                          fontWeight: TdsFontWeight.bold,
+                        ),
+                        if (a.s('contact').isNotEmpty) ...[
+                          const TdsSpacing(4),
+                          TdsText(
+                            '${a.s('contact')} · 담당자',
+                            typography: TdsTypography.t6,
+                            color: theme.color('grey600'),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  ProfileAvatar(a, large: true),
+                ],
               ),
             ),
-        ],
-        const Section('요청 이력'),
-        for (final r
-            in app.workspace
-                .records('requests')
-                .where((r) => r.s(retailer ? 'uncleId' : 'retailerId') == id))
+            if (a.s('intro').trim().isNotEmpty) Info(a.s('intro')),
+            if (connected)
+              Item(
+                retailer ? '새 사입 요청' : '이 거래처 전달 목록',
+                leading: const FigmaIcon('bag', selected: true),
+                onTap: () => openPage(
+                  context,
+                  retailer
+                      ? RequestEditor(peerId: id)
+                      : PageFrame(
+                          title: '${a.name} 전달',
+                          children: [DeliveryList(peerId: id)],
+                        ),
+                ),
+              ),
+          ],
+        ),
+        const Section('업무·배송 정보'),
+        FigmaSurface(
+          children: [
+            if (a.role == AppRole.uncle) ...[
+              Inset(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TdsBadge(
+                    size: TdsBadgeSize.small,
+                    variant: TdsBadgeVariant.weak,
+                    color: a.b('working')
+                        ? TdsBadgeColor.blue
+                        : TdsBadgeColor.elephant,
+                    child: Text(a.b('working') ? '업무 중' : '휴무 중'),
+                  ),
+                ),
+              ),
+              Item(
+                '도매 픽업 구역',
+                leading: const FigmaIcon('pin'),
+                subtitle: a.s('pickupArea'),
+              ),
+              Item(
+                '소매 배송 지역',
+                leading: const FigmaIcon('truck'),
+                subtitle: a.s('deliveryArea'),
+              ),
+              Item(
+                '요청 마감시간',
+                leading: const FigmaIcon('clock'),
+                subtitle: a.s('deadline'),
+              ),
+              if (a.s('holiday').trim().isNotEmpty)
+                Item('휴무 안내', subtitle: a.s('holiday')),
+            ] else ...[
+              Item(
+                '기본 배송지',
+                leading: const FigmaIcon('pin'),
+                subtitle: '${a.s('address')} ${a.s('addressDetail')}',
+              ),
+              Item('배송 참고사항', subtitle: a.s('deliveryNote')),
+            ],
+          ],
+        ),
+        const Section('연락처'),
+        FigmaSurface(
+          children: [
+            Item(
+              '전화번호',
+              leading: const FigmaIcon('phone'),
+              subtitle: a.s('phone'),
+            ),
+          ],
+        ),
+        Section('요청 이력 ${history.length}건'),
+        if (history.isEmpty) const Info('함께 진행한 사입 요청이 여기에 쌓여요.'),
+        for (final r in history)
           RequestCard(
             RequestRecord(r.id, r.data),
             onTap: () => openPage(context, RequestDetailPage(r.id)),

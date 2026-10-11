@@ -39,6 +39,18 @@ function LoaderEventsFixture() {
   </TDS.GlobalConfigProvider>;
 }
 
+function ButtonLifecycleFixture() {
+  const [config, setConfig] = React.useState({
+    loading: false, disabled: false, inert: false,
+    variant: parameters.get('variant') ?? 'fill',
+  });
+  React.useEffect(() => {
+    window.tdsReference.updateButton = patch => setConfig(previous => ({...previous, ...patch}));
+  }, []);
+  return <Button {...config} data-case="button-lifecycle"
+    onClick={() => window.tdsReference.events.push('click')}>확인하기</Button>;
+}
+
 function HighlightFixture() {
   const [open, setOpen] = React.useState(parameters.get('open') !== 'false');
   React.useEffect(() => { window.tdsReference.setHighlightOpen = setOpen; }, []);
@@ -214,6 +226,7 @@ function Fixture() {
     <TDS.ColorSchemeArea theme={theme} asChild><div id="fixture" style={{ padding: 24, width: 390, boxSizing: 'border-box', background: theme === 'dark' ? '#17171c' : '#fff', fontFamily: 'Toss Product Sans' }}>
       {family === 'sheet-hook' && <SheetHookFixture />}
       {family === 'loading-events' && <LoaderEventsFixture />}
+      {family === 'button-lifecycle' && <ButtonLifecycleFixture />}
       {family === 'highlight' && <HighlightFixture />}
       {family === 'wiki-viewport' && <WikiViewportFixture />}
       {family === 'full-tooltip' && <FullTooltipFixture />}

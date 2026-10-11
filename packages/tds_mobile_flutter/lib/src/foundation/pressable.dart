@@ -23,6 +23,7 @@ class TdsPressable extends StatefulWidget {
     this.deferPointerActivation = false,
     this.allowPointerEffect,
     this.keyboardActivation = true,
+    this.keyboardPressEffect = true,
     this.focusableWhenDisabled = false,
     this.onDisabledTap,
     super.key,
@@ -40,6 +41,10 @@ class TdsPressable extends StatefulWidget {
   // Some source controls use focusable labels with a hidden native input.
   // Those labels receive focus but do not synthesize Enter/Space clicks.
   final bool keyboardActivation, focusableWhenDisabled;
+
+  /// Some original controls only animate in response to pointer events, even
+  /// though their HTML element still supports native keyboard activation.
+  final bool keyboardPressEffect;
 
   /// Keypads commit on pointer down, while ordinary controls commit on tap.
   /// Semantics and keyboard activation remain available in either mode.
@@ -158,8 +163,15 @@ class _TdsPressableState extends State<TdsPressable> {
             widget.activateOnPressStart ||
             event.logicalKey == LogicalKeyboardKey.enter &&
                 (widget.activateOnEnterDown || _activation != null);
+        // Native HTML buttons repeat Enter clicks on repeated keydown, while
+        // Space still produces a single activation when released.
+        if (event is KeyRepeatEvent &&
+            event.logicalKey == LogicalKeyboardKey.enter &&
+            widget.activateOnEnterDown) {
+          _onActivate?.call();
+        }
         if (event is KeyDownEvent && !_pressed) {
-          _allowPointerEffect = true;
+          _allowPointerEffect = widget.keyboardPressEffect;
           _press(true);
           if (commitOnDown) _onActivate?.call();
         }

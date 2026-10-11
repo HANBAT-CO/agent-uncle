@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 import '../foundation/color.dart';
 import '../foundation/line_box.dart';
@@ -169,6 +170,8 @@ class TdsButton extends StatelessWidget {
         semanticLabel: semanticLabel,
         focusNode: focusNode,
         autofocus: autofocus,
+        activateOnEnterDown: true,
+        keyboardPressEffect: false,
         builder: (context, pressed, hovered, focused) {
           final motion = pressed ? TdsMotion.rapid : TdsMotion.quick;
           return AnimatedScale(
@@ -208,14 +211,15 @@ class TdsButton extends StatelessWidget {
                                 ? 1
                                 : null,
                             heightFactor: 1,
-                            child: AnimatedOpacity(
+                            child: _ButtonLabelOpacity(
                               opacity: loading
                                   ? 0
                                   : disabled && variant == TdsButtonVariant.weak
                                   ? .3
                                   : 1,
-                              duration: TdsMotion.quick.duration,
-                              curve: TdsMotion.quick,
+                              delay: !loading && !disabled
+                                  ? const Duration(milliseconds: 100)
+                                  : Duration.zero,
                               child: DefaultTextStyle(
                                 style: theme
                                     .textStyle(
@@ -241,33 +245,27 @@ class TdsButton extends StatelessWidget {
                         ),
                       ),
                     ),
-                    if (loading)
-                      Positioned.fill(
+                    Positioned.fill(
+                      child: IgnorePointer(
                         child: _LoadingGlow(
+                          loading: loading,
                           color: colors.gradient,
                           maxOpacity: variant == TdsButtonVariant.fill
                               ? (disabled ? .2 : .7)
                               : (disabled ? .14 : .24),
                         ),
                       ),
-                    if (loading)
-                      Semantics(
-                        liveRegion: true,
-                        label: 'loading',
-                        child: ExcludeSemantics(
-                          child: Opacity(
-                            opacity:
-                                disabled && variant == TdsButtonVariant.weak
-                                ? .4
-                                : 1,
-                            child: TdsButtonLoader(
-                              size: size.loaderSize,
-                              gap: size.loaderGap,
-                              color: colors.loader,
-                            ),
-                          ),
-                        ),
+                    ),
+                    Positioned.fill(
+                      child: _ButtonLoaderPresence(
+                        loading: loading,
+                        opacity: disabled && variant == TdsButtonVariant.weak
+                            ? .4
+                            : 1,
+                        size: size,
+                        color: colors.loader,
                       ),
+                    ),
                     Positioned.fill(
                       child: IgnorePointer(
                         child: AnimatedContainer(
@@ -276,7 +274,7 @@ class TdsButton extends StatelessWidget {
                           color: colors.dimmer.withValues(
                             alpha: pressed
                                 ? colors.dimmer.a * .26
-                                : loading
+                                : loading && !disabled
                                 ? .26 * .13
                                 : 0,
                           ),
@@ -292,6 +290,111 @@ class TdsButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The source's initial label variant waits 100ms. A new state cancels that
+/// delay and transitions from the current opacity, including during loading.
+class _ButtonLabelOpacity extends StatefulWidget {
+  const _ButtonLabelOpacity({
+    required this.opacity,
+    required this.delay,
+    required this.child,
+  });
+  final double opacity;
+  final Duration delay;
+  final Widget child;
+  @override
+  State<_ButtonLabelOpacity> createState() => _ButtonLabelOpacityState();
+}
+
+class _ButtonLabelOpacityState extends State<_ButtonLabelOpacity>
+    with SingleTickerProviderStateMixin {
+  late final _opacity = AnimationController(vsync: this, value: widget.opacity);
+  Timer? _delay;
+
+  @override
+  void didUpdateWidget(_ButtonLabelOpacity oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.opacity == widget.opacity &&
+        oldWidget.delay == widget.delay) {
+      return;
+    }
+    _delay?.cancel();
+    _opacity.stop();
+    if (_opacity.value == widget.opacity) return;
+    void animate() => _opacity.animateTo(
+      widget.opacity,
+      duration: TdsMotion.quick.duration,
+      curve: TdsMotion.quick,
+    );
+    if (widget.delay == Duration.zero) {
+      animate();
+    } else {
+      _delay = Timer(widget.delay, animate);
+    }
+  }
+
+  @override
+  void dispose() {
+    _delay?.cancel();
+    _opacity.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      FadeTransition(opacity: _opacity, child: widget.child);
+}
+
+/// Keep the original dot instances alive through their exit, including an
+/// interrupted exit. Like AnimatePresence, remove them only after fading out.
+class _ButtonLoaderPresence extends StatefulWidget {
+  const _ButtonLoaderPresence({
+    required this.loading,
+    required this.opacity,
+    required this.size,
+    required this.color,
+  });
+  final bool loading;
+  final double opacity;
+  final TdsButtonSize size;
+  final Color color;
+  @override
+  State<_ButtonLoaderPresence> createState() => _ButtonLoaderPresenceState();
+}
+
+class _ButtonLoaderPresenceState extends State<_ButtonLoaderPresence> {
+  late bool _present = widget.loading;
+  @override
+  void didUpdateWidget(_ButtonLoaderPresence oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.loading) _present = true;
+  }
+
+  @override
+  Widget build(BuildContext context) => !_present
+      ? const SizedBox.shrink()
+      : Center(
+          child: AnimatedOpacity(
+            opacity: widget.loading ? widget.opacity : 0,
+            duration: TdsMotion.quick.duration,
+            curve: TdsMotion.quick,
+            onEnd: () {
+              if (!widget.loading && mounted) setState(() => _present = false);
+            },
+            child: Semantics(
+              liveRegion: true,
+              label: 'loading',
+              child: ExcludeSemantics(
+                child: TdsButtonLoader(
+                  size: widget.size.loaderSize,
+                  gap: widget.size.loaderGap,
+                  color: widget.color,
+                ),
+              ),
+            ),
+          ),
+        );
 }
 
 class TdsButtonLoader extends StatefulWidget {
@@ -353,7 +456,12 @@ class _TdsButtonLoaderState extends State<TdsButtonLoader>
 }
 
 class _LoadingGlow extends StatefulWidget {
-  const _LoadingGlow({required this.color, required this.maxOpacity});
+  const _LoadingGlow({
+    required this.loading,
+    required this.color,
+    required this.maxOpacity,
+  });
+  final bool loading;
   final Color color;
   final double maxOpacity;
   @override
@@ -365,7 +473,45 @@ class _LoadingGlowState extends State<_LoadingGlow>
   late final _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 600),
-  )..repeat(reverse: true);
+  );
+  bool _pulsing = false;
+  double _fadeFrom = 0;
+
+  double _opacity(double maximum) => _pulsing
+      ? TdsMotion.out.transform(_controller.value) * maximum
+      : _fadeFrom * (1 - TdsMotion.quick.transform(_controller.value));
+
+  void _pulse() {
+    _pulsing = true;
+    _controller
+      ..stop()
+      ..duration = const Duration(milliseconds: 600)
+      ..value = 0
+      ..repeat(reverse: true);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.loading) _pulse();
+  }
+
+  @override
+  void didUpdateWidget(_LoadingGlow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.loading &&
+        (!oldWidget.loading || oldWidget.maxOpacity != widget.maxOpacity)) {
+      _pulse();
+    } else if (!widget.loading && oldWidget.loading) {
+      _fadeFrom = _opacity(oldWidget.maxOpacity);
+      _pulsing = false;
+      _controller
+        ..stop()
+        ..duration = TdsMotion.quick.duration
+        ..forward(from: 0);
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -382,8 +528,7 @@ class _LoadingGlowState extends State<_LoadingGlow>
           maxHeight: dimension,
           maxWidth: dimension,
           child: Opacity(
-            opacity:
-                TdsMotion.out.transform(_controller.value) * widget.maxOpacity,
+            opacity: _opacity(widget.maxOpacity),
             child: Container(
               width: dimension,
               height: dimension,

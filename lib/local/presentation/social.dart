@@ -1066,43 +1066,162 @@ class _ChatPageState extends State<ChatPage> {
   }
 }
 
-class NoticesPage extends StatelessWidget {
+class NoticesPage extends StatefulWidget {
   const NoticesPage({super.key});
+  @override
+  State<NoticesPage> createState() => _NoticesPageState();
+}
+
+class _NoticesPageState extends State<NoticesPage> {
+  bool unreadOnly = false;
+
+  String _dateLabel(String value, DateTime today) {
+    final date = DateTime.tryParse(value)?.toLocal();
+    if (date == null) return '이전 알림';
+    final day = DateTime(date.year, date.month, date.day);
+    if (day == today) return '오늘';
+    if (day == DateTime(today.year, today.month, today.day - 1)) return '어제';
+    return '${date.year == today.year ? '' : '${date.year}년 '}${date.month}월 ${date.day}일';
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
         notices = app.workspace.records('notices');
+    final theme = TdsTheme.of(context);
+    final unreadCount = notices.where((n) => !n.b('read')).length;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final groups = <String, List<Record>>{};
+    for (final notice in notices) {
+      if (unreadOnly && notice.b('read')) continue;
+      final date = _dateLabel(notice.s('createdAt'), today);
+      (groups[date] ??= []).add(notice);
+    }
     return PageFrame(
       title: '알림',
+      scrollKey: unreadOnly ? 'notices-unread' : 'notices-all',
+      header: TdsTab(
+        semanticLabel: '알림 필터',
+        items: [
+          TdsTabItem(text: '전체', selected: !unreadOnly),
+          TdsTabItem(text: '안 읽음 $unreadCount', selected: unreadOnly),
+        ],
+        onChanged: (index) => setState(() => unreadOnly = index == 1),
+      ),
       children: [
-        const PageHeading('새로 확인할 소식'),
-        if (notices.isEmpty)
-          const EmptyState('새로운 알림이 없어요', '거래처와 요청의 처리 결과가 여기에 모여요.'),
-        for (final n in notices)
-          FigmaSurface(
-            tinted: !n.b('read'),
-            children: [
-              Item(
-                n.s('title'),
-                subtitle: displayTime(n.s('createdAt')),
-                trailing: n.b('read') ? null : const StatusBadge('새 알림'),
-                onTap: () async {
-                  try {
-                    await app.session.setDestination({
-                      ...n.data,
-                      'noticeId': n.id,
-                    });
-                    if (context.mounted) await openDestination(context);
-                  } catch (error) {
-                    if (context.mounted) {
-                      await confirm(context, '알림을 열지 못했어요', error.toString());
-                    }
-                  }
-                },
+        if (groups.isEmpty)
+          EmptyState(
+            unreadOnly && notices.isNotEmpty
+                ? '모든 알림을 확인했어요'
+                : '아직 도착한 알림이 없어요',
+            unreadOnly && notices.isNotEmpty
+                ? '지난 소식은 전체에서 다시 볼 수 있어요.'
+                : '새 메시지와 사입 진행 소식을 여기서 알려드릴게요.',
+            icon: 'bell',
+            action: unreadOnly && notices.isNotEmpty ? '전체 알림 보기' : null,
+            onAction: () => setState(() => unreadOnly = false),
+          ),
+        for (final group in groups.entries) ...[
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+            child: Semantics(
+              header: true,
+              child: TdsText(
+                group.key,
+                typography: TdsTypography.t6,
+                fontWeight: TdsFontWeight.semibold,
+                color: theme.color('grey700'),
               ),
+            ),
+          ),
+          TdsList(
+            semanticLabel: '${group.key} 알림',
+            children: [
+              for (var i = 0; i < group.value.length; i++)
+                _noticeRow(context, group.value[i], border: i > 0),
             ],
           ),
+        ],
       ],
+    );
+  }
+
+  Widget _noticeRow(
+    BuildContext context,
+    Record notice, {
+    required bool border,
+  }) {
+    final theme = TdsTheme.of(context);
+    final unread = !notice.b('read');
+    final (category, icon) = switch (notice.s('kind')) {
+      'chat' => ('채팅', 'chat'),
+      'connection' => ('거래처', 'store'),
+      'delivery' => ('상품 전달', 'truck'),
+      'request' => ('사입', 'bag'),
+      _ => ('안내', 'bell'),
+    };
+    final date = DateTime.tryParse(notice.s('createdAt'))?.toLocal();
+    final time = date == null
+        ? '시간 정보 없음'
+        : '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    return TdsListRow(
+      key: ValueKey('notice-${notice.id}'),
+      semanticLabel: unread ? '안 읽은 알림' : '읽은 알림',
+      verticalPadding: TdsListRowVerticalPadding.large,
+      leftAlignment: TdsListRowAlignment.top,
+      border: border ? TdsListRowBorder.indented : TdsListRowBorder.none,
+      left: ExcludeSemantics(
+        child: TdsAssetFrame(
+          shape: const TdsAssetFrameShape(
+            width: 40,
+            height: 40,
+            radius: 20,
+            transparent: false,
+          ),
+          backgroundColor: theme.color(
+            unread ? 'tBlueBadgeBackground' : 'greyOpacity100',
+          ),
+          content: FigmaIcon(icon, selected: unread, size: 22),
+        ),
+      ),
+      contents: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TdsText(
+            unread ? '$category · 안 읽음' : category,
+            typography: TdsTypography.t7,
+            fontWeight: TdsFontWeight.medium,
+            color: theme.color(unread ? 'blue600' : 'grey600'),
+          ),
+          const TdsSpacing(4),
+          TdsText(
+            notice.s('title'),
+            typography: TdsTypography.t5,
+            fontWeight: unread ? TdsFontWeight.semibold : TdsFontWeight.regular,
+          ),
+          const TdsSpacing(6),
+          TdsText(
+            time,
+            typography: TdsTypography.t7,
+            color: theme.color('grey600'),
+          ),
+        ],
+      ),
+      onPressed: () async {
+        final app = AppScope.read(context);
+        try {
+          await app.session.setDestination({
+            ...notice.data,
+            'noticeId': notice.id,
+          });
+          if (context.mounted) await openDestination(context);
+        } catch (error) {
+          if (context.mounted) {
+            await confirm(context, '알림을 열지 못했어요', error.toString());
+          }
+        }
+      },
     );
   }
 }

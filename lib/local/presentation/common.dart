@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
+import 'layout.dart';
+export 'layout.dart';
 
 class TabSaveGuard {
   Future<void> Function()? save;
@@ -45,40 +47,34 @@ class PageFrame extends StatelessWidget {
     child: TdsDialogProvider(
       child: ColoredBox(
         color: TdsTheme.of(context).color('background'),
-        child: SafeArea(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  if (back) const TdsTopNavigationBackButton(),
-                  Expanded(
-                    child: TdsTop(
-                      title: TdsTopTitleParagraph(title, size: 28),
-                      subtitleBottom: subtitle == null
-                          ? null
-                          : TdsTopSubtitleParagraph(subtitle!),
-                    ),
-                  ),
-                  ?trailing,
-                ],
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  key: PageStorageKey(scrollKey ?? title),
-                  keyboardDismissBehavior:
-                      ScrollViewKeyboardDismissBehavior.onDrag,
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.viewInsetsOf(context).bottom,
-                  ),
+        child: Column(
+          children: [
+            TdsTopNavigation(
+              leading: back ? const TdsTopNavigationBackButton() : null,
+              content: Text(title),
+              trailing: trailing,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                key: PageStorageKey(scrollKey ?? title),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                child: SafeArea(
+                  top: false,
+                  bottom: bottom == null,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [...children, const TdsSpacing(24)],
+                    children: [
+                      if (subtitle != null) PageHeading(subtitle!),
+                      ...children,
+                      const TdsSpacing(24),
+                    ],
                   ),
                 ),
               ),
-              ?bottom,
-            ],
-          ),
+            ),
+            if (bottom != null) SafeArea(top: false, child: bottom!),
+          ],
         ),
       ),
     ),
@@ -170,11 +166,12 @@ class ActionButton extends StatefulWidget {
     this.danger = false,
     this.enabled = true,
     this.onError,
+    this.bottom = false,
     super.key,
   });
   final String label;
   final FutureOr<void> Function() onPressed;
-  final bool weak, danger, enabled;
+  final bool weak, danger, enabled, bottom;
   final ValueChanged<Object>? onError;
   @override
   State<ActionButton> createState() => _ActionButtonState();
@@ -183,41 +180,59 @@ class ActionButton extends StatefulWidget {
 class _ActionButtonState extends State<ActionButton> {
   bool busy = false;
   String? error;
+  Future<void> submit() async {
+    if (busy) return;
+    setState(() {
+      busy = true;
+      error = null;
+    });
+    try {
+      await widget.onPressed();
+    } catch (e) {
+      if (mounted) setState(() => error = e.toString());
+      widget.onError?.call(e);
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => Inset(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (error != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: TdsText(error!, color: TdsPalette.red600),
+  Widget build(BuildContext context) {
+    if (widget.bottom) {
+      return TdsBottomCTA(
+        background: false,
+        hasSafeAreaPadding: false,
+        topAccessory: error == null ? null : Info(error!, error: true),
+        color: widget.danger ? TdsButtonColor.danger : TdsButtonColor.primary,
+        variant: widget.weak ? TdsButtonVariant.weak : TdsButtonVariant.fill,
+        loading: busy,
+        disabled: busy || !widget.enabled,
+        onPressed: submit,
+        child: Text(widget.label),
+      );
+    }
+    return Inset(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (error != null) Info(error!, error: true),
+          TdsButton(
+            display: TdsButtonDisplay.block,
+            variant: widget.weak
+                ? TdsButtonVariant.weak
+                : TdsButtonVariant.fill,
+            color: widget.danger
+                ? TdsButtonColor.danger
+                : TdsButtonColor.primary,
+            loading: busy,
+            disabled: busy || !widget.enabled,
+            onPressed: submit,
+            child: Text(widget.label),
           ),
-        TdsButton(
-          display: TdsButtonDisplay.block,
-          variant: widget.weak ? TdsButtonVariant.weak : TdsButtonVariant.fill,
-          color: widget.danger ? TdsButtonColor.danger : TdsButtonColor.primary,
-          loading: busy,
-          disabled: busy || !widget.enabled,
-          onPressed: () async {
-            setState(() {
-              busy = true;
-              error = null;
-            });
-            try {
-              await widget.onPressed();
-            } catch (e) {
-              if (mounted) setState(() => error = e.toString());
-              widget.onError?.call(e);
-            } finally {
-              if (mounted) setState(() => busy = false);
-            }
-          },
-          child: Text(widget.label),
-        ),
-      ],
-    ),
-  );
+        ],
+      ),
+    );
+  }
 }
 
 class EmptyState extends StatelessWidget {
@@ -480,15 +495,45 @@ class RequestCard extends StatelessWidget {
                 : 'retailerId',
           ),
         );
-    return Item(
-      '${request.s('product')} · ${request.s('option')} · ${request.quantity}개',
-      subtitle:
-          '${peer?.name ?? ''} · ${request.s('wholesaler')}\n확보 ${request.acquired} · ${request.b('resultShared') ? '미송 ${request.backorder}' : '미확인 ${request.remaining}'} · 전달 ${request.delivered} · 수령 ${request.received}',
-      trailing: StatusBadge(
-        request.statusLabel,
-        attention: request.needsReply || request.n('openIssues') > 0,
-      ),
-      onTap: onTap,
+    return FigmaSurface(
+      children: [
+        TdsListRow(
+          left: const FigmaIcon('shirt'),
+          contents: TdsListRowTexts(
+            type: TdsListRowTextType.row2TypeA,
+            top: Text('${request.s('product')} · ${request.s('option')}'),
+            bottom: Text('${peer?.name ?? '거래처'} · 요청 ${request.quantity}장'),
+          ),
+          onPressed: onTap,
+          withArrow: true,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              StatusBadge(
+                request.statusLabel,
+                attention: request.needsReply || request.n('openIssues') > 0,
+              ),
+              TdsText(
+                '확보 ${request.acquired} · ${request.b('resultShared') ? '미송 ${request.backorder}' : '미확인 ${request.remaining}'} · 전달 ${request.delivered}',
+                typography: TdsTypography.t7,
+              ),
+            ],
+          ),
+        ),
+        if (request.s('recheck').isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 4, 24, 0),
+            child: TdsText(
+              '${request.s('recheck')} 재확인',
+              typography: TdsTypography.t7,
+              color: TdsTheme.of(context).color('grey600'),
+            ),
+          ),
+      ],
     );
   }
 }

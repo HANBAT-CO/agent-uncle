@@ -27,8 +27,8 @@ enum AppRole { retailer, uncle }
 extension AppRoleLabel on AppRole {
   String get label => this == AppRole.retailer ? '소매업자' : '사입삼촌';
   List<String> get tabs => this == AppRole.retailer
-      ? const ['사입현황', '채팅', '요청하기', '사입삼촌', '내 정보']
-      : const ['오늘 업무', '채팅', '전달', '거래처', '내 정보'];
+      ? const ['홈', '사입', '채팅', '사입삼촌', '내 정보']
+      : const ['홈', '업무', '채팅', '거래처', '내 정보'];
 }
 
 @immutable

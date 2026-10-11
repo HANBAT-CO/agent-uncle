@@ -8,15 +8,43 @@ import 'common.dart';
 import 'requests.dart';
 import 'delivery.dart';
 
-class ConnectionsList extends StatelessWidget {
+class ConnectionsList extends StatefulWidget {
   const ConnectionsList({super.key});
+  @override
+  State<ConnectionsList> createState() => _ConnectionsListState();
+}
+
+class _ConnectionsListState extends State<ConnectionsList> {
+  String filter = '연결됨', query = '';
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
-        connections = app.workspace.records('connections');
+        connections = app.workspace.records('connections').where((c) {
+          final peer = app.workspace.profile(
+            c.s(c.s('from') == app.session.current!.id ? 'to' : 'from'),
+          );
+          final status =
+              filter == '전체' ||
+              (filter == '연결됨'
+                  ? c.s('status') == 'accepted'
+                  : c.s('status') == 'pending');
+          return status &&
+              (peer?.name ?? '').toLowerCase().contains(query.toLowerCase());
+        }).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Inset(
+          child: TdsSearchField(
+            placeholder: '거래처 검색',
+            onChanged: (v) => setState(() => query = v),
+          ),
+        ),
+        Choices(
+          options: const ['연결됨', '연결 대기', '전체'],
+          value: filter,
+          onChanged: (v) => setState(() => filter = v),
+        ),
         ActionButton(
           '상대방 연결하기',
           onPressed: () => openPage(context, const AddConnectionPage()),
@@ -44,8 +72,7 @@ class ConnectionCard extends StatelessWidget {
         own = record.s('from') == app.session.current!.id,
         peerId = record.s(own ? 'to' : 'from'),
         peer = app.workspace.profile(peerId);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return FigmaSurface(
       children: [
         Item(
           peer?.name ?? '거래처',
@@ -106,6 +133,29 @@ class _AddConnectionPageState extends State<AddConnectionPage> {
     final app = AppScope.of(context), me = app.session.current!;
     return PageFrame(
       title: '상대방 연결',
+      bottom: found == null
+          ? ActionButton(
+              '상대방 확인',
+              bottom: true,
+              onPressed: () async {
+                final result = await app.workspace.lookupCode(code.text);
+                if (mounted) {
+                  setState(() {
+                    found = result;
+                    op = newId();
+                  });
+                }
+              },
+            )
+          : ActionButton(
+              '연결 요청 보내기',
+              bottom: true,
+              onPressed: () async {
+                await app.workspace.lookupCode(code.text);
+                await app.workspace.connect(found!.id, op);
+                if (context.mounted) Navigator.pop(context);
+              },
+            ),
       children: [
         const Section('내 초대 코드'),
         Item(
@@ -134,34 +184,16 @@ class _AddConnectionPageState extends State<AddConnectionPage> {
           controller: code,
           onChanged: (_) => setState(() => found = null),
         ),
-        ActionButton(
-          '상대방 확인',
-          onPressed: () async {
-            final result = await app.workspace.lookupCode(code.text);
-            if (mounted) {
-              setState(() {
-                found = result;
-                op = newId();
-              });
-            }
-          },
-        ),
-        if (found != null) ...[
-          const Section('연결할 상대방'),
-          Item(
-            found!.name,
-            subtitle:
-                '${found!.role!.label}\n${found!.s('pickupArea')} ${found!.s('deliveryArea')}',
+        if (found != null)
+          FigmaSurface(
+            children: [
+              Item(
+                found!.name,
+                subtitle:
+                    '${found!.role!.label} · ${found!.s('pickupArea')} ${found!.s('deliveryArea')}',
+              ),
+            ],
           ),
-          ActionButton(
-            '연결 요청 보내기',
-            onPressed: () async {
-              await app.workspace.lookupCode(code.text);
-              await app.workspace.connect(found!.id, op);
-              if (context.mounted) Navigator.pop(context);
-            },
-          ),
-        ],
       ],
     );
   }
@@ -237,13 +269,21 @@ class PartnerPage extends StatelessWidget {
   }
 }
 
-class ChatList extends StatelessWidget {
+class ChatList extends StatefulWidget {
   const ChatList({super.key});
+  @override
+  State<ChatList> createState() => _ChatListState();
+}
+
+class _ChatListState extends State<ChatList> {
+  String query = '';
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
         messages = app.workspace.records('messages'),
-        partners = app.workspace.partners.toList();
+        partners = app.workspace.partners
+            .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+            .toList();
     partners.sort((a, b) {
       String latest(String id) =>
           messages
@@ -255,6 +295,12 @@ class ChatList extends StatelessWidget {
     });
     return Column(
       children: [
+        Inset(
+          child: TdsSearchField(
+            placeholder: '거래처 검색',
+            onChanged: (v) => setState(() => query = v),
+          ),
+        ),
         if (partners.isEmpty)
           const EmptyState('대화할 거래처가 없어요', '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.'),
         for (final a in partners)
@@ -298,6 +344,73 @@ class _ChatPageState extends State<ChatPage> {
   final body = TextEditingController();
   List<String> photos = [];
   String messageId = newId();
+  late String requestId = widget.requestId;
+  bool sending = false;
+  String? sendError;
+
+  Future<void> send() async {
+    if (sending) {
+      return;
+    }
+    final sentBody = body.text, sentPhotos = List<String>.of(photos);
+    setState(() {
+      sending = true;
+      sendError = null;
+    });
+    try {
+      await AppScope.read(context).workspace.sendMessage(
+        widget.peerId,
+        messageId,
+        sentBody,
+        sentPhotos,
+        requestId: requestId,
+      );
+      if (mounted) {
+        setState(() {
+          if (body.text == sentBody) body.clear();
+          photos.removeWhere(sentPhotos.contains);
+          messageId = newId();
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => sendError = e.toString());
+    } finally {
+      if (mounted) setState(() => sending = false);
+    }
+  }
+
+  Future<void> chooseRequest() async {
+    final app = AppScope.read(context);
+    final result = await openPage<String>(
+      context,
+      PageFrame(
+        title: '대화에 연결할 요청',
+        children: [
+          Builder(
+            builder: (context) =>
+                Item('요청 연결 안 함', onTap: () => Navigator.pop(context, '')),
+          ),
+          for (final r
+              in app.workspace
+                  .records('requests')
+                  .where(
+                    (r) =>
+                        r.s('retailerId') == widget.peerId ||
+                        r.s('uncleId') == widget.peerId,
+                  ))
+            Builder(
+              builder: (context) => Item(
+                r.s('product'),
+                subtitle: r.s('option'),
+                onTap: () => Navigator.pop(context, r.id),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (result != null && mounted) setState(() => requestId = result);
+  }
+
   final marked = <String>{};
   @override
   void dispose() {
@@ -341,6 +454,69 @@ class _ChatPageState extends State<ChatPage> {
     }
     return PageFrame(
       title: peer?.name ?? '채팅',
+      bottom: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (sendError != null) Info(sendError!, error: true),
+          TdsListRow(
+            contents: TdsListRowTexts(
+              type: TdsListRowTextType.row1TypeA,
+              top: Text(
+                requestId.isEmpty
+                    ? '요청 연결하기'
+                    : '현재 요청 · ${app.workspace.request(requestId)?.s('product') ?? ''}',
+              ),
+            ),
+            withArrow: true,
+            onPressed: sending ? null : chooseRequest,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                TdsTextButton(
+                  size: TdsTextButtonSize.small,
+                  onPressed: sending
+                      ? null
+                      : () async {
+                          try {
+                            final id = await app.attachments.pick(
+                              document: false,
+                            );
+                            if (id != null && mounted) {
+                              setState(() => photos.add(id));
+                            }
+                          } catch (e) {
+                            if (mounted) {
+                              setState(() => sendError = e.toString());
+                            }
+                          }
+                        },
+                  child: Text(photos.isEmpty ? '사진' : '사진 ${photos.length}'),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TdsTextField(
+                    controller: body,
+                    placeholder: '메시지를 입력하세요',
+                    semanticLabel: '메시지',
+                    variant: TdsTextFieldVariant.box,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                TdsButton(
+                  size: TdsButtonSize.small,
+                  loading: sending,
+                  disabled: sending,
+                  onPressed: send,
+                  child: const Text('전송'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
       children: [
         if (me.role == AppRole.retailer)
           ActionButton(
@@ -349,11 +525,11 @@ class _ChatPageState extends State<ChatPage> {
             onPressed: () =>
                 openPage(context, RequestEditor(peerId: widget.peerId)),
           ),
-        if (widget.requestId.isNotEmpty)
+        if (requestId.isNotEmpty)
           Item(
             '연결된 요청 보기',
-            subtitle: app.workspace.request(widget.requestId)?.s('product'),
-            onTap: () => openPage(context, RequestDetailPage(widget.requestId)),
+            subtitle: app.workspace.request(requestId)?.s('product'),
+            onTap: () => openPage(context, RequestDetailPage(requestId)),
           ),
         if (rows.isEmpty)
           const EmptyState('아직 메시지가 없어요', '요청에 관한 이야기를 나눠 보세요.'),
@@ -369,6 +545,7 @@ class _ChatPageState extends State<ChatPage> {
                     : CrossAxisAlignment.start,
                 children: [
                   TdsBubble(
+                    withTail: false,
                     background: m.s('senderId') == me.id
                         ? TdsBubbleBackground.blue
                         : TdsBubbleBackground.grey,
@@ -419,36 +596,32 @@ class _ChatPageState extends State<ChatPage> {
               ),
             ),
           ),
-        const Section('메시지 보내기'),
-        Field('메시지', controller: body, multiline: true),
-        AttachmentField(
-          label: '사진',
-          multiple: true,
-          ids: photos,
-          onChanged: (ids) => setState(() => photos = ids),
-        ),
-        ActionButton(
-          '메시지 전송',
-          onPressed: () async {
-            await app.workspace.sendMessage(
-              widget.peerId,
-              messageId,
-              body.text,
-              photos,
-              requestId: widget.requestId,
-            );
-            if (mounted) {
-              setState(() {
-                body.clear();
-                photos = [];
-                messageId = newId();
-              });
-            }
-          },
-        ),
-        const Info(
-          '읽음이나 메시지 전송으로 요청을 수락하거나 수량을 변경하지 않아요. 전송에 실패하면 입력을 유지하며 다시 보낼 수 있어요.',
-        ),
+        if (requestId.isNotEmpty &&
+            me.role == AppRole.retailer &&
+            app.workspace.request(requestId)?.needsReply == true) ...[
+          const FigmaSurface(
+            tinted: true,
+            children: [
+              Item(
+                '업무 답변을 확정해 주세요',
+                subtitle: '채팅 내용과 별도로 미송 처리 방법을 확정하면 기록에 남아요.',
+              ),
+            ],
+          ),
+          ActionButton(
+            '미송 답변하기',
+            onPressed: () => openPage(context, BackorderReplyPage(requestId)),
+          ),
+        ],
+        for (final id in photos) AttachmentPreview(id, compact: true),
+        if (photos.isNotEmpty)
+          Inset(
+            child: TdsTextButton(
+              size: TdsTextButtonSize.small,
+              onPressed: sending ? null : () => setState(() => photos = []),
+              child: const Text('첨부 삭제'),
+            ),
+          ),
       ],
     );
   }
@@ -463,23 +636,32 @@ class NoticesPage extends StatelessWidget {
     return PageFrame(
       title: '알림',
       children: [
+        const PageHeading('새로 확인할 소식'),
         if (notices.isEmpty)
           const EmptyState('새로운 알림이 없어요', '거래처와 요청의 처리 결과가 여기에 모여요.'),
         for (final n in notices)
-          Item(
-            n.s('title'),
-            subtitle: displayTime(n.s('createdAt')),
-            trailing: n.b('read') ? null : const StatusBadge('새 알림'),
-            onTap: () async {
-              try {
-                await app.session.setDestination({...n.data, 'noticeId': n.id});
-                if (context.mounted) await openDestination(context);
-              } catch (error) {
-                if (context.mounted) {
-                  await confirm(context, '알림을 열지 못했어요', error.toString());
-                }
-              }
-            },
+          FigmaSurface(
+            tinted: !n.b('read'),
+            children: [
+              Item(
+                n.s('title'),
+                subtitle: displayTime(n.s('createdAt')),
+                trailing: n.b('read') ? null : const StatusBadge('새 알림'),
+                onTap: () async {
+                  try {
+                    await app.session.setDestination({
+                      ...n.data,
+                      'noticeId': n.id,
+                    });
+                    if (context.mounted) await openDestination(context);
+                  } catch (error) {
+                    if (context.mounted) {
+                      await confirm(context, '알림을 열지 못했어요', error.toString());
+                    }
+                  }
+                },
+              ),
+            ],
           ),
       ],
     );

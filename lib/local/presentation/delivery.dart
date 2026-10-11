@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -57,7 +58,7 @@ class _DeliveryListState extends State<DeliveryList> {
           if (groups.isEmpty)
             EmptyState(
               '지금 전달할 물품이 없어요',
-              '오늘 업무에서 실제 확보한 수량을 기록해 주세요.',
+              '업무에서 실제 확보한 수량을 기록해 주세요.',
               action: widget.onWork == null ? null : '오늘 업무로',
               onAction: widget.onWork,
             ),
@@ -105,6 +106,7 @@ class DeliveryBatchPage extends StatefulWidget {
 }
 
 class _DeliveryBatchPageState extends State<DeliveryBatchPage> {
+  final initialRequests = <String, RequestRecord>{};
   final quantities = <String, TextEditingController>{},
       versions = <String, int>{};
   bool ready = false;
@@ -118,6 +120,7 @@ class _DeliveryBatchPageState extends State<DeliveryBatchPage> {
     for (final id in widget.requestIds) {
       final r = app.workspace.request(id);
       if (r != null) {
+        initialRequests[id] = r;
         quantities[id] = TextEditingController(text: '${r.available}');
         versions[id] = r.version;
       }
@@ -138,50 +141,67 @@ class _DeliveryBatchPageState extends State<DeliveryBatchPage> {
     return PageFrame(
       title: '이번 전달 기록',
       subtitle: '실제로 물품을 전달한 뒤 기록해 주세요',
+      bottom: ActionButton(
+        '실제 전달한 수량 기록',
+        bottom: true,
+        enabled: quantities.values.any((c) => (int.tryParse(c.text) ?? 0) > 0),
+        onPressed: () async {
+          final selected = <String, int>{};
+          for (final e in quantities.entries) {
+            final n = int.tryParse(e.value.text);
+            if (n == null || n < 0) {
+              throw const AppFailure('전달 수량은 0 이상의 정수로 입력해 주세요.');
+            }
+            if (n > 0) selected[e.key] = n;
+          }
+          if (!await confirm(
+            context,
+            '물품을 전달했나요?',
+            '${selected.length}개 요청, 총 ${selected.values.fold<int>(0, (a, b) => a + b)}개 전달을 기록해요. 소매업자의 수령 확인은 별도로 진행돼요.',
+          )) {
+            return;
+          }
+          await app.workspace.deliver(selected, versions, op);
+          if (context.mounted) Navigator.pop(context);
+        },
+      ),
       children: [
         const Info('이번에 전달하지 않는 요청은 0개로 입력해 주세요. 남은 수량은 전달할 목록에 유지돼요.'),
         for (final e in quantities.entries)
           Builder(
             builder: (context) {
-              final r = app.workspace.request(e.key)!;
-              return Column(
+              final r = initialRequests[e.key]!;
+              final count = int.tryParse(e.value.text) ?? 0;
+              return FigmaSurface(
                 children: [
                   Item(
                     '${r.s('product')} · ${r.s('option')}',
                     subtitle:
                         '${r.s('address')} ${r.s('addressDetail')}\n전달 가능 ${r.available}개',
                   ),
-                  Field(
-                    '이번 전달 수량 · ${r.s('product')}',
-                    controller: e.value,
-                    numeric: true,
+                  const Section('이번 전달'),
+                  Center(
+                    child: TdsNumericSpinner(
+                      size: TdsNumericSpinnerSize.large,
+                      number: count,
+                      minNumber: 0,
+                      maxNumber: r.available,
+                      semanticLabel: '이번 전달 수량 · ${r.s('product')}',
+                      onNumberChange: (n) =>
+                          setState(() => e.value.text = '$n'),
+                    ),
                   ),
+                  const TdsSpacing(12),
+                  QuantityRow(
+                    '누적 전달',
+                    '${r.delivered}장 → ${r.delivered + count}장',
+                  ),
+                  QuantityRow('확보 후 전달 대기', '${r.available - count}장'),
+                  QuantityRow('남은 미송', '${r.backorder}장'),
                 ],
               );
             },
           ),
-        ActionButton(
-          '실제 전달한 수량 기록',
-          onPressed: () async {
-            final selected = <String, int>{};
-            for (final e in quantities.entries) {
-              final n = int.tryParse(e.value.text);
-              if (n == null || n < 0) {
-                throw const AppFailure('전달 수량은 0 이상의 정수로 입력해 주세요.');
-              }
-              if (n > 0) selected[e.key] = n;
-            }
-            if (!await confirm(
-              context,
-              '물품을 전달했나요?',
-              '${selected.length}개 요청, 총 ${selected.values.fold<int>(0, (a, b) => a + b)}개 전달을 기록해요. 소매업자의 수령 확인은 별도로 진행돼요.',
-            )) {
-              return;
-            }
-            await app.workspace.deliver(selected, versions, op);
-            if (context.mounted) Navigator.pop(context);
-          },
-        ),
       ],
     );
   }

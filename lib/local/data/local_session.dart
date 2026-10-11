@@ -115,6 +115,13 @@ class LocalSessionRepository extends SessionRepository {
     'terms',
     'privacy',
     'notificationSettings',
+    'salesChannel',
+    'markets',
+    'transport',
+    'activityHours',
+    'activityStart',
+    'activityEnd',
+    'activityDays',
   ];
   @override
   Future<void> saveProfile(Data fields, {bool complete = false}) async {

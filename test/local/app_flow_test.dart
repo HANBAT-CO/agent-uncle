@@ -102,32 +102,40 @@ void main() {
     await tapButton(tester, '시작하기');
     await enter(tester, '계정 이름', '첫 매장');
     await tapButton(tester, '로컬 계정 만들기');
-    await tapButton(tester, '소매업자로 시작');
+    await tester.tap(find.widgetWithText(TdsCheckbox, '소매업자'));
+    await settle(tester);
+    await tapButton(tester, '선택한 역할로 계속');
     for (final e in {
       '매장명·쇼핑몰명': '첫 매장',
       '이름·담당자명': '담당자',
       '연락처': '01012345678',
-      '사업자명': '첫 매장',
-      '사업자등록번호': '1234567890',
-      '주소': '서울 중구',
-      '상세주소': '101호',
     }.entries) {
       await enter(tester, e.key, e.value);
     }
+    await tapButton(tester, '다음');
+    await enter(tester, '사업자명', '첫 매장');
+    await enter(tester, '사업자등록번호', '1234567890');
+    await tapButton(tester, '다음');
+    expect(session.current!.complete, false);
+    expect(find.text('사업자등록증을 첨부해 주세요.'), findsOneWidget);
+    expect(session.current!.s('contact'), '담당자');
+    await tapButton(tester, '사업자등록증 (필수) 첨부');
+    await tapButton(tester, '다음');
+    await enter(tester, '주소', '서울 중구');
+    await enter(tester, '상세주소', '101호');
+    await tapButton(tester, '다음');
+    await tester.tap(find.widgetWithText(TdsCheckbox, '동대문'));
+    await settle(tester);
+    await tapButton(tester, '다음');
+    expect(session.current!.s('address'), '서울 중구');
+    expect(session.current!.list('markets'), ['동대문']);
+    await tapButton(tester, '다음');
     for (final label in ['[필수] 서비스 이용 동의 확인', '[필수] 개인정보 처리 동의 확인']) {
       final checkbox = find.widgetWithText(TdsCheckbox, label);
       await tester.ensureVisible(checkbox);
       await tester.tap(checkbox);
       await settle(tester);
     }
-    await tapButton(tester, '가입 완료');
-    expect(session.current!.complete, false);
-    expect(find.text('사업자등록증을 첨부해 주세요.'), findsOneWidget);
-    expect(find.text('사업자등록증 (필수)'), findsOneWidget);
-    expect(session.current!.s('address'), '서울 중구');
-    expect(session.current!.s('contact'), '담당자');
-    expect(find.text('101호'), findsOneWidget);
-    await tapButton(tester, '사업자등록증 (필수) 첨부');
     await tapButton(tester, '가입 완료');
     expect(session.current!.complete, true);
     for (final label in AppRole.retailer.tabs) {
@@ -163,14 +171,20 @@ void main() {
       );
       await tester.pumpWidget(AgentUncleApp(services: app));
       await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '요청하기'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
       await settle(tester);
-      await tapButton(tester, '새로 작성');
+      await tester.tap(find.text('새로 작성'));
+      await settle(tester);
       await enter(tester, '상품명', '자동 저장 셔츠');
+      await tapButton(tester, '초안 저장 후 닫기');
       await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
       await settle(tester);
       expect(find.byType(RequestEditor), findsNothing);
-      await tester.tap(find.widgetWithText(TdsTextButton, '요청하기'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+      await settle(tester);
+      await tester.tap(find.text('임시저장·다시 요청'));
+      await settle(tester);
+      await tester.tap(find.text('자동 저장 셔츠'));
       await settle(tester);
       expect(find.byType(RequestEditor), findsOneWidget);
       expect(find.text('자동 저장 셔츠'), findsOneWidget);
@@ -244,8 +258,10 @@ void main() {
     for (final label in AppRole.uncle.tabs) {
       expect(find.widgetWithText(TdsTextButton, label), findsOneWidget);
     }
-    expect(find.widgetWithText(TdsTextButton, '요청하기'), findsNothing);
-    await tester.tap(find.widgetWithText(TdsTextButton, '전달'));
+    expect(find.widgetWithText(TdsTextButton, '사입'), findsNothing);
+    await tester.tap(find.widgetWithText(TdsTextButton, '업무'));
+    await settle(tester);
+    await tester.tap(find.text('전달할 물품'));
     await settle(tester);
     expect(find.text('지금 전달할 물품이 없어요'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -277,14 +293,19 @@ void main() {
       for (var i = 1; i < positions.length; i++) {
         expect(positions[i], greaterThan(positions[i - 1]));
       }
-      final scroller = find.byKey(PageStorageKey('${f.retailer}-tab-0'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+      await settle(tester);
+      final scroller = find.byKey(PageStorageKey('${f.retailer}-tab-1'));
       await tester.drag(scroller, const Offset(0, -600));
       await settle(tester);
       final scrollable = find.descendant(
         of: scroller,
         matching: find.byType(Scrollable),
       );
-      final offset = tester.state<ScrollableState>(scrollable).position.pixels;
+      final offset = tester
+          .state<ScrollableState>(scrollable.first)
+          .position
+          .pixels;
       expect(offset, greaterThan(0));
       final card = find.byType(RequestCard).hitTestable().first;
       final requestId = tester.widget<RequestCard>(card).request.id;
@@ -298,9 +319,12 @@ void main() {
       await settle(tester);
       await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
       await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '사입현황'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
       await settle(tester);
-      expect(tester.state<ScrollableState>(scrollable).position.pixels, offset);
+      expect(
+        tester.state<ScrollableState>(scrollable.first).position.pixels,
+        offset,
+      );
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await drainClose(tester, f.close());
@@ -345,7 +369,7 @@ void main() {
         findsOneWidget,
       );
       await tapButton(tester, '이번 전달분 수령 확인');
-      await tapButton(tester, '수령 확인');
+      await tapButton(tester, '3장 수령 확인 · 요청 완료');
       expect(find.text('전달 내역'), findsOneWidget);
       expect(find.widgetWithText(TdsButton, '이번 전달분 수령 확인'), findsNothing);
       expect(find.text('수령 확인'), findsOneWidget);
@@ -375,9 +399,10 @@ void main() {
     );
     await tester.pumpWidget(AgentUncleApp(services: app));
     await settle(tester);
-    await tester.tap(find.widgetWithText(TdsTextButton, '요청하기'));
+    await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
     await settle(tester);
-    await tapButton(tester, '새로 작성');
+    await tester.tap(find.text('새로 작성'));
+    await settle(tester);
     f.store.failNextWrite = true;
     await enter(tester, '상품명', '저장 실패 후 복원');
     expect(find.widgetWithText(TdsButton, '초안 저장 다시 시도'), findsOneWidget);

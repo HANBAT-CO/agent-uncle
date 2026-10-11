@@ -10,19 +10,36 @@ The source inventory contains **416 top-level exports** and **622 recursive
 members**. The latter include namespace types and wrapper metadata, not 622
 visual components. The current ledger has native counterparts for all 416
 top-level exports: 108 runtime exports, 27 hooks, 22 utilities and 259 types.
-**All 416 mappings are partial, not parity-verified.** Of the 622 recursive
-members, 559 have partial mappings and 63 remain pending. The remaining entries
-are mainly optional component IDs and React wrapper metadata, not 63 widgets.
+**All 416 mappings are partial, not parity-verified.** All 622 recursive members
+also have partial native mappings. This includes explicit adaptations for 56
+optional component IDs (absent in the original runtime) and seven React memo
+wrappers, not 63 additional widgets. No inventory entry is left unmapped.
 These counts are not a completion or visual-similarity percentage.
+
+The user explicitly retained **100% pixel, API and Toss-host equivalence** as
+the completion criterion. Documented native adaptations are not an accepted
+substitute. The current implementation does not meet that criterion: React
+DOM/ref/runtime contracts are not reproduced, real Toss-host behavior cannot
+be verified without its implementation or reference environment, and measured
+text/layout differences remain. See the [verification checkpoint](reference/verification.md)
+for the release gate and scoped evidence; passing tests or builds does not clear it.
 
 The authoritative per-API record is [native-coverage.json](reference/native-coverage.json).
 It records native symbols, source files, scoped test evidence, differences and
 remaining work. Its inputs are `native-mapping.json`, `native-families.json`,
 `native-additions.json`, `native-completion.json` and generated
-`native-constants.json`; the completion filename does not
+`native-constants.json` / `native-wrappers.json`; the completion filename does not
 mean the migration is complete.
 No empty placeholder is counted as implemented. Passing a widget test does not
 prove visual, motion or whole-component parity.
+
+`component-wrappers.json` is measured directly from the pinned original ESM
+runtime. `TdsComponentWithAs.id` is optional immutable builder metadata, not a
+DOM id, Flutter Key or semantics identifier. The unwrapped constructors for
+SearchField, FullSecureKeypad and Post headings/paragraph replace React's
+`memo.type`; Flutter does not expose or reproduce React memo/forwardRef objects
+or render-call counts. These are documented framework adaptations, not verified
+JavaScript reflection parity.
 
 Implemented subsets include theme/typography/fonts, buttons, badges, checkbox,
 switch, assets, loader, top/bottom information, fields, tab/segmented controls,
@@ -83,6 +100,14 @@ and accessibility tables. Do not apply Flutter text scaling again downstream.
 
 ## Native adaptations and known differences
 
+Button now commits Enter on key down/repeat and Space on release, while
+reserving its press visuals for pointer input. Disabled
+loading has no dimmer; the dots remain mounted through their quick exit, the
+glow fades from its current value, and the label waits 100ms before returning.
+Interrupted loading, delayed work disposal and custom child hit testing have
+regressions backed by the pinned original's lifecycle fixture. This covers
+these contracts only, not the full motion or pixel matrix.
+
 | React / browser contract | Native contract |
 | --- | --- |
 | ReactNode, HTML props, DOM events, refs | Widget slots, named parameters, native callbacks/controllers; incomplete mappings are listed individually |
@@ -102,6 +127,22 @@ scroll notifications; supply `scrollController` for an explicit target.
 Hidden controls leave native focus/semantics, and reduced motion skips these
 transitions. Those accessibility choices differ from literal transparent DOM.
 Real keyboard/safe-area behavior and motion-frame comparisons remain pending.
+
+Ordinary plain/rich text keeps CJK graphemes together across style and link
+boundaries. Oversized labels, including selectable labels, use preceding natural
+spaces and reshape emergency line endings. The package source comparisons cover
+108 original cases plus 24 mixed-language cases executed plain/rich. Selection
+also has 164 source-backed selector/joining-control cases, each checked with
+and without selection. Single BMP marks retain the preceding CJK context;
+supplementary selectors and ZWNJ keep their original normal break opportunities,
+while ZWJ prevents a normal break. Twelve original-browser suffix-omission cases
+and wider combining/fallback-font differences remain explicit open gaps. Selection
+maps layout-only joiners and line breaks back to original text and UTF-16 ranges,
+preserving genuine source controls and whitespace. Width changes, equivalent
+Text rebuilds and inherited font updates retain forward/reverse selection;
+clear, select-all and character input during rebuilding have regression tests.
+Selectable opaque/custom/WidgetSpan trees remain untouched. Full CSS whitespace,
+Unicode/RTL, gesture and accessibility equivalence remain unverified.
 
 `TdsFontScaleLimit.tdsWeb` and `.tdsMobile` limit independent typography families
 without changing the host values returned by `usePlatform`, `useFontScaleCondition`
@@ -339,6 +380,10 @@ zero; only Paragraph ancestry provides the source link metrics. Original
 touchcancel persistence and dormant CSS hover fill are reproduced. Uniform
 labels use measured fractional line boxes/baselines, Korean keep-all with
 oversized-word fallback, fixed arrow frames and CSS under-edge underlines.
+Emoji/CJK fallback runs with unequal glyph heights now share their logical
+underline line; explicit empty lines still reserve their original indices.
+Package geometry regressions and Android/iOS actual-font checks cover this
+grouping, not arbitrary mixed-size typography or fallback-glyph pixel identity.
 Rich/mixed-font content, other CSS ancestors, early-mount overlapping timelines,
 non-unit-DPR decoration snapping and exhaustive device pixels remain incomplete.
 
@@ -402,14 +447,15 @@ flutter test
 ```
 
 Also run `flutter test` from `packages/tds_mobile_flutter`; root tests do not run
-dependency package tests. The package currently has 434 passing tests and the
-root has a Google OAuth-launch regression test. Real Google authentication is
-not performed by these tests. Kakao remains disabled in the application.
+dependency package tests. The package currently has 525 passing tests. The root
+suite also covers the app's Google/Kakao OAuth-launch buttons, repositories and
+business flows. These tests do not perform real provider authentication.
 
 Optional asset regeneration, from the root:
 
 ```sh
 node tool/tds_source/icons.mjs
+node tool/tds_source/wrappers.mjs --check
 uv run tool/tds_source/fonts.py
 ```
 

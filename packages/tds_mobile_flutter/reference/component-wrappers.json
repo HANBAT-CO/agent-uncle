@@ -1,0 +1,462 @@
+{
+  "sourceVersion": "2.5.1",
+  "javascriptSha256": "bd00a3368f54e33ef1b4f03b5d3a28df19476ad4b787d6f407e08e08f8613053",
+  "scope": "Pinned original ESM runtime metadata, not rendered visual/behavioral parity.",
+  "metadata": [
+    {
+      "source": "AlertDialog.AlertButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.Icon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.Image.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.Lottie.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.Text.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.Video.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.ContentIcon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.ContentImage.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.ContentLottie.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Asset.ContentVideo.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Badge.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Button.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Chip.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItem.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItemLeftCard.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItemLeftIcon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItemLeftImage.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItemRightIcon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ChipItemRightNumber.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ConfirmDialog.ConfirmButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ConfirmDialog.CancelButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "FullSecureKeypad.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "IconButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListFooter.Icon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListHeader.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListHeader.TitleTextButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.AssetIcon.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.AssetImage.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.AssetText.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.AssetLottie.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.LeftContainer.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.Text.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "ListRow.LeftText.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Loader.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Paragraph.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Paragraph.Text.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Paragraph.Badge.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Paragraph.Link.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Post.H1.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "Post.H2.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "Post.H3.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "Post.H4.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "Post.Paragraph.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "RootTopNavigation.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "SearchField.type",
+      "property": "type",
+      "ownProperty": true,
+      "valueType": "object",
+      "wrapper": "react.memo",
+      "innerWrapper": "react.forward_ref",
+      "renderType": "function"
+    },
+    {
+      "source": "Selector.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TableRow.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Text.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TextButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.LowerCTAButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.TitleParagraph.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.TitleTextButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.SubtitleParagraph.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.SubtitleParagraph.Text.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.SubtitleParagraph.Badge.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.SubtitleParagraph.Link.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "Top.SubtitleTextButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TopNavigation.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TopNavigationBackButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TopNavigationIconButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    },
+    {
+      "source": "TopNavigationTextButton.id",
+      "property": "id",
+      "ownProperty": false,
+      "valueType": "undefined",
+      "wrapper": "react.forward_ref"
+    }
+  ]
+}

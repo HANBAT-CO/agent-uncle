@@ -4,6 +4,30 @@ Scope: native Flutter (Android/iOS/Web), original Toss Product Sans, reference
 packages pinned at 2.5.1. This is an **incomplete migration checkpoint**, not a
 whole-library parity certificate.
 
+## Strict completion gate
+
+The user explicitly chose **100% pixel, API and Toss-host equivalence** on
+2026-10-11. Native adaptations, disclosed differences and passing supported
+subsets are not accepted as the final completion standard. No export has been
+promoted to parity-verified, and the requested completion-gated commits/push
+have not been performed.
+
+This gate is not satisfied. Native Dart widgets/controllers do not reproduce
+the original React DOM/ref/object-reflection/rendering contracts. No real Toss
+host SDK, bridge specification or test application is available; injected test
+doubles cannot establish equivalence to an unobserved implementation. Existing
+pixel evidence also contains differences, including later-line baselines,
+underlines and the 100-line Footer at 160% (3413.484375px native flow versus
+3379.6875px source flow). Arbitrary span layouts and broader motion, compound,
+Unicode/RTL and accessibility matrices remain incomplete. The ordinary
+selectable emergency-wrap path has new scoped evidence below; it does not
+establish those wider contracts.
+
+These are explicit blockers, not tolerances or approved exceptions. More native
+regression tests alone cannot certify the missing React and real-host contracts.
+Changing the runtime architecture or substituting a different completion
+standard requires a separate user decision; neither has been authorized.
+
 ## API coverage
 
 | Export kind | Original | Partial native mapping | Pending |
@@ -14,8 +38,8 @@ whole-library parity certificate.
 | Types | 259 | 259 | 0 |
 | Total top-level exports | 416 | 416 | 0 |
 
-Recursive members add 622 entries: 559 partial, 63 pending. Combined ledger:
-975 partial, 63 pending. These entries include properties, wrapper metadata
+Recursive members add 622 entries, all with partial native mappings. Combined
+ledger: 1,038 partial, zero unmapped entries. These include properties, wrapper metadata
 and namespace types, not just visual components. No export is parity-verified.
 The generator validates source names,
 mapped file existence, native symbol presence and referenced test-file paths.
@@ -27,7 +51,7 @@ See `native-coverage.json` for individual outstanding work.
 - `flutter analyze`: clean at the final checkpoint.
 - Root `flutter test`: Google OAuth launch regression test passed; no real OAuth
   credentials/browser authorization or Supabase data changes performed.
-- Package `flutter test`: 463 tests passed. Includes all typography categories;
+- Package `flutter test`: 514 tests passed. Includes all typography categories;
   control activation/disabled/loading; spinner hold/drag/disposal; field raw vs
   display values, formatting and IME; tab/segment keyboard and semantics;
   intrinsic-width dialog footer wrapping; modal dimmer/Escape lifecycle;
@@ -47,7 +71,7 @@ See `native-coverage.json` for individual outstanding work.
   `list_footer_test.dart` adds a regression for source shadow
   percentage-width quantization before centering at 342px and 333.25px widths.
   Final package/root test and analyzer logs:
-  `.context/visual-final-{package,root}-{tests,analyze}.log`.
+  `.context/tds-fallback-underline-{package,root}-{tests,analyze}.log`.
 - New focused coverage: tooltip strong overshoot/reversal/reduced motion;
   WikiText bottom-anchor flip, Escape and keyboard-focus return; agreement
   immediate semantics with delayed color and timer disposal; fit-content menus;
@@ -1192,27 +1216,586 @@ flutter drive --no-pub --driver=test_driver/tds_native_driver.dart \
   --target=integration_test/text_underline_test.dart -d <emulator-or-simulator-id>
 ```
 
+### Rich keep-all and grapheme integrity (2026-10-11)
+
+The shared `TdsKeepAllText` adapter previously transformed only `Text.data`.
+An ordinary `Text.rich` tree therefore lost the original inherited
+`word-break: keep-all` across nested color/link spans. The medium TextButton
+at 160% and 130px width produced `자세한 내용 / 을 확인하기`, while the original
+produced `자세한 / 내용을 / 확인하기`. A package regression and an Android
+failing-before run reproduce this discrepancy.
+
+The adapter now transforms contiguous ordinary TextSpan text as one run, then
+redistributes joiners to the original span boundaries. It keeps styles,
+recognizers, pointer callbacks, cursor, locale, spell-out settings, accessibility
+labels and identifiers. Source objects are not mutated; unchanged subtrees retain
+identity. WidgetSpan and custom span subclasses are opaque boundaries and remain
+unchanged, rather than losing their custom behavior through cloning.
+
+Joiners are inserted only between extended grapheme clusters. Previously the
+decomposed spelling `한글` received joiners between its constituent jamo,
+visibly separating them. It now shapes as `한글`, without normalizing or replacing
+the caller's string. Package tests compare composed/decomposed original-font
+advances at 17/27/34px. Tests also cover combining accents, BMP/supplementary
+variation selectors and graphemes crossing valid TextSpan boundaries. Each
+TextSpan still must contain valid UTF-16, as required by Flutter; invalid
+individual surrogate halves are not repaired by this adapter.
+
+Rich accessibility labels use the original text, never inserted joiners.
+Ordinary selectable text now retains keep-all through a selection-container
+adapter that maps layout UTF-16 offsets back to source offsets. Previously plain
+selection copied the injected U+2060 characters, while rich text bypassed
+keep-all to avoid that corruption. Both paths now return the original selected
+substring, including partial/reversed ranges, genuine source joiners, decomposed
+graphemes and whitespace. Selection content lengths compose correctly with other
+text widgets. Flutter still owns hit testing, handle layers, selection paint,
+word/paragraph gestures and context-menu actions. The original span objects
+remain unchanged. Opaque custom spans and WidgetSpan subtrees bypass rewriting
+when selectable, because their content/offset model is not known here.
+
+At this earlier checkpoint, selectable text did not receive width-dependent
+emergency correction. The newer selectable-emergency follow-up below supersedes
+that limitation for ordinary TextSpan trees. Arbitrary rich spans, the full
+gesture/accessibility matrix and CSS whitespace equivalence are not established.
+
+`word-break.json` contains 108 new original-browser specimens: six TextButton
+sizes × three font scales × three widths × plain/nested color-only children.
+The content-only probe is `.context/tds-rich-keepall-source.js`, run against the
+pinned `text-buttons` fixture with `variant=clear`. Only the fixture host width
+and label contents change; package code and stylesheets do not.
+All 108 specimens now match original line membership. The ten former failures
+were reproduced with strict source expectations in
+`.context/tds-emergency-wrap-before.log`. Before emergency splitting an oversized
+word, the adapter now uses its preceding natural space. The original and native
+result is `자세 / 한 / 내용 / 을 / 확인 / 하기`, not the former native
+`자세 / 한 내 / 용을 / 확인 / 하기`.
+
+Another 24 independently measured original cases cover mixed Korean/Latin words
+at 60/90/130/210px and 40px semibold, each executed for plain and nested-color
+forms (48 additional executions). Latin fragment endings are reshaped after
+the native full-context break. At 90px, the `Latin` prefix inside
+`LatinTextCombined` measures 89.921875px because of nT kerning, but standalone
+`Latin` measures 93.6328125px. The source backtracks to `Lati`. It does not then
+greedily expand other lines: at 60px the source keeps `La`, even though reshaped
+`Lat` would fit. The tests cover both boundaries. The capture probe explicitly
+waits for `document.fonts.load`; the font-ready recapture exactly matches the
+earlier 24 rows. No Flutter-derived expectation replaced source measurements.
+
+Width-dependent rewrites use cloned spans in a render proxy before its normal
+RichText child lays out. The supported synchronous layout callback updates the
+child; the paragraph does not mutate itself during layout. Intrinsic/dry
+measurements use independent TextPainters and do not mutate live text. Width
+changes restore source spaces. Justification, nowrap, non-finite widths and
+opaque span trees retain their native path. This is a line-membership contract,
+not pixel, baseline or whole-library parity.
+
+Fifteen rich/emergency package tests cover the source matrices, grapheme
+boundaries and shaping, metadata, links/pointer callbacks, source identity,
+custom/widget boundaries, width-only relayout and dry/intrinsic purity. Nine
+selection tests cover actual Copy-menu dispatch, original content/range mapping,
+multiple labels, replacement/empty/disabled scopes, opaque spans and link/word
+selection. This earlier package checkpoint passed 490 tests with a clean analyzer.
+The earlier separate Chrome probe passes
+two glyph-independent layout-string/semantics tests. Its Ahem face does not
+provide Korean glyph advances, so an exploratory hard-coded CJK height assertion
+was discarded; it is not original-font wrapping evidence. The probe is saved at
+`.context/tds_word_break_web_test.dart`; Flutter's browser runner requires placing
+it under `test/` while running, and the temporary test copy was removed afterward.
+
+At the earlier rich/grapheme checkpoint, the full Android emulator and iOS
+Simulator regression suites each passed 12 scenarios. Its focused reruns, after
+the then-current selectable-rich guard, each passed one scenario covering
+plain/rich labels, activation and light/dark at 100/160%.
+All eight original-font captures were regenerated and inspected via
+`.context/tds-word-break-review-{android,ios}.png`.
+The compact `.context/tds-word-break-before-after.png` shows corrected nested
+wrapping and NFD Hangul shaping on Android/100%. Cropped/resized sheets are visual
+review aids, not pixel-comparison inputs. An independent actual-font Web fixture
+has four inspected captures at `.context/tds-word-break-web-{light,dark}-{100,160}.png`;
+its accessible text contains no injected joiners. These are rendered smoke
+checks, not pixel parity thresholds.
+
+The Web fixture loads the bundled Toss faces, but also requests fallback Noto
+fonts for the decomposed sample and reports that it cannot find coverage for
+every missing character. The labels visibly compose correctly after the fix;
+that does not establish original-font glyph identity for the fallback path.
+The headless CPU-rendering warning also remains. Both warnings are retained in
+`.context/tds-rich-keepall-web-console.log`; no extra font was bundled to conceal
+the difference.
+
+Reliable logs are `.context/tds-rich-keepall-package-complete-{tests,analyze}.log`,
+`.context/tds-rich-keepall-chrome-verified-tests.log`,
+`.context/tds-rich-keepall-full-{android,ios}-drive.log`,
+`.context/tds-rich-keepall-final-{android,ios}-drive.log` and the original failing
+Android run `.context/tds-rich-keepall-before-android-drive.log`. The root OAuth
+regression passes, with two existing browser-only tests skipped on the VM, and
+the root analyzer is clean; logs are `.context/tds-rich-keepall-root-{tests,analyze}.log`.
+The earlier `package-tests.log` was written by overlapping diagnostic runs and
+is not verification evidence; the clean final run uses the `package-complete`
+prefix. Earlier test-harness failures are not attributed to the implementation.
+
+The earlier rich/grapheme checkpoint's application builds passed sequentially
+from `lib/main.dart`: Android debug APK, unsigned arm64 iOS Simulator debug build
+(Flutter configuration followed by `xcodebuild`) and Flutter Web. That checkpoint
+restored `FLUTTER_TARGET=lib/main.dart` in `ios/Flutter/Generated.xcconfig`.
+These historical builds do not verify the later emergency/selection changes.
+Build logs use the `.context/tds-rich-keepall-main-`
+prefix (`android`, `ios-config`, `ios-build`, `web`). These are build checks,
+not physical-device or real Toss-host validation. The auxiliary Web fixture
+server on port 5183 was stopped after verification; the existing
+original-reference server on port 5182 was left running.
+
+This fix does not change line heights, later native glyph baselines, underline
+geometry, arrow painting or shadows. The long-line drift and rounded-up overlap
+guard described above remain. Custom spans, full Unicode line-break coverage,
+rich-font fallback/RTL matrices and complete selection behavior are not parity-verified.
+No export is newly marked parity-verified. Google auth and disabled Kakao are
+unchanged.
+
+Reproduce the permanent regressions:
+
+```sh
+cd packages/tds_mobile_flutter
+flutter test --no-pub test/word_break_test.dart test/word_break_rich_test.dart \
+  test/word_break_selection_test.dart
+cd ../..
+flutter drive --no-pub --driver=test_driver/tds_native_driver.dart \
+  --target=integration_test/text_word_break_test.dart -d <emulator-or-simulator-id>
+```
+
+### Emergency wrapping and selection follow-up
+
+The latest focused native suite passes three scenarios on both Android and iOS:
+the earlier rich/grapheme cases, oversized Korean/Latin endings, and selectable
+plain/rich labels in light/dark at 160%. The Copy action is dispatched through
+the actual native selection menu callback, with only the platform clipboard
+channel captured so no simulator/host clipboard is overwritten. Both platforms
+produce the original source string. This verifies native layout and Flutter
+selection contracts, not physical-device handles or real OS clipboard services.
+
+All eight latest native selection captures were inspected through
+`.context/tds-selection-review-{android,ios}.png`. Selection highlighting is
+visible for both plain/rich labels in both themes. The fixture explicitly owns
+and focuses the SelectionArea's FocusNode, then schedules an additional raster
+frame before capturing; it does not alter production selection painting. The
+latest focused logs are `.context/tds-selection-final-{android,ios}-drive.log`.
+
+After the focus/capture adjustment, the complete native regression suite was
+rerun on both engines. Both passed all 12 scenarios, including existing mixed
+input order, Footer descendant color/context lifecycles, arrows, shadows and
+text geometry. Latest full-suite logs are
+`.context/tds-selection-full-{android,ios}-drive.log`. Driver teardown adds one
+to Flutter's displayed counter; it is not a thirteenth application scenario.
+Android's slow-frame/IME diagnostics and the driver's long-request notices are
+retained in the logs, not reclassified as passing performance/IME coverage.
+
+All 12 emergency captures were inspected through
+`.context/tds-emergency-review-{android,ios}.png`. A separate actual-font Web
+fixture asserts the same three line-membership cases for plain/rich labels in
+light/dark. All six pages report PASS, preserve original accessible text and
+retain button activation. The six captures were inspected through
+`.context/tds-emergency-review-web.png`. These cropped/resized sheets are visual
+review aids, not pixel-diff inputs. The Web run reports the headless CPU-rendering
+warning, but no missing-font-coverage warning for these six cases. The earlier
+NFD fallback warning described above is not reclassified as fixed.
+
+`test/tds_selection_web_test.dart` adds two permanent Chrome copy/replacement/
+disabled-scope checks. Together with the existing line-box/underline browser
+tests, all four pass. They deliberately import only the foundations to avoid
+the unrelated Flutter browser test-server `host.dart.js` collision and use Ahem,
+not original-font pixel expectations. Native captures and the actual-font Web
+fixture provide separate rendering evidence.
+
+The reliable latest package logs are
+`.context/tds-selection-final-package-{tests,analyze}.log` (490 tests, clean
+analyzer). Chrome output is `.context/tds-selection-chrome-tests.log`.
+The latest root analyzer and Google OAuth launch regression also pass, with
+logs `.context/tds-selection-final-root-{analyze,tests}.log`. The OAuth test is
+local and does not authorize a real account or change Supabase data.
+The failed-before selection proof is `.context/tds-selection-before.log`.
+Temporary selection-harness failures were traced to nested registrars queuing
+post-frame callbacks from idle microtasks; `tester.pump()` without a scheduled
+frame does not flush those callbacks. The permanent tests schedule and flush
+the nested registrar frames before directly dispatching selection events.
+They do not change expected text to accommodate the implementation.
+
+The final application builds for this emergency/selection checkpoint all passed
+sequentially from `lib/main.dart`: Android debug APK, unsigned arm64 iOS Simulator
+and Flutter Web. Logs are
+`.context/tds-selection-main-{android,ios-config,ios-build,web}.log`.
+The Simulator binary was checked with `lipo` and is arm64;
+`ios/Flutter/Generated.xcconfig` records `FLUTTER_TARGET=lib/main.dart`.
+These build checks do not establish pixel, physical-device or Toss-host parity.
+
+An initial selectable emergency-wrap experiment was **not retained**. Its
+character-extension regression expected `LatinTextComb` but selected
+`LatinTextCombined 다음`. The candidate and its test are preserved only under
+gitignored `.context/tds-selectable-emergency-candidate{,-test}.dart`, with the
+failure recorded in `.context/tds-selectable-emergency-candidate.log` and
+`.context/tds-selectable-emergency-character-probe.log`. At that checkpoint the
+root cause was unresolved. Production `word_break.dart` was restored to the
+earlier verified implementation; its content hash matched those historical
+application build records. The restored package suite passed all 490 tests:
+`.context/tds-strict-restored-package-tests.log`. No failing experimental test
+or diagnostic logging was retained in the package. The follow-up below is a new
+implementation and verification, not a retroactive claim that this candidate passed.
+
+Post-restoration package/root analyzers are clean; the local Google OAuth launch
+regression passes one test and the Chrome regressions pass all four tests again.
+Fresh logs are `.context/tds-strict-restored-{package,root}-analyze.log`,
+`.context/tds-strict-restored-root-tests.log` and
+`.context/tds-strict-restored-chrome-tests.log`. Wrapper/coverage checks, Dart
+formatting and `git diff --check` also pass. These checks confirm the retained
+checkpoint, not satisfaction of the strict completion gate.
+
+### Selectable emergency wrapping and rebuild lifecycle
+
+Ordinary selectable TextSpan trees now use the same emergency-wrap layout as
+non-selectable text. Source offsets are mapped across both inserted keep-all
+joiners and width-dependent separators. Genuine source controls, spaces and
+newlines remain in Copy. Word/paragraph selection and reversed dragging use
+original source boundaries rather than treating layout-only newlines as content.
+Opaque/custom/WidgetSpan selectable trees still bypass rewriting.
+
+The rejected character-extension case is now reproduced and fixed: the exact
+right edge of a selectable rectangle is excluded by `Rect.contains`. A synthesized
+caret on that edge was treated as a drag beyond the paragraph and selected the
+suffix. Synthesized coordinates are kept inside the boundary; genuine zero-width
+source controls are disambiguated with logical character movement. No Flutter
+SDK file or original reference expectation was modified.
+
+Equivalent Text rebuilds dispose native selection fragments before layout.
+The adapter caches original offsets before that disposal and restores them after
+registration. Clearing during the gap previously unregistered a child while its
+parent was iterating the live list. Clear now traverses a snapshot; logical content
+length/presence stays stable throughout layout-only fragment replacement. Clear
+cancels restoration and deferred input. Source-based select-all/character commands
+return their logical result immediately; commands needing native fragments retain
+their order until registration finishes. Scheduled work is invalidated by source
+replacement, newer events and disposal.
+
+`word_break_selection_emergency_test.dart` adds 18 tests. They cover all 108 pinned
+TextButton specimens and all 24 mixed-language specimens in plain/rich forms;
+original Copy/ranges; width-only and rebuilt reflow; inherited font changes;
+forward/reverse selection; clear and select-all during rebuilding; ordered
+character input and deferred word/character ordering; real zero-width controls
+and graphemes; word/paragraph dragging;
+and SelectionArea long press. The source matrices remain unchanged.
+
+Latest automated checks on this implementation:
+
+- Package suite: 508 passed; package/root analyzers clean.
+- Root Google OAuth-launch regression: one passed, with no real authorization.
+- Chrome: seven passed across `tds_line_box_web_test.dart` and
+  `tds_selection_web_test.dart`. Tests distinguish SelectionArea's synchronous
+  public callbacks from direct child-delegate content/range updates, which do
+  not invoke that callback in Flutter. Clipboard writes remain mocked.
+- Logs: `.context/tds-selection-emergency-final-package-{tests,analyze}.log`,
+  `.context/tds-selection-emergency-final-root-{tests,analyze}.log` and
+  `.context/tds-selection-emergency-final-chrome-all.log`.
+
+Android emulator and iOS Simulator each pass four focused scenarios and all
+12 full native regression scenarios on the same production source. The fourth
+focused scenario uses real long press to select `LatinTextCombined`, checks
+recreated Text at 90→60→240→90 widths, asserts original 60px/90px line membership,
+then invokes the actual Copy menu with only the clipboard platform call mocked.
+It also tests clear and select-all/ordered character commands during rebuilding.
+The full suites retain mixed input order, descendant/footer color propagation,
+reentry/retargeting, original-font geometry, arrows and shadow assertions.
+Logs: `.context/tds-selection-emergency-final-{focused,full}-{android,ios}.log`.
+Driver teardown adds one displayed result; it is not an application scenario.
+
+The final native light/dark, plain/rich captures show only the source Latin word
+highlighted after emergency wrapping. All eight raw captures and both review
+sheets were inspected:
+`.context/tds-native-selection-emergency-{android,ios}-{light,dark}-{plain,rich}.png`
+and `.context/tds-selection-emergency-review-{android,ios}.png`.
+The cropped/resized sheets are visual review aids, not pixel-diff evidence.
+
+The browser runner's Ahem request does not prove original-font glyph geometry.
+The separate release-Web fixture explicitly loads original 400/600 Toss fonts.
+Light and dark runs pass the original 90px and 60px line-membership assertions,
+whole-word selection, rebuilt 90→60→240→90 reflow, source offsets and original
+selected content in both plain/rich forms. Both captures were visually inspected:
+`.context/tds-selection-emergency-web-{light,dark}.png`. The fixture initially
+inherited Material's 0.25px body letter spacing, whereas the original computed
+style is 40px/600/Toss Product Sans/normal spacing/50.08px line height. Moving the
+fixture's TDS provider inside Scaffold removed that harness contamination without
+changing original expectations or forcing application text to ignore caller styles.
+The browser reports CPU-only CanvasKit rendering; that is recorded, not hidden
+or treated as pixel equality. These captures are not image-diff certificates.
+
+Main application builds also pass on the same production implementation:
+Android debug APK, unsigned arm64 iOS Simulator and Flutter Web, run sequentially.
+`ios/Flutter/Generated.xcconfig` targets `lib/main.dart`, and `lipo` confirms the
+Simulator executable is arm64. Logs use the
+`.context/tds-selection-emergency-main-{android,ios-config,ios-build,web}.log`
+paths. The quiet Xcode build returned exit code 0; its log may be empty.
+The temporary gallery server on port 5183 was stopped after verification; the
+existing original-reference server on port 5182 was preserved.
+
+Native real-host behavior, every rendering pixel, arbitrary spans and complete
+gesture/accessibility matrices remain outside these claims.
+
+### Fallback-font underline line grouping
+
+`RenderTdsTextUnderline` previously grouped selection boxes by their tight top
+coordinate. One logical line can contain multiple fallback fonts with different
+glyph bounds. On the iOS Simulator, `A🙂B` produced Latin boxes at approximately
+0.7–22px and an emoji box at -2.9–24px. The renderer treated these as separate
+lines and painted two underlines. Hanja and other emoji sequences reproduced
+the same grouping problem.
+
+The renderer now requests `BoxHeightStyle.max`, which gives every run on the
+same line a shared vertical extent. Horizontal range boxes remain tight.
+Zero-width newline boxes still reserve their line indices without widening a
+visible underline. This does not change glyph layout/painting, text selection,
+the existing multiline flow guard or the source's undecorated ellipsis.
+The [Flutter API contract](https://api.flutter.dev/flutter/dart-ui/BoxHeightStyle.html)
+explicitly distinguishes per-run `tight` heights from shared per-line `max`
+heights.
+
+Two permanent `text_button_test.dart` regressions reproduce unequal run heights
+and preserve leading/intervening empty lines across LTR/RTL and start/center/right
+alignment. The VM test runner does not load system fallback fonts, so these
+tests deliberately use different explicit run sizes to exercise the geometry.
+They do **not** claim mixed-size typography equivalence. The first regression
+fails before the production change with two rectangles instead of one; all 18
+TextButton tests pass afterward. Logs:
+`.context/tds-fallback-underline-unit-{before,after}.log`.
+
+The focused native fixture `integration_test/text_underline_test.dart` now has
+three scenarios. Its new actual-font scenario covers `A🙂B`, `토스 😀 글자`,
+`A❤️B`, `A漢B`, family/skin-tone emoji, intervening empty lines and a leading
+empty line. Underline counts, original CSS line indices and activation pass
+on Android and iOS in light/dark at 100/160%. The preexisting explicit-break
+and long-baseline-drift scenarios also pass. Driver teardown adds one displayed
+test result; it is not a fourth application scenario. Logs:
+`.context/tds-fallback-underline-focused-{android,ios}.log`.
+
+The pinned React TextButton content-only probe shows a single underline for
+`A🙂B` in all six sizes, without package/CSS changes. An ellipsis probe also
+confirmed that the original does not decorate the ellipsis; no speculative
+ellipsis change was applied. Explicit native newlines remain stress fixtures,
+not evidence that literal React string newlines bypass normal CSS whitespace
+collapse. Original probe/capture:
+`.context/tds-fallback-underlines-source.js` and
+`.context/tds-fallback-underlines-source-ios.png`.
+
+The before/after review image
+`.context/tds-fallback-underline-before-after.png` visibly removes the duplicate
+stroke. All eight native light/dark and 100/160% captures were reviewed via
+`.context/tds-fallback-underline-review-{android,ios}.png`. These are resized
+visual aids, not source/native pixel-diff certificates. System emoji/fallback
+glyph identity and every arbitrary span/RTL combination remain unverified.
+
+On the current production implementation, the package suite passes 510 tests,
+root/package analysis is clean, the root mocked Google OAuth regression passes,
+and the combined Chrome foundation/selection suite passes seven tests. Logs:
+`.context/tds-fallback-underline-package-{tests,analyze}.log`,
+`.context/tds-fallback-underline-root-{tests,analyze}.log` and
+`.context/tds-fallback-underline-chrome-tests.log`.
+
+The full native suite also passes all 12 application scenarios on each platform,
+including input ordering, descendant colors, tooltip lifecycles, original-font
+geometry, arrows and Footer shadows. Teardown again adds a displayed result.
+Logs: `.context/tds-fallback-underline-full-{android,ios}.log`.
+
+The release Web fixture explicitly loads the bundled Toss 500 face, then uses
+the platform's fallback path for characters that face does not contain. After
+network idle and two further animation frames, its exported verification
+callback resamples the actual render geometry. All eight specimens pass in
+light/dark at 100/160% Android mobile-typography profiles (32 checks); all four
+captures were viewed. Evidence:
+`.context/tds-fallback-underline-web-{light,dark}-{100,160}.{json,png}`.
+Console logs at the corresponding `-console.log` paths contain both the known
+CPU-only CanvasKit warning and a warning that Noto cannot cover all missing
+characters. These are **not** suppressed or treated as proof of fallback-glyph
+identity. There were no application exceptions in these captures. Geometry
+success does not establish complete Unicode rendering or original pixels.
+
+Main application builds pass sequentially for Android debug APK, unsigned arm64
+iOS Simulator and Flutter Web. `ios/Flutter/Generated.xcconfig` was restored to
+`FLUTTER_TARGET=lib/main.dart`, and `lipo` confirms the Simulator binary is arm64.
+Logs: `.context/tds-fallback-underline-main-{android,ios-config,ios-build,web}.log`.
+The quiet Xcode build returned exit code 0 with an empty log. Wrapper/coverage
+checks still report 1,038 partial mappings, with no whole-export parity claims.
+
+This fixes logical underline grouping only. Later-line glyph/underline drift,
+rounded-up long Footer flow, complete mixed-font pixels, React runtime contracts
+and real Toss-host behavior remain strict completion blockers.
+
+### Cluster-boundary keep-all and joining controls (2026-10-11)
+
+The keep-all adapter lost the preceding CJK classification when a grapheme ended
+in a BMP combining mark or variation selector. A following Latin letter/number
+could therefore start a new line, unlike the original. `_keepAllOffsets` now
+looks behind exactly one BMP mark, retaining the original single-code-unit rule.
+It does not treat a sequence of marks or a supplementary selector as its base
+letter. This is backed by actual 2.5.1 TextButton measurements and the matching
+browser's [ShouldKeepAfterKeepAll implementation](https://github.com/chromium/chromium/blob/145.0.7632.6/third_party/blink/renderer/platform/text/text_break_iterator.cc#L139).
+No joiner is inserted inside an extended grapheme, even across styled spans.
+
+The emergency-word matcher also incorrectly combined normal break opportunities
+after such clusters into one oversized word. It now retains unjoined CJK cluster
+boundaries, and can start an oversized suffix there without forcing its preceding
+short cluster onto another line. Caller-supplied U+2060 still joins the word.
+ZWJ/ZWNJ are retained when finding candidate words; ZWJ follows UAX #14 LB8a and
+prevents a normal break after its cluster, whereas ZWNJ does not. This fixes, for
+example, the original 40px/90px split `앞 / 한AB / C 뒤` when the Hangul syllable
+ends in U+FE0F or ZWJ, while U+E0100 instead permits `앞 한 / ABC / 뒤`.
+
+`reference/word-break.json` retains 176 new plain/nested source specimens at four
+widths, including numeric suffixes, oversized Korean/Latin suffixes and genuine
+source joiners. Of these, 164 have matching full-text line membership. Each is
+checked in the VM both with and without selection (328 comparisons), including
+exact copied content and source UTF-16 lengths. New tests cover reverse ranges,
+equivalent label rebuilds at 90/130/210px, character-wise selection across source
+graphemes and genuine source controls. Existing span metadata and emergency-wrap
+tests still pass. Measurement helpers now use whole graphemes and line-wide
+vertical boxes so zero-width marks cannot disappear from the expected text.
+
+The other 12 specimens remain explicitly marked `knownDifference`, not accepted
+exceptions. The original Chromium renderer actually omits the visible suffix for
+three strings when ZWNJ alone is in a color-only span. Both DOM-content probes and
+fresh keyed mounts through the original React props reproduce the same omission.
+The native adapter still displays the complete string. Screenshots
+`.context/tds-cluster-zwnj-{source,react}.png` were inspected; the omitted text is
+still in the original DOM, but its ranges have zero width. Those rows are retained
+as failed equivalence evidence, not silently regenerated from native output.
+
+A broader 312-specimen diagnostic also agrees exactly between the DOM probe and
+fresh React mounts. Native VM line comparisons still differ in 48 specimens:
+the 12 suffix-omission rows above and 36 combining/fallback/shaping rows. Several
+probed accents, tone marks and Hanja are absent from the original bundled font's
+cmap; U+0326 is present and still has a separate shaping/advance discrepancy.
+These failures remain in `.context/tds-cluster-boundary-joincontrols-after.log`.
+The original reference is `.context/tds-cluster-boundary-react-v6.json`; its input
+probe is `.context/tds-cluster-boundary-source.js`. No character normalization,
+fallback-font substitution, hidden suffix workaround or source CSS/package patch
+was used to turn these failures into passes.
+
+Verification on the new code:
+
+- Package 514 tests and 46 focused wrapping/selection tests passed; root/package
+  analysis is clean. Root mocked Google OAuth test and seven Chrome
+  line-box/selection tests passed, without actual authentication or data writes.
+- Android and iOS focused suites each passed five scenarios (driver teardown adds
+  one result). The added scenario verifies original-font line membership, width
+  changes and Copy on five selector/control strings, plain/rich and light/dark.
+  Both host settings resolve the measured text size to 40px. All 44 focused
+  captures were reviewed in `.context/tds-cluster-review-{android,ios}-*.png`.
+- The full Android and iOS suites each passed all 12 application scenarios
+  (plus driver teardown). All 156 captures per platform were inspected through
+  `.context/tds-cluster-full-review-{android,ios}-1.png` through `-13.png`.
+  These resized contact sheets check for visible regressions, not exact pixels.
+- The actual-font Web gallery checks 352 samples per theme. Both light and dark
+  pass all 328 comparable samples and all 352 copy/content checks. The 24 known
+  mismatches per theme are the 12 original suffix-omission rows in both selection
+  modes; the exported result deliberately has `strictPassed: false`. Both Web
+  captures were viewed. CPU-only rendering and Noto missing-character warnings
+  remain in the browser logs; this is not a glyph-completeness or pixel certificate.
+- Main-app builds passed sequentially: Android debug APK, unsigned arm64 iOS
+  Simulator, then Web. The generated iOS config was restored to
+  `FLUTTER_TARGET=lib/main.dart`; `lipo` confirmed the Simulator executable is
+  arm64. This does not verify the previously failing x86_64 Simulator build.
+- Logs use `.context/tds-cluster-boundary-{package,root}-{analyze,tests}.log`,
+  `tds-cluster-boundary-chrome-corrected.log`,
+  `tds-cluster-boundary-native-{android,ios}.log`,
+  `tds-cluster-boundary-full-{android,ios}.log`,
+  `tds-cluster-boundary-main-{android,ios-config,ios-build,web}.log` and
+  `.context/tds-cluster-web-{light,dark}.{json,png}`.
+
+The earlier long-paragraph baseline/flow guard remains untouched. React DOM/ref
+contracts, real Toss host behavior and the strict completion gate remain unmet.
+No export was promoted to parity-verified, and no commit/push was performed.
+
+### Component wrapper metadata audit
+
+`tool/tds_source/wrappers.mjs` reads the same pinned original ESM entrypoint as
+the browser reference and checks its SHA-256 against the inventory. All 56
+declared optional `ComponentWithAs.id` fields are absent (`undefined`) at runtime.
+All seven `.type` fields are React memo wrappers around forwardRef objects.
+No source component is assigned an invented ID or rendered/mutated by this audit.
+
+`component-wrappers.json` records these source facts. `native-wrappers.json`
+records partial native adaptations: the existing nullable `TdsComponentWithAs.id`
+builder metadata and seven unwrapped native constructor tear-offs. Three tests
+check source shape, optional metadata vs native keys, constructor props, callbacks
+and keys. This removes the 63 unmapped inventory entries, not 63 visual bugs.
+There are now 1,038 partial mappings and no unmapped entries; zero exports are
+whole-component parity-verified. React object reflection, mutable static metadata
+and memo render-call counts are not Flutter contracts.
+
+```sh
+node tool/tds_source/wrappers.mjs --check
+node tool/tds_source/coverage.mjs --check
+flutter test --no-pub --platform chrome test/tds_line_box_web_test.dart \
+  test/tds_selection_web_test.dart
+```
+
+### Button loading lifecycle and keyboard follow-up (2026-10-11)
+
+A fresh source audit found six concrete differences: ordinary Button committed
+Enter on release instead of keydown/repeat and incorrectly showed pointer
+press visuals for keyboard input; disabled-loading painted a dimmer;
+loading dots and glow disappeared immediately on exit; and the label skipped the
+source's 100ms return delay. The new `test/button_lifecycle_test.dart` initially
+failed all seven source-contract cases. The corrected implementation also tests
+custom child hit testing, disposal during the label delay, and a disabled state
+interrupting that delay.
+
+The unchanged `@toss/tds-mobile@2.5.1` was exercised in Chromium using
+`?family=button-lifecycle`. Trusted Enter down/repeat/up followed by Space
+down/up produced click totals 1/2/2/2/3. Holding Enter retained scale 1; the
+native regression initially failed at scale .96 before separating pointer visuals. Both fill and weak disabled-loading
+states have zero dimmer opacity. During exit, the original retains the dots and
+glow while the label stays at zero; after exit the dots are removed, glow is
+zero and label is one. Reproduce the state checks with
+`tool/tds_source/browser-probes/button-lifecycle.js`. Local original-only
+observations are in `.context/tds-button-original-observations.json`.
+
+Native fixes retain dot instances through interrupted exits, cancel stale label
+timers, fade the glow from its current opacity and stop animation tickers after
+exit/disposal. The decorative glow ignores hit testing while remaining mounted.
+TdsButton's public constructor is unchanged. The internal pressable has an
+optional keyboardPressEffect flag, defaulting to its existing behavior. Enter-repeat behavior also applies to
+other controls that explicitly opt into `activateOnEnterDown`.
+
+Final validation: 525 package tests passed (11 Button lifecycle regressions),
+seven Chrome selection/line-box tests passed, root application regression passed,
+`flutter analyze` reported no issues, and the standalone gallery web release
+build passed. The pinned-source inventory/wrapper checks and original-browser
+Button probe passed. The source-tool lockfile was repaired so `npm ci` also
+passes in the source workspace without changing pinned library versions.
+
+This does not
+resolve the documented multiline renderer discrepancy, arbitrary React DOM/ref
+contracts, real Toss-host integration, or the full component/state pixel matrix.
+Android/iOS device tests were not rerun for this follow-up.
+
 ## Next required work
 
 1. Finish existing public prop/compound contracts, motion interruption,
    native text selection/context menus and nested modal focus restoration.
-2. Finish remaining compound contracts and the 63 pending recursive entries.
+2. Finish remaining compound contracts beyond their current partial mappings.
    BottomCTA compounds, FontScaleLimit Web/Mobile, ListRow.Typography and
    paragraphVariables and all asset-frame constant descendants now have audited
    partial mappings. PortalContext Provider/Consumer now have nullable native
    target adapters; arbitrary React context and wrapper metadata still differ.
    BottomCTA's DOM containerStyle/ref and remaining Button props, arbitrary
    child sizing and device keyboard/safe-area behavior are not fully equivalent.
-3. Complete native type/utility/hook adapters with documented DOM-only
-   differences. Real host security and toast integrations remain unimplemented;
+3. Audit native type/utility/hook adapters without treating documented DOM-only
+   differences as accepted equivalence. Real host security and toast integrations remain unimplemented;
    local toast persistence and an injected host bridge are now tested;
    native accessory fallback needs its full placement/lifecycle matrix. The user
    confirmed there is no host SDK/bridge documentation or test app. Self-validation
    uses injected contract tests, platform haptic channel tests and local engines;
    it cannot establish real Toss host/security behavior.
 4. Expand paired fixtures to error/disabled/pressed/loading, multiline, all
-   sizes, all scales, dark/light and frame-by-frame motion. Establish reviewed
-   golden tolerances per component, not an aggregate similarity percentage.
+   sizes, all scales, dark/light and frame-by-frame motion. Record exact
+   per-component differences; nonzero differences remain open gaps under the
+   strict criterion, not an aggregate similarity percentage or an accepted tolerance.
    All 20 typography types now have source-backed first-baseline/flow checks;
    correct each later native line advance together with rounded-up multiline
    flow without breaking selection, semantics, glyphs/diacritics or mixed spans,

@@ -22,8 +22,7 @@
     },
     "members": 622,
     "allStatus": {
-      "partial": 975,
-      "pending": 63
+      "partial": 1038
     }
   },
   "exports": [
@@ -1379,13 +1378,21 @@
             {
               "source": "tds-mobile:AlertDialog.AlertButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1566,13 +1573,21 @@
             {
               "source": "tds-mobile:Asset.Icon.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1599,13 +1614,21 @@
             {
               "source": "tds-mobile:Asset.Image.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1632,13 +1655,21 @@
             {
               "source": "tds-mobile:Asset.Lottie.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1663,13 +1694,21 @@
             {
               "source": "tds-mobile:Asset.Text.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1696,13 +1735,21 @@
             {
               "source": "tds-mobile:Asset.Video.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1727,13 +1774,21 @@
             {
               "source": "tds-mobile:Asset.ContentIcon.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1758,13 +1813,21 @@
             {
               "source": "tds-mobile:Asset.ContentImage.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1789,13 +1852,21 @@
             {
               "source": "tds-mobile:Asset.ContentLottie.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -1822,13 +1893,21 @@
             {
               "source": "tds-mobile:Asset.ContentVideo.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -9732,13 +9811,21 @@
         {
           "source": "tds-mobile:Badge.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -10604,25 +10691,35 @@
       ],
       "verified": [
         "test/interaction_test.dart: activation, loading/disabled/inert",
-        "light xlarge initial eight-color/variant browser comparison, not a parity pass"
+        "light xlarge initial eight-color/variant browser comparison, not a parity pass",
+        "test/button_lifecycle_test.dart: Enter down/repeat, Space release, disabled-loading dimmer, retained loader/glow exit, delayed label/reentry/disposal and child hit testing",
+        "tool/tds_source/browser-probes/button-lifecycle.js: pinned React runtime lifecycle checks; trusted Chromium Enter/Space input checked separately"
       ],
       "differences": [
         "Native font rasterization differs from browser rasterization."
       ],
       "remaining": [
-        "Full size/theme/font-scale/state visual matrix; loading motion timeline; all custom-color cases."
+        "Full size/theme/font-scale/state visual matrix; complete motion interruption and dynamic color/variant timelines; all custom-color cases."
       ],
       "members": [
         {
           "source": "tds-mobile:Button.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -10851,13 +10948,21 @@
         {
           "source": "tds-mobile:Chip.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -10884,13 +10989,21 @@
         {
           "source": "tds-mobile:ChipItem.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -10915,13 +11028,21 @@
         {
           "source": "tds-mobile:ChipItemLeftCard.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -10963,13 +11084,21 @@
         {
           "source": "tds-mobile:ChipItemLeftIcon.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -11011,13 +11140,21 @@
         {
           "source": "tds-mobile:ChipItemLeftImage.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -11078,13 +11215,21 @@
         {
           "source": "tds-mobile:ChipItemRightIcon.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -11126,13 +11271,21 @@
         {
           "source": "tds-mobile:ChipItemRightNumber.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -11678,13 +11831,21 @@
             {
               "source": "tds-mobile:ConfirmDialog.ConfirmButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -11709,13 +11870,21 @@
             {
               "source": "tds-mobile:ConfirmDialog.CancelButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -12560,13 +12729,21 @@
         {
           "source": "tds-mobile:FullSecureKeypad.type",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsFullSecureKeypad.new"
+          ],
+          "files": [
+            "lib/src/components/keypad.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
           ],
           "members": []
         }
@@ -13098,13 +13275,21 @@
         {
           "source": "tds-mobile:IconButton.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -13233,13 +13418,21 @@
             {
               "source": "tds-mobile:ListFooter.Icon.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -13454,13 +13647,21 @@
         {
           "source": "tds-mobile:ListHeader.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         },
@@ -13536,13 +13737,21 @@
             {
               "source": "tds-mobile:ListHeader.TitleTextButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -13791,13 +14000,21 @@
         {
           "source": "tds-mobile:ListRow.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         },
@@ -13829,13 +14046,21 @@
             {
               "source": "tds-mobile:ListRow.AssetIcon.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -13869,13 +14094,21 @@
             {
               "source": "tds-mobile:ListRow.AssetImage.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -13909,13 +14142,21 @@
             {
               "source": "tds-mobile:ListRow.AssetText.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -13949,13 +14190,21 @@
             {
               "source": "tds-mobile:ListRow.AssetLottie.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -14024,13 +14273,21 @@
             {
               "source": "tds-mobile:ListRow.LeftContainer.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -14100,13 +14357,21 @@
             {
               "source": "tds-mobile:ListRow.Text.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -14213,13 +14478,21 @@
             {
               "source": "tds-mobile:ListRow.LeftText.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -14461,13 +14734,21 @@
         {
           "source": "tds-mobile:Loader.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -15286,13 +15567,21 @@
         {
           "source": "tds-mobile:Paragraph.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         },
@@ -15318,13 +15607,21 @@
             {
               "source": "tds-mobile:Paragraph.Text.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -15373,13 +15670,21 @@
             {
               "source": "tds-mobile:Paragraph.Badge.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -15407,13 +15712,21 @@
             {
               "source": "tds-mobile:Paragraph.Link.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -16179,13 +16492,21 @@
             {
               "source": "tds-mobile:Post.H1.type",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsPostH1.new"
+              ],
+              "files": [
+                "lib/src/components/post.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
               ],
               "members": []
             }
@@ -16212,13 +16533,21 @@
             {
               "source": "tds-mobile:Post.H2.type",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsPostH2.new"
+              ],
+              "files": [
+                "lib/src/components/post.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
               ],
               "members": []
             }
@@ -16245,13 +16574,21 @@
             {
               "source": "tds-mobile:Post.H3.type",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsPostH3.new"
+              ],
+              "files": [
+                "lib/src/components/post.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
               ],
               "members": []
             }
@@ -16278,13 +16615,21 @@
             {
               "source": "tds-mobile:Post.H4.type",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsPostH4.new"
+              ],
+              "files": [
+                "lib/src/components/post.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
               ],
               "members": []
             }
@@ -16311,13 +16656,21 @@
             {
               "source": "tds-mobile:Post.Paragraph.type",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsPostParagraph.new"
+              ],
+              "files": [
+                "lib/src/components/post.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
               ],
               "members": []
             }
@@ -16844,13 +17197,21 @@
         {
           "source": "tds-mobile:RootTopNavigation.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -16999,13 +17360,21 @@
         {
           "source": "tds-mobile:SearchField.type",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsSearchField.new"
+          ],
+          "files": [
+            "lib/src/components/input_controls.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
           ],
           "members": []
         }
@@ -17121,13 +17490,21 @@
         {
           "source": "tds-mobile:Selector.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -18121,13 +18498,21 @@
         {
           "source": "tds-mobile:TableRow.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -18325,13 +18710,21 @@
         {
           "source": "tds-mobile:Text.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -18402,13 +18795,21 @@
         {
           "source": "tds-mobile:TextButton.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -18956,13 +19357,21 @@
         {
           "source": "tds-mobile:Top.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         },
@@ -19044,13 +19453,21 @@
             {
               "source": "tds-mobile:Top.LowerCTAButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -19134,13 +19551,21 @@
             {
               "source": "tds-mobile:Top.TitleParagraph.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -19167,13 +19592,21 @@
             {
               "source": "tds-mobile:Top.TitleTextButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -19220,13 +19653,21 @@
             {
               "source": "tds-mobile:Top.SubtitleParagraph.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             },
@@ -19252,13 +19693,21 @@
                 {
                   "source": "tds-mobile:Top.SubtitleParagraph.Text.id",
                   "kind": "runtime",
-                  "status": "pending",
-                  "dart": [],
-                  "files": [],
-                  "verified": [],
-                  "differences": [],
+                  "status": "partial",
+                  "dart": [
+                    "TdsComponentWithAs.id"
+                  ],
+                  "files": [
+                    "lib/src/foundation/api_adapters.dart"
+                  ],
+                  "verified": [
+                    "test/component_wrappers_test.dart"
+                  ],
+                  "differences": [
+                    "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+                  ],
                   "remaining": [
-                    "Native implementation and verification required."
+                    "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
                   ],
                   "members": []
                 }
@@ -19307,13 +19756,21 @@
                 {
                   "source": "tds-mobile:Top.SubtitleParagraph.Badge.id",
                   "kind": "runtime",
-                  "status": "pending",
-                  "dart": [],
-                  "files": [],
-                  "verified": [],
-                  "differences": [],
+                  "status": "partial",
+                  "dart": [
+                    "TdsComponentWithAs.id"
+                  ],
+                  "files": [
+                    "lib/src/foundation/api_adapters.dart"
+                  ],
+                  "verified": [
+                    "test/component_wrappers_test.dart"
+                  ],
+                  "differences": [
+                    "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+                  ],
                   "remaining": [
-                    "Native implementation and verification required."
+                    "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
                   ],
                   "members": []
                 }
@@ -19341,13 +19798,21 @@
                 {
                   "source": "tds-mobile:Top.SubtitleParagraph.Link.id",
                   "kind": "runtime",
-                  "status": "pending",
-                  "dart": [],
-                  "files": [],
-                  "verified": [],
-                  "differences": [],
+                  "status": "partial",
+                  "dart": [
+                    "TdsComponentWithAs.id"
+                  ],
+                  "files": [
+                    "lib/src/foundation/api_adapters.dart"
+                  ],
+                  "verified": [
+                    "test/component_wrappers_test.dart"
+                  ],
+                  "differences": [
+                    "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+                  ],
                   "remaining": [
-                    "Native implementation and verification required."
+                    "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
                   ],
                   "members": []
                 }
@@ -19395,13 +19860,21 @@
             {
               "source": "tds-mobile:Top.SubtitleTextButton.id",
               "kind": "runtime",
-              "status": "pending",
-              "dart": [],
-              "files": [],
-              "verified": [],
-              "differences": [],
+              "status": "partial",
+              "dart": [
+                "TdsComponentWithAs.id"
+              ],
+              "files": [
+                "lib/src/foundation/api_adapters.dart"
+              ],
+              "verified": [
+                "test/component_wrappers_test.dart"
+              ],
+              "differences": [
+                "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+              ],
               "remaining": [
-                "Native implementation and verification required."
+                "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
               ],
               "members": []
             }
@@ -19506,13 +19979,21 @@
         {
           "source": "tds-mobile:TopNavigation.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -19537,13 +20018,21 @@
         {
           "source": "tds-mobile:TopNavigationBackButton.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -19587,13 +20076,21 @@
         {
           "source": "tds-mobile:TopNavigationIconButton.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }
@@ -19656,13 +20153,21 @@
         {
           "source": "tds-mobile:TopNavigationTextButton.id",
           "kind": "runtime",
-          "status": "pending",
-          "dart": [],
-          "files": [],
-          "verified": [],
-          "differences": [],
+          "status": "partial",
+          "dart": [
+            "TdsComponentWithAs.id"
+          ],
+          "files": [
+            "lib/src/foundation/api_adapters.dart"
+          ],
+          "verified": [
+            "test/component_wrappers_test.dart"
+          ],
+          "differences": [
+            "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+          ],
           "remaining": [
-            "Native implementation and verification required."
+            "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
           ],
           "members": []
         }

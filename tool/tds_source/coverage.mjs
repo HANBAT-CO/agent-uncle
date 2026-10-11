@@ -9,7 +9,7 @@ const inventory = JSON.parse(await readFile(resolve(base, 'reference/api-invento
 const map = JSON.parse(await readFile(resolve(base, 'reference/native-mapping.json')));
 // Audited families keep related constructor/compound prop adaptations together.
 // Each family remains partial until every stated source contract is verified.
-const families = (await Promise.all(['native-families.json', 'native-additions.json', 'native-completion.json', 'native-constants.json'].map(async file => JSON.parse(await readFile(resolve(base, 'reference', file)))))).flat();
+const families = (await Promise.all(['native-families.json', 'native-additions.json', 'native-completion.json', 'native-constants.json', 'native-wrappers.json'].map(async file => JSON.parse(await readFile(resolve(base, 'reference', file)))))).flat();
 for (const { sources, ...mapping } of families) {
   for (const source of sources) {
     if (source in map) throw new Error(`Duplicate native mapping: ${source}`);

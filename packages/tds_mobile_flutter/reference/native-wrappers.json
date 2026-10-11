@@ -1,0 +1,217 @@
+[
+  {
+    "sources": [
+      "AlertDialog.AlertButton.id",
+      "Asset.Icon.id",
+      "Asset.Image.id",
+      "Asset.Lottie.id",
+      "Asset.Text.id",
+      "Asset.Video.id",
+      "Asset.ContentIcon.id",
+      "Asset.ContentImage.id",
+      "Asset.ContentLottie.id",
+      "Asset.ContentVideo.id",
+      "Badge.id",
+      "Button.id",
+      "Chip.id",
+      "ChipItem.id",
+      "ChipItemLeftCard.id",
+      "ChipItemLeftIcon.id",
+      "ChipItemLeftImage.id",
+      "ChipItemRightIcon.id",
+      "ChipItemRightNumber.id",
+      "ConfirmDialog.ConfirmButton.id",
+      "ConfirmDialog.CancelButton.id",
+      "IconButton.id",
+      "ListFooter.Icon.id",
+      "ListHeader.id",
+      "ListHeader.TitleTextButton.id",
+      "ListRow.id",
+      "ListRow.AssetIcon.id",
+      "ListRow.AssetImage.id",
+      "ListRow.AssetText.id",
+      "ListRow.AssetLottie.id",
+      "ListRow.LeftContainer.id",
+      "ListRow.Text.id",
+      "ListRow.LeftText.id",
+      "Loader.id",
+      "Paragraph.id",
+      "Paragraph.Text.id",
+      "Paragraph.Badge.id",
+      "Paragraph.Link.id",
+      "RootTopNavigation.id",
+      "Selector.id",
+      "TableRow.id",
+      "Text.id",
+      "TextButton.id",
+      "Top.id",
+      "Top.LowerCTAButton.id",
+      "Top.TitleParagraph.id",
+      "Top.TitleTextButton.id",
+      "Top.SubtitleParagraph.id",
+      "Top.SubtitleParagraph.Text.id",
+      "Top.SubtitleParagraph.Badge.id",
+      "Top.SubtitleParagraph.Link.id",
+      "Top.SubtitleTextButton.id",
+      "TopNavigation.id",
+      "TopNavigationBackButton.id",
+      "TopNavigationIconButton.id",
+      "TopNavigationTextButton.id"
+    ],
+    "dart": [
+      "TdsComponentWithAs.id"
+    ],
+    "files": [
+      "lib/src/foundation/api_adapters.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "All 56 optional static IDs are absent in the original ESM runtime. Nullable immutable metadata on an explicit native builder adapter replaces mutable JavaScript component metadata. It is not a DOM id, Flutter Key or semantics identifier."
+    ],
+    "remaining": [
+      "Native widget classes do not expose JavaScript reflection or mutable static properties. Parent component rendering/behavior remains partial."
+    ]
+  },
+  {
+    "sources": [
+      "FullSecureKeypad.type"
+    ],
+    "dart": [
+      "TdsFullSecureKeypad.new"
+    ],
+    "files": [
+      "lib/src/components/keypad.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H1.type"
+    ],
+    "dart": [
+      "TdsPostH1.new"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H2.type"
+    ],
+    "dart": [
+      "TdsPostH2.new"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H3.type"
+    ],
+    "dart": [
+      "TdsPostH3.new"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "Post.H4.type"
+    ],
+    "dart": [
+      "TdsPostH4.new"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "Post.Paragraph.type"
+    ],
+    "dart": [
+      "TdsPostParagraph.new"
+    ],
+    "files": [
+      "lib/src/components/post.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  },
+  {
+    "sources": [
+      "SearchField.type"
+    ],
+    "dart": [
+      "TdsSearchField.new"
+    ],
+    "files": [
+      "lib/src/components/input_controls.dart"
+    ],
+    "verified": [
+      "test/component_wrappers_test.dart"
+    ],
+    "differences": [
+      "An unwrapped native constructor tear-off replaces React memo.type. Flutter element/key reconciliation replaces React memo/forwardRef objects; it does not promise React render-call counts or JavaScript object identity."
+    ],
+    "remaining": [
+      "Parent component props, pixels and host behavior remain partial. There is no native React wrapper object."
+    ]
+  }
+]

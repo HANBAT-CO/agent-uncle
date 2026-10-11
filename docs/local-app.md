@@ -10,7 +10,9 @@ flutter run -d chrome --web-port 5188 --dart-define=LOCAL_MODE=true
 ```
 
 iOS 또는 Android는 `flutter run -d <device-id> --dart-define=LOCAL_MODE=true`로 실행한다. 기본 진입점은
-`lib/main.dart`이며 `LOCAL_MODE=true`일 때 Supabase 초기화·인증·네트워크 API 호출 없이 실행된다.
+`lib/main.dart`이며 `LOCAL_MODE=true`일 때 Supabase 초기화·인증·업무 API 호출 없이 실행된다.
+사진이 없는 계정의 기본 아바타는 로컬 모드에서도 DiceBear API로 불러온다.
+오프라인에서는 인물 아이콘을 표시하며 [프로필 이미지 안내](profile-images.md)를 참고한다.
 기본 실행은 서버 모드이며 [서버 안내](supabase.md)를 참고한다.
 빈 온보딩부터 시작하며 예시 거래나 계정을 자동 생성하지 않는다.
 
@@ -47,10 +49,11 @@ iOS 또는 Android는 `flutter run -d <device-id> --dart-define=LOCAL_MODE=true`
 
 앱 UI는 TDS의 기존 컴포넌트를 조합하고, 홈·가입·업무 화면은 Figma 01–04의 배치를
 따른다. 각 탭의 Navigator로 작성 화면과 스크롤을 유지하고, 탭 이동 전에 초안 저장을
-완료한다. Paperlogy와 원본 Figma SVG는 유지하고, 승인된 딥그린·라임 팔레트와
-사용자 제공 검정 로고를 적용했다. 이미지는 TDS asset 컴포넌트로 표시하고,
+완료한다. Paperlogy와 원본 Figma SVG는 유지하고, 기존 차콜·오프화이트 팔레트에
+딥그린 강조색과 사용자 제공 검정 로고를 적용했다. 이미지는 TDS asset 컴포넌트로 표시하고,
 카드·탭 컨테이너는 배치와 표면 장식만 담당한다.
 컴포넌트 대응표와 테마 적용 범위는 [Figma 배치 안내](figma-layout.md)를 참고한다.
+홈은 세 번째 탭이며 iOS 26+의 탭·알림 버튼은 [Apple Liquid Glass](liquid-glass.md)를 사용한다.
 
 ## 데이터와 수량 처리
 

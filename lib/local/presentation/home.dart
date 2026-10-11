@@ -287,12 +287,75 @@ class HomeTabPage extends StatelessWidget {
   }
 }
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({required this.onTab, super.key});
   final ValueChanged<int> onTab;
   @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  final _waitingClock = TdsListRowController();
+  final _recheckClock = TdsListRowController();
+  final _waitingAnchor = GlobalKey();
+  final _recheckAnchor = GlobalKey();
+  ScrollableState? _scrollable;
+  bool _motionEnabled = false, _clockFrameScheduled = false;
+  bool _pendingWaitingMotion = false, _pendingRecheckMotion = false;
+  Object? _waitingSignature, _recheckSignature;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final scrollable = Scrollable.maybeOf(context);
+    if (_scrollable != scrollable) {
+      _scrollable?.position.removeListener(_scheduleClockMotion);
+      _scrollable = scrollable;
+      _scrollable?.position.addListener(_scheduleClockMotion);
+    }
+  }
+
+  // Defer each finite TDS effect until its clock actually enters the viewport.
+  // Lower home cards must not finish animating before the user scrolls to them.
+  void _scheduleClockMotion() {
+    if (_clockFrameScheduled) return;
+    _clockFrameScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _clockFrameScheduled = false;
+      if (!mounted || !_motionEnabled) return;
+      bool visible(GlobalKey key) {
+        final box = key.currentContext?.findRenderObject();
+        if (box is! RenderBox || !box.hasSize || !box.attached) return false;
+        final viewport = _scrollable?.context.findRenderObject();
+        final bounds = viewport is RenderBox && viewport.hasSize
+            ? viewport.localToGlobal(Offset.zero) & viewport.size
+            : Offset.zero & MediaQuery.sizeOf(context);
+        return bounds.contains(box.localToGlobal(box.size.center(Offset.zero)));
+      }
+
+      if (_pendingWaitingMotion && visible(_waitingAnchor)) {
+        _pendingWaitingMotion = false;
+        _waitingClock.shine();
+      }
+      if (_pendingRecheckMotion && visible(_recheckAnchor)) {
+        _pendingRecheckMotion = false;
+        _recheckClock.shine();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollable?.position.removeListener(_scheduleClockMotion);
+    _waitingClock.dispose();
+    _recheckClock.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), account = app.session.current!;
+    final theme = TdsTheme.of(context);
     final retailer = account.role == AppRole.retailer;
     final all = app.workspace
         .records('requests')
@@ -309,12 +372,56 @@ class Dashboard extends StatelessWidget {
         )
         .toList();
     final available = active.fold<int>(0, (n, r) => n + r.available);
+    final waiting = active
+        .where((r) => retailer ? r.s('status') == 'pending' : r.needsReply)
+        .toList();
     final rechecks =
         active
             .where((r) => r.backorder > 0 && r.s('recheck').isNotEmpty)
             .toList()
           ..sort((a, b) => a.s('recheck').compareTo(b.s('recheck')));
-    void work() => onTab(AppTab.business.index);
+    final motionEnabled =
+        TickerMode.valuesOf(context).enabled &&
+        !MediaQuery.disableAnimationsOf(context);
+    _motionEnabled = motionEnabled;
+    final waitingSignature = (account.id, waiting.length, motionEnabled);
+    final next = rechecks.firstOrNull;
+    final recheckSignature = (
+      account.id,
+      next?.id,
+      next?.s('recheck'),
+      next?.backorder,
+      motionEnabled,
+    );
+    if (_waitingSignature != waitingSignature) {
+      _waitingSignature = waitingSignature;
+      _pendingWaitingMotion = motionEnabled && waiting.isNotEmpty;
+    }
+    if (_recheckSignature != recheckSignature) {
+      _recheckSignature = recheckSignature;
+      _pendingRecheckMotion = motionEnabled && next != null;
+    }
+    _scheduleClockMotion();
+    Widget clock(
+      String name,
+      GlobalKey anchor,
+      TdsListRowController controller,
+      bool active,
+    ) {
+      final icon = Center(child: FigmaIcon('clock', selected: active));
+      return ExcludeSemantics(
+        key: anchor,
+        child: SizedBox.square(
+          key: ValueKey(name),
+          dimension: 32,
+          child: active && motionEnabled
+              ? TdsListRowEffects(controller: controller, child: icon)
+              : icon,
+        ),
+      );
+    }
+
+    void work() => widget.onTab(AppTab.business.index);
     void compose() => openPage(context, const RequestEditor());
     void delivery() => openPage(
       context,
@@ -353,7 +460,6 @@ class Dashboard extends StatelessWidget {
           ),
         FigmaSurface(
           margin: 12,
-          tinted: true,
           style: FigmaSurfaceStyle.glass,
           grouped: true,
           children: [
@@ -383,7 +489,18 @@ class Dashboard extends StatelessWidget {
           style: FigmaSurfaceStyle.glass,
           grouped: true,
           children: [
-            Item(retailer ? '내 사입 현황' : '오늘 업무', onTap: work),
+            TdsListRow(
+              contents: Semantics(
+                header: true,
+                child: TdsText(
+                  retailer ? '내 사입 현황' : '오늘 업무',
+                  typography: TdsTypography.t4,
+                  fontWeight: TdsFontWeight.bold,
+                ),
+              ),
+              withArrow: true,
+              onPressed: work,
+            ),
             metric(
               'bag',
               '${active.length}건',
@@ -412,25 +529,48 @@ class Dashboard extends StatelessWidget {
         FigmaSurface(
           margin: 12,
           children: [
-            Item(
-              '상대방 확인 대기',
-              trailing: StatusBadge(
-                '${active.where((r) => retailer ? r.s('status') == 'pending' : r.needsReply).length}건',
+            TdsListRow(
+              contents: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TdsText(
+                          '상대방 확인 대기',
+                          typography: TdsTypography.t5,
+                          fontWeight: TdsFontWeight.semibold,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      clock(
+                        'waiting-clock',
+                        _waitingAnchor,
+                        _waitingClock,
+                        waiting.isNotEmpty,
+                      ),
+                    ],
+                  ),
+                  const TdsSpacing(8),
+                  Semantics(
+                    liveRegion: true,
+                    child: TdsText(
+                      '${waiting.length}건',
+                      typography: TdsTypography.t2,
+                      fontWeight: TdsFontWeight.bold,
+                      color: theme.color(
+                        waiting.isEmpty ? 'grey600' : 'blue600',
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-            if (active.any(
-              (r) => retailer ? r.s('status') == 'pending' : r.needsReply,
-            ))
-              for (final r
-                  in active
-                      .where(
-                        (r) => retailer
-                            ? r.s('status') == 'pending'
-                            : r.needsReply,
-                      )
-                      .take(2))
+            if (waiting.isNotEmpty)
+              for (final r in waiting.take(2))
                 Item(
                   r.s('product'),
+                  leading: const FigmaIcon('shirt'),
                   subtitle: '${r.s('option')} · ${r.statusLabel}',
                   onTap: () => openPage(context, RequestDetailPage(r.id)),
                 )
@@ -442,10 +582,36 @@ class Dashboard extends StatelessWidget {
           FigmaSurface(
             margin: 12,
             children: [
-              Item(
-                '다음 미송 재확인',
-                subtitle: rechecks.first.s('recheck'),
-                trailing: const FigmaIcon('clock'),
+              TdsListRow(
+                contents: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TdsText(
+                            '다음 미송 재확인',
+                            typography: TdsTypography.t5,
+                            fontWeight: TdsFontWeight.semibold,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        clock(
+                          'recheck-clock',
+                          _recheckAnchor,
+                          _recheckClock,
+                          true,
+                        ),
+                      ],
+                    ),
+                    const TdsSpacing(4),
+                    TdsText(
+                      rechecks.first.s('recheck'),
+                      typography: TdsTypography.t6,
+                      color: theme.color('grey600'),
+                    ),
+                  ],
+                ),
               ),
               Item(
                 rechecks.first.s('product'),
@@ -471,7 +637,12 @@ class Dashboard extends StatelessWidget {
                 withArrow: true,
                 onPressed: () => openPage(context, RequestDetailPage(r.id)),
               ),
-            if (retailer) Item('새 사입 요청하기', onTap: compose),
+            if (retailer)
+              Item(
+                '새 사입 요청하기',
+                leading: const FigmaIcon('bag'),
+                onTap: compose,
+              ),
           ],
         ),
         FigmaSurface(
@@ -479,12 +650,14 @@ class Dashboard extends StatelessWidget {
           children: [
             Item(
               retailer ? '함께하는 사입삼촌' : '함께하는 거래처',
+              leading: const FigmaIcon('store'),
               subtitle: '${app.workspace.partners.length}곳 연결됨',
-              onTap: () => onTab(AppTab.connections.index),
+              onTap: () => widget.onTab(AppTab.connections.index),
             ),
             if (app.workspace.partners.isEmpty)
               Item(
                 '거래처 연결하기',
+                leading: const FigmaIcon('person'),
                 onTap: () => openPage(context, const AddConnectionPage()),
               ),
           ],

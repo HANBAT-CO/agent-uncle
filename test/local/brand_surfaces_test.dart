@@ -80,6 +80,10 @@ void main() {
         await tester.runAsync(() async {
           await f.start();
           await f.session.finishOnboarding();
+          final request = await f.request();
+          await f.accept(request);
+          await f.result(request, 2, 1);
+          await f.request();
           await f.session.saveProfile({'name': '아주 긴 이름을 가진 소매 매장과 온라인 쇼핑몰'});
         });
         final services = AppServices(

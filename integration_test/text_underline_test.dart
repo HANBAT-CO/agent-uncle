@@ -8,6 +8,119 @@ import 'package:tds_mobile_flutter/src/foundation/text_underline.dart';
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  testWidgets('native fallback fonts share their logical underline lines', (
+    tester,
+  ) async {
+    final ios = defaultTargetPlatform == TargetPlatform.iOS;
+    if (!ios) await binding.convertFlutterSurfaceToImage();
+    const specimens = <(String, List<int>)>[
+      ('A🙂B', [0]),
+      ('토스 😀 글자', [0]),
+      ('A❤️B', [0]),
+      ('A漢B', [0]),
+      ('A👨‍👩‍👧‍👦B', [0]),
+      ('A👍🏽B', [0]),
+      ('A🙂B\n\nC漢D', [0, 2]),
+      ('\nA漢B\n\nC🙂D', [1, 3]),
+    ];
+    for (final dark in [false, true]) {
+      for (final scale in [100.0, 160.0]) {
+        final theme = TdsThemeData(
+          colorScheme: dark
+              ? TdsColorPreference.dark
+              : TdsColorPreference.light,
+          platform: TdsPlatform(
+            os: ios ? TdsOS.ios : TdsOS.android,
+            fontScale: scale,
+            fontA11y: scale == 160 ? 'A11y_Medium' : 'Large',
+          ),
+        );
+        final suffix =
+            '${ios ? 'ios' : 'android'}-${dark ? 'dark' : 'light'}-${scale.toInt()}';
+        var clicks = 0;
+        await tester.pumpWidget(
+          WidgetsApp(
+            key: ValueKey(('fallback', suffix)),
+            color: theme.color('background'),
+            debugShowCheckedModeBanner: false,
+            pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+              settings: settings,
+              pageBuilder: (context, _, _) => builder(context),
+            ),
+            home: TdsMobileProvider(
+              theme: theme,
+              child: ColoredBox(
+                color: theme.color('background'),
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (final (index, specimen) in specimens.indexed)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 24),
+                            child: SizedBox(
+                              width: 240,
+                              child: TdsTextButton(
+                                key: ValueKey('fallback-$index'),
+                                size: TdsTextButtonSize.medium,
+                                variant: TdsTextButtonVariant.underline,
+                                onPressed: () => clicks++,
+                                child: Text(specimen.$1),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await binding.takeScreenshot('tds-native-underline-fallback-$suffix');
+        final fontSize = theme.platform.size(TdsTypography.t5);
+        final lineHeight = tdsCssLineHeight(fontSize * 1.252);
+        for (final (index, specimen) in specimens.indexed) {
+          final button = find.byKey(ValueKey('fallback-$index'));
+          final render = tester.renderObject<RenderTdsTextUnderline>(
+            find.descendant(
+              of: button,
+              matching: find.byType(TdsTextUnderline),
+            ),
+          );
+          final line = tester.renderObject<RenderBox>(
+            find.descendant(of: button, matching: find.byType(TdsLineBox)),
+          );
+          final offset = render.localToGlobal(Offset.zero, ancestor: line);
+          final rects = render.underlineRects;
+          expect(rects, hasLength(specimen.$2.length), reason: specimen.$1);
+          for (var row = 0; row < rects.length; row++) {
+            expect(
+              rects[row].top + offset.dy,
+              closeTo(
+                tdsCssTextBaseline(fontSize, lineHeight) +
+                    specimen.$2[row] * lineHeight +
+                    fontSize * 534 / 2564 +
+                    1,
+                .001,
+              ),
+              reason: '$suffix/${specimen.$1}/$row',
+            );
+          }
+        }
+        await tester.tap(find.byKey(const ValueKey('fallback-0')));
+        await tester.pumpAndSettle();
+        expect(clicks, 1);
+        expect(tester.takeException(), isNull);
+      }
+    }
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('native underlines retain hard-break line indices', (
     tester,
   ) async {

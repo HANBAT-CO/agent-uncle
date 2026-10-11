@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show BoxHeightStyle;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'line_box.dart';
@@ -69,6 +70,11 @@ class RenderTdsTextUnderline extends RenderProxyBox {
             .toPlainText(includeSemanticsLabels: false)
             .length,
       ),
+      // A single styled line can contain several fallback fonts (emoji/CJK).
+      // Their tight glyph boxes have different tops. Use the line's shared
+      // height so those runs do not become extra CSS underline line indices.
+      // Widths remain tight: ellipsis and trailing-blank behavior is unchanged.
+      boxHeightStyle: BoxHeightStyle.max,
     );
     final lines = <Rect>[];
     for (final box in boxes) {

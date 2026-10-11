@@ -229,6 +229,129 @@ void main() {
     },
   );
 
+  testWidgets('underline run heights do not invent extra text lines', (
+    tester,
+  ) async {
+    // The VM runner does not load the device's emoji/CJK fallback fonts. Two
+    // explicit run metrics reproduce their unequal tight boxes deterministically.
+    // This checks line grouping only, not mixed-size typography equivalence.
+    await tester.pumpWidget(
+      app(
+        const TdsTextUnderline(
+          fontSize: 17,
+          color: Color(0xff6b7684),
+          child: Text.rich(
+            TextSpan(
+              text: 'A',
+              children: [
+                TextSpan(text: 'X', style: TextStyle(fontSize: 24)),
+                TextSpan(text: 'B'),
+              ],
+            ),
+            style: TextStyle(
+              fontFamily: 'Toss Product Sans',
+              package: 'tds_mobile_flutter',
+              fontSize: 17,
+              height: 1.252,
+            ),
+          ),
+        ),
+      ),
+    );
+    final paragraph = tester.renderObject<RenderParagraph>(
+      find.byType(RichText),
+    );
+    final boxes = paragraph.getBoxesForSelection(
+      const TextSelection(baseOffset: 0, extentOffset: 3),
+    );
+    expect(boxes.map((box) => box.top).toSet().length, greaterThan(1));
+    final render = tester.renderObject<RenderTdsTextUnderline>(
+      find.byType(TdsTextUnderline),
+    );
+    expect(render.underlineRects, hasLength(1));
+    final bounds = boxes
+        .map((box) => box.toRect())
+        .reduce((a, b) => a.expandToInclude(b));
+    expect(render.underlineRects.single.left, closeTo(bounds.left, .001));
+    expect(render.underlineRects.single.right, closeTo(bounds.right, .001));
+  });
+
+  testWidgets('varied run metrics retain blank line indices and alignment', (
+    tester,
+  ) async {
+    for (final direction in TextDirection.values) {
+      for (final align in [
+        TextAlign.start,
+        TextAlign.center,
+        TextAlign.right,
+      ]) {
+        await tester.pumpWidget(
+          app(
+            SizedBox(
+              width: 160,
+              child: TdsTextUnderline(
+                fontSize: 17,
+                color: const Color(0xff6b7684),
+                child: Text.rich(
+                  const TextSpan(
+                    text: '\nA',
+                    children: [
+                      TextSpan(text: 'X', style: TextStyle(fontSize: 24)),
+                      TextSpan(text: 'B\n\nC'),
+                      TextSpan(text: 'Y', style: TextStyle(fontSize: 24)),
+                      TextSpan(text: 'D'),
+                    ],
+                  ),
+                  textAlign: align,
+                  textDirection: direction,
+                  style: const TextStyle(
+                    fontFamily: 'Toss Product Sans',
+                    package: 'tds_mobile_flutter',
+                    fontSize: 17,
+                    height: 1.252,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+        final paragraph = tester.renderObject<RenderParagraph>(
+          find.byType(RichText),
+        );
+        final render = tester.renderObject<RenderTdsTextUnderline>(
+          find.byType(TdsTextUnderline),
+        );
+        final rects = render.underlineRects;
+        expect(rects, hasLength(2), reason: '$direction/$align');
+        final underline =
+            paragraph.getDryBaseline(
+              paragraph.constraints,
+              TextBaseline.alphabetic,
+            )! +
+            17 * 534 / 2564 +
+            1;
+        for (final (index, selection) in [
+          const TextSelection(baseOffset: 1, extentOffset: 4),
+          const TextSelection(baseOffset: 6, extentOffset: 9),
+        ].indexed) {
+          final bounds = paragraph
+              .getBoxesForSelection(selection)
+              .map((box) => box.toRect())
+              .reduce((a, b) => a.expandToInclude(b));
+          expect(rects[index].left, closeTo(bounds.left, .001));
+          expect(rects[index].right, closeTo(bounds.right, .001));
+          expect(
+            rects[index].top,
+            closeTo(
+              underline + (1 + index * 2) * tdsCssLineHeight(17 * 1.252),
+              .001,
+            ),
+          );
+        }
+      }
+    }
+  });
+
   testWidgets('blank-only and trailing lines paint no extra underlines', (
     tester,
   ) async {

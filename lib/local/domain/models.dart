@@ -24,11 +24,14 @@ class AppFailure implements Exception {
 
 enum AppRole { retailer, uncle }
 
+/// Shared visual order; home is centered for both roles.
+enum AppTab { business, chat, home, connections, profile }
+
 extension AppRoleLabel on AppRole {
   String get label => this == AppRole.retailer ? '소매업자' : '사입삼촌';
   List<String> get tabs => this == AppRole.retailer
-      ? const ['홈', '사입', '채팅', '사입삼촌', '내 정보']
-      : const ['홈', '업무', '채팅', '거래처', '내 정보'];
+      ? const ['사입', '채팅', '홈', '사입삼촌', '내 정보']
+      : const ['업무', '채팅', '홈', '거래처', '내 정보'];
 }
 
 @immutable

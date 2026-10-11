@@ -525,3 +525,13 @@ Screenshots/diffs are local evidence in `.context/`, not committed golden
 baselines. Pixel differences have no approved pass threshold and are not a
 parity score. See [verification.md](reference/verification.md) for the current
 verification scope and outstanding work.
+
+### Optional Apple Liquid Glass host adapter
+
+`TdsLiquidTabBar` and `TdsGlassIconButton` opt into real UIKit controls through
+`tds/liquid_glass` when the app registers a compatible iOS 26+ host. The app's
+`ios/Runner/TdsLiquidGlassHost.swift` is the host implementation. Without that
+host (including Android/Web), these widgets compose existing TDS controls with
+standard translucent surfaces. They do not change the reference TDS APIs or
+claim native Liquid Glass parity on other platforms. Tab selection awaits the
+caller's asynchronous save guard. See [the app integration](../../docs/liquid-glass.md).

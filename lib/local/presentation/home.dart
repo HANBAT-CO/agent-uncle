@@ -17,7 +17,8 @@ class HomeShell extends StatefulWidget {
 }
 
 class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
-  int selected = 0;
+  int selected = AppTab.home.index;
+  bool changingTab = false;
   bool ready = false;
   Timer? timer;
   final navigators = List.generate(5, (_) => GlobalKey<NavigatorState>());
@@ -33,14 +34,21 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     }),
   );
 
-  Future<void> selectTab(int index) async {
-    if (index == selected) return;
+  Future<bool> selectTab(int index) async {
+    if (index < 0 || index >= navigators.length || changingTab) return false;
+    if (index == selected) return true;
+    changingTab = true;
     try {
       await guards[selected].save?.call();
+      if (!mounted) return false;
       FocusManager.instance.primaryFocus?.unfocus();
-      if (mounted) setState(() => selected = index);
+      setState(() => selected = index);
+      return true;
     } catch (_) {
-      // The editor shows its save failure and retains the active input.
+      // Both UIKit and TDS keep the active tab if the draft cannot be saved.
+      return false;
+    } finally {
+      changingTab = false;
     }
   }
 
@@ -105,23 +113,25 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
         .records('messages')
         .where((m) => m.s('recipientId') == a.id && !m.b('read'))
         .length;
+    final attentionCount = requests
+        .where(
+          (r) => a.role == AppRole.retailer
+              ? (r.needsReply ||
+                    r.delivered > r.received ||
+                    r.n('openIssues') > 0)
+              : r.s('status') == 'pending' || r.overdue,
+        )
+        .length;
+    final businessCount = a.role == AppRole.uncle
+        ? app.workspace
+              .records('deliveries')
+              .where((d) => d.n('received') < d.n('quantity'))
+              .length
+        : requests.where((r) => !r.ended).length;
     final badges = [
-      requests
-          .where(
-            (r) => a.role == AppRole.retailer
-                ? (r.needsReply ||
-                      r.delivered > r.received ||
-                      r.n('openIssues') > 0)
-                : r.s('status') == 'pending' || r.overdue,
-          )
-          .length,
-      a.role == AppRole.uncle
-          ? app.workspace
-                .records('deliveries')
-                .where((d) => d.n('received') < d.n('quantity'))
-                .length
-          : requests.where((r) => !r.ended).length,
+      businessCount,
       unread,
+      attentionCount,
       app.workspace
           .records('connections')
           .where((c) => c.s('status') == 'pending' && c.s('to') == a.id)
@@ -132,6 +142,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
       child: TdsDialogProvider(
         child: HomeBackdrop(
           child: SafeArea(
+            bottom: false,
             child: Column(
               children: [
                 if (app.session.syncError != null)
@@ -147,116 +158,79 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                     ),
                   ),
                 Expanded(
-                  child: IndexedStack(
-                    index: selected,
+                  child: Stack(
                     children: [
-                      for (var i = 0; i < tabs.length; i++)
-                        TickerMode(
-                          enabled: selected == i,
-                          child: TabSaveScope(
-                            guard: guards[i],
-                            child: NavigatorPopHandler<Object?>(
-                              enabled: selected == i,
-                              onPopWithResult: (_) =>
-                                  navigators[i].currentState?.maybePop(),
-                              child: Navigator(
-                                key: navigators[i],
-                                observers: [observers[i]],
-                                onGenerateRoute: (_) => PageRouteBuilder<void>(
-                                  pageBuilder: (context, a, b) =>
-                                      HomeTabPage(index: i, onTab: selectTab),
+                      Positioned.fill(
+                        child: IndexedStack(
+                          index: selected,
+                          children: [
+                            for (var i = 0; i < tabs.length; i++)
+                              TickerMode(
+                                enabled: selected == i,
+                                child: TabSaveScope(
+                                  guard: guards[i],
+                                  child: NavigatorPopHandler<Object?>(
+                                    enabled: selected == i,
+                                    onPopWithResult: (_) =>
+                                        navigators[i].currentState?.maybePop(),
+                                    child: Navigator(
+                                      key: navigators[i],
+                                      observers: [observers[i]],
+                                      onGenerateRoute: (_) =>
+                                          PageRouteBuilder<void>(
+                                            pageBuilder: (context, a, b) =>
+                                                HomeTabPage(
+                                                  index: i,
+                                                  onTab: selectTab,
+                                                ),
+                                          ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                          ],
+                        ),
+                      ),
+                      if (!detailOpen[selected])
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: MediaQuery.viewPaddingOf(context).bottom > 24
+                              ? MediaQuery.viewPaddingOf(context).bottom - 12
+                              : MediaQuery.viewPaddingOf(context).bottom,
+                          child: TdsLiquidTabBar(
+                            selectedIndex: selected,
+                            onSelected: selectTab,
+                            fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
+                            items: [
+                              for (var i = 0; i < tabs.length; i++)
+                                TdsLiquidTab(
+                                  label: tabs[i],
+                                  symbol: const [
+                                    'bag',
+                                    'bubble.left.and.bubble.right',
+                                    'house',
+                                    'storefront',
+                                    'person.crop.circle',
+                                  ][i],
+                                  icon: FigmaIcon(
+                                    const [
+                                      'bag',
+                                      'chat',
+                                      'home',
+                                      'store',
+                                      'person',
+                                    ][i],
+                                    selected: selected == i,
+                                  ),
+                                  badge: badges[i],
+                                ),
+                            ],
                           ),
                         ),
                     ],
                   ),
                 ),
-                if (!detailOpen[selected])
-                  FigmaSurface(
-                    margin: 12,
-                    style: FigmaSurfaceStyle.glass,
-                    children: [
-                      Row(
-                        children: [
-                          for (var i = 0; i < tabs.length; i++)
-                            Expanded(
-                              child: Semantics(
-                                selected: selected == i,
-                                label: badges[i] > 0
-                                    ? '${tabs[i]}, 알림 ${badges[i]}개'
-                                    : tabs[i],
-                                child: TdsTextButton(
-                                  size: TdsTextButtonSize.xsmall,
-                                  colorToken: selected == i
-                                      ? 'blue600'
-                                      : 'grey600',
-                                  onPressed: () => selectTab(i),
-                                  child: SizedBox(
-                                    width: double.infinity,
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            if (selected == i)
-                                              Positioned(
-                                                left: -10,
-                                                right: -10,
-                                                top: -4,
-                                                bottom: -4,
-                                                child: IgnorePointer(
-                                                  child: DecoratedBox(
-                                                    decoration: BoxDecoration(
-                                                      color: AppColors.lime
-                                                          .withValues(
-                                                            alpha: .85,
-                                                          ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            12,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            FigmaIcon(
-                                              const [
-                                                'home',
-                                                'bag',
-                                                'chat',
-                                                'store',
-                                                'person',
-                                              ][i],
-                                              selected: selected == i,
-                                            ),
-                                            if (badges[i] > 0)
-                                              Positioned(
-                                                top: -6,
-                                                right: -10,
-                                                child: TdsBadge(
-                                                  size: TdsBadgeSize.xsmall,
-                                                  color: TdsBadgeColor.red,
-                                                  variant: TdsBadgeVariant.fill,
-                                                  child: Text('${badges[i]}'),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                        const TdsSpacing(6),
-                                        Text(tabs[i]),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
               ],
             ),
           ),
@@ -282,50 +256,32 @@ class HomeTabPage extends StatelessWidget {
         )
         .length;
     final page = switch (index) {
-      0 => BackdropGroup(child: Dashboard(onTab: onTab)),
-      1 => BusinessList(onTab: onTab),
-      2 => const ChatList(),
+      0 => BusinessList(onTab: onTab),
+      1 => const ChatList(),
+      2 => BackdropGroup(child: Dashboard(onTab: onTab)),
       3 => const ConnectionsList(),
       _ => const MyPage(),
     };
-    return Column(
+    return PageFrame(
+      title: index == AppTab.home.index ? a.name : a.role!.tabs[index],
+      back: false,
+      showHeaderDivider: false,
+      navigationLeading: index == AppTab.home.index
+          ? const AppLogo(width: 40)
+          : null,
+      navigationSubtitle: index == AppTab.home.index ? a.role!.label : null,
+      trailing: TdsGlassIconButton(
+        semanticLabel: '알림',
+        symbol: 'bell',
+        icon: const FigmaIcon('bell'),
+        unreadCount: notices,
+        onPressed: () => openPage(context, const NoticesPage()),
+      ),
+      scrollKey: '${a.id}-tab-$index',
       children: [
-        TdsRootTopNavigation(
-          withSafeAreaTop: false,
-          background: const Color(0x00FFFFFF),
-          content: index == 0
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 24),
-                  child: Row(
-                    children: [
-                      const AppLogo(width: 40),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          a.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Text(a.role!.tabs[index]),
-          trailing: TdsTopNavigationTextButton(
-            onPressed: () => openPage(context, const NoticesPage()),
-            child: Text(notices == 0 ? '알림' : '알림 $notices'),
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            key: PageStorageKey('${a.id}-tab-$index'),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [page, const TdsSpacing(16)],
-            ),
-          ),
-        ),
+        if (index == AppTab.home.index) const TdsSpacing(8),
+        page,
+        const TdsSpacing(88),
       ],
     );
   }
@@ -358,7 +314,7 @@ class Dashboard extends StatelessWidget {
             .where((r) => r.backorder > 0 && r.s('recheck').isNotEmpty)
             .toList()
           ..sort((a, b) => a.s('recheck').compareTo(b.s('recheck')));
-    void work() => onTab(1);
+    void work() => onTab(AppTab.business.index);
     void compose() => openPage(context, const RequestEditor());
     void delivery() => openPage(
       context,
@@ -524,7 +480,7 @@ class Dashboard extends StatelessWidget {
             Item(
               retailer ? '함께하는 사입삼촌' : '함께하는 거래처',
               subtitle: '${app.workspace.partners.length}곳 연결됨',
-              onTap: () => onTab(3),
+              onTap: () => onTab(AppTab.connections.index),
             ),
             if (app.workspace.partners.isEmpty)
               Item(
@@ -654,7 +610,7 @@ class _BusinessListState extends State<BusinessList> {
                 ? '거래처와 연결하고 사입을 시작해 보세요.'
                 : '새 요청을 보내거나 검색 조건을 바꿔 보세요.',
             action: app.workspace.partners.isEmpty ? '거래처 연결하기' : null,
-            onAction: () => widget.onTab(3),
+            onAction: () => widget.onTab(AppTab.connections.index),
           ),
         for (final e in groups.entries) ...[
           Section('${e.key} ${e.value.length}건'),

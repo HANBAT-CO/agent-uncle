@@ -295,7 +295,9 @@ void main() {
       }
       await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
       await settle(tester);
-      final scroller = find.byKey(PageStorageKey('${f.retailer}-tab-1'));
+      final scroller = find.byKey(
+        PageStorageKey('${f.retailer}-tab-${AppTab.business.index}'),
+      );
       await tester.drag(scroller, const Offset(0, -600));
       await settle(tester);
       final scrollable = find.descendant(

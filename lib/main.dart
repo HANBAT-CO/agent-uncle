@@ -1,4 +1,5 @@
 import 'core/theme/app_theme.dart';
+import 'core/presentation/app_splash.dart';
 import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
@@ -14,13 +15,14 @@ Future<void> main() async {
 }
 
 class LocalBootstrap extends StatefulWidget {
-  const LocalBootstrap({super.key});
+  const LocalBootstrap({this.initialize, super.key});
+  final Future<AppServices> Function()? initialize;
   @override
   State<LocalBootstrap> createState() => _LocalBootstrapState();
 }
 
 class _LocalBootstrapState extends State<LocalBootstrap> {
-  late Future<AppServices> startup = _open();
+  late Future<AppServices> startup = (widget.initialize ?? _open)();
   Future<AppServices> _open() async {
     final database = await openLocalDatabase();
     if (const bool.fromEnvironment('LOCAL_MODE')) {
@@ -43,7 +45,7 @@ class _LocalBootstrapState extends State<LocalBootstrap> {
     builder: (context, snapshot) {
       if (snapshot.hasData) return AgentUncleApp(services: snapshot.data!);
       return WidgetsApp(
-        color: AppColors.background,
+        color: TdsPalette.white,
         debugShowCheckedModeBanner: false,
         builder: (context, child) => StableViewport(
           child: TdsMobileAITProvider(child: AppTheme(child: child!)),
@@ -51,23 +53,27 @@ class _LocalBootstrapState extends State<LocalBootstrap> {
         pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
           pageBuilder: (context, a, b) => builder(context),
         ),
-        home: ColoredBox(
-          color: AppColors.background,
-          child: Center(
-            child: snapshot.hasError
-                ? TdsResult(
+        home:
+            snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasError
+            ? ColoredBox(
+                color: AppColors.background,
+                child: Center(
+                  child: TdsResult(
                     title: const Text('앱을 시작하지 못했어요'),
                     description: const Text(
                       '인터넷 연결과 기기 저장 공간을 확인한 뒤 다시 시도해 주세요.',
                     ),
                     button: TdsResultButton(
-                      onPressed: () => setState(() => startup = _open()),
+                      onPressed: () => setState(() {
+                        startup = (widget.initialize ?? _open)();
+                      }),
                       child: const Text('다시 시도'),
                     ),
-                  )
-                : const TdsLoader(),
-          ),
-        ),
+                  ),
+                ),
+              )
+            : const AppSplashScreen(),
       );
     },
   );

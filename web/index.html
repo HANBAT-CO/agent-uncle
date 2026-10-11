@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -17,22 +17,45 @@
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Agent Uncle">
+  <meta name="description" content="사입 요청부터 상품 수령까지 함께 기록해요.">
+  <meta name="theme-color" content="#ffffff">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Agent Uncle">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <meta name="apple-mobile-web-app-title" content="사입삼춘">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Agent Uncle</title>
+  <title>사입삼춘</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    body { margin: 0; background: #ffffff; }
+    #launch-screen {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+    }
+    #launch-screen img { width: 192px; height: 192px; }
+  </style>
 </head>
 <body>
+  <!-- Flutter 엔진이 준비되기 전에도 네이티브와 같은 원본 로고를 표시한다. -->
+  <div id="launch-screen" role="status" aria-label="사입삼춘을 시작하고 있어요">
+    <img src="splash.png" width="192" height="192" alt="">
+  </div>
+  <script>
+    window.addEventListener('flutter-first-frame', () => {
+      document.getElementById('launch-screen')?.remove();
+      document.querySelector('meta[name="theme-color"]').content = '#EDECE3';
+    }, { once: true });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

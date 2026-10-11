@@ -1,0 +1,11 @@
+{
+  "name": "agent-uncle-brand-assets",
+  "private": true,
+  "scripts": {
+    "generate": "node generate.cjs",
+    "check": "node generate.cjs --check"
+  },
+  "devDependencies": {
+    "sharp": "0.35.5"
+  }
+}

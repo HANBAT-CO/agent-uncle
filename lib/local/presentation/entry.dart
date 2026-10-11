@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/presentation/app_splash.dart';
 import '../../features/auth/presentation/social_login_buttons.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
@@ -27,18 +28,15 @@ class AccountLanding extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final session = AppScope.of(context).session;
-    if (session.loading || (session.authenticated && session.current == null)) {
+    if (session.loading) return const AppSplashScreen();
+    if (session.authenticated && session.current == null) {
       return PageFrame(
         title: '계정 확인',
         back: false,
         children: [
-          if (session.loading)
-            const Center(child: TdsLoader())
-          else ...[
-            Info(session.syncError ?? '계정 정보를 확인하지 못했어요.', error: true),
-            ActionButton('다시 시도', onPressed: session.retrySync),
-            ActionButton('로그아웃', weak: true, onPressed: session.signOut),
-          ],
+          Info(session.syncError ?? '계정 정보를 확인하지 못했어요.', error: true),
+          ActionButton('다시 시도', onPressed: session.retrySync),
+          ActionButton('로그아웃', weak: true, onPressed: session.signOut),
         ],
       );
     }

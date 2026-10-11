@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12의 288dp 캔버스 안에 192dp 원본을 중앙 배치한다. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetLeft="16.666667%"
+    android:insetTop="16.666667%"
+    android:insetRight="16.666667%"
+    android:insetBottom="16.666667%">
+    <bitmap android:src="@drawable/splash_logo" android:gravity="fill" />
+</inset>

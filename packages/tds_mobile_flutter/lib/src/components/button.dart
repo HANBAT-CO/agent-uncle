@@ -84,6 +84,8 @@ class TdsButtonColors {
           }
         }
         fill = theme.primaryButtonBackground ?? fill;
+        weak = theme.primaryButtonWeakBackground ?? weak;
+        weakText = theme.primaryButtonWeakForeground ?? weakText;
       case TdsButtonColor.danger:
         fill = TdsPalette.red500;
         text = TdsPalette.whiteOpacity900;
@@ -116,7 +118,13 @@ class TdsButtonColors {
     final neutralPrimary =
         color == TdsButtonColor.primary &&
         (primaryLab.l >= .8 || primaryLab.l < .4);
-    final dim = neutralPrimary ? TdsPalette.grey700 : fill;
+    final dim =
+        color == TdsButtonColor.primary &&
+            theme.primaryButtonWeakForeground != null
+        ? theme.primaryButtonWeakForeground!
+        : neutralPrimary
+        ? TdsPalette.grey700
+        : fill;
     return TdsButtonColors(
       weak,
       weakText,

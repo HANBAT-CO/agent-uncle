@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/theme/app_theme.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -77,7 +78,10 @@ class SocialLoginPage extends StatelessWidget {
         ],
       ),
       children: [
-        const TdsSpacing(48),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+          child: Align(alignment: Alignment.centerLeft, child: AppLogo()),
+        ),
         const PageHeading(
           '사입의 시작부터 수령까지',
           description: '요청하고, 확보하고, 전달해요.\n거래처와 같은 내용을 함께 확인하세요.',
@@ -155,7 +159,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ],
     ),
     children: [
-      const TdsSpacing(32),
+      const Padding(
+        padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+        child: Align(alignment: Alignment.centerLeft, child: AppLogo()),
+      ),
       PageHeading(titles[index], description: descriptions[index]),
       const TdsSpacing(24),
       FigmaSurface(
@@ -197,9 +204,13 @@ class _LocalLoginPageState extends State<LocalLoginPage> {
     final session = AppScope.of(context).session;
     return PageFrame(
       title: '사입삼춘',
-      subtitle: '사입의 시작부터 수령까지',
       back: false,
       children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+          child: Align(alignment: Alignment.centerLeft, child: AppLogo()),
+        ),
+        const PageHeading('사입의 시작부터 수령까지'),
         const Info('지금은 이 기기에 저장하는 로컬 체험 모드예요. 계정을 나누어 만들면 양쪽 역할을 확인할 수 있어요.'),
         const Inset(
           child: TdsButton(

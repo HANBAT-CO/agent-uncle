@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/theme/app_theme.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -129,8 +130,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     ];
     return TdsToastProvider(
       child: TdsDialogProvider(
-        child: ColoredBox(
-          color: TdsTheme.of(context).color('background'),
+        child: HomeBackdrop(
           child: SafeArea(
             child: Column(
               children: [
@@ -176,6 +176,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                 if (!detailOpen[selected])
                   FigmaSurface(
                     margin: 12,
+                    style: FigmaSurfaceStyle.glass,
                     children: [
                       Row(
                         children: [
@@ -192,38 +193,62 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                                       ? 'blue600'
                                       : 'grey600',
                                   onPressed: () => selectTab(i),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Stack(
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          FigmaIcon(
-                                            const [
-                                              'home',
-                                              'bag',
-                                              'chat',
-                                              'store',
-                                              'person',
-                                            ][i],
-                                            selected: selected == i,
-                                          ),
-                                          if (badges[i] > 0)
-                                            Positioned(
-                                              top: -6,
-                                              right: -10,
-                                              child: TdsBadge(
-                                                size: TdsBadgeSize.xsmall,
-                                                color: TdsBadgeColor.red,
-                                                variant: TdsBadgeVariant.fill,
-                                                child: Text('${badges[i]}'),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            if (selected == i)
+                                              Positioned(
+                                                left: -10,
+                                                right: -10,
+                                                top: -4,
+                                                bottom: -4,
+                                                child: IgnorePointer(
+                                                  child: DecoratedBox(
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.lime
+                                                          .withValues(
+                                                            alpha: .85,
+                                                          ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
+                                            FigmaIcon(
+                                              const [
+                                                'home',
+                                                'bag',
+                                                'chat',
+                                                'store',
+                                                'person',
+                                              ][i],
+                                              selected: selected == i,
                                             ),
-                                        ],
-                                      ),
-                                      const TdsSpacing(6),
-                                      Text(tabs[i]),
-                                    ],
+                                            if (badges[i] > 0)
+                                              Positioned(
+                                                top: -6,
+                                                right: -10,
+                                                child: TdsBadge(
+                                                  size: TdsBadgeSize.xsmall,
+                                                  color: TdsBadgeColor.red,
+                                                  variant: TdsBadgeVariant.fill,
+                                                  child: Text('${badges[i]}'),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        const TdsSpacing(6),
+                                        Text(tabs[i]),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -257,7 +282,7 @@ class HomeTabPage extends StatelessWidget {
         )
         .length;
     final page = switch (index) {
-      0 => Dashboard(onTab: onTab),
+      0 => BackdropGroup(child: Dashboard(onTab: onTab)),
       1 => BusinessList(onTab: onTab),
       2 => const ChatList(),
       3 => const ConnectionsList(),
@@ -267,7 +292,25 @@ class HomeTabPage extends StatelessWidget {
       children: [
         TdsRootTopNavigation(
           withSafeAreaTop: false,
-          content: Text(index == 0 ? a.name : a.role!.tabs[index]),
+          background: const Color(0x00FFFFFF),
+          content: index == 0
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 24),
+                  child: Row(
+                    children: [
+                      const AppLogo(width: 40),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          a.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : Text(a.role!.tabs[index]),
           trailing: TdsTopNavigationTextButton(
             onPressed: () => openPage(context, const NoticesPage()),
             child: Text(notices == 0 ? '알림' : '알림 $notices'),
@@ -355,6 +398,8 @@ class Dashboard extends StatelessWidget {
         FigmaSurface(
           margin: 12,
           tinted: true,
+          style: FigmaSurfaceStyle.glass,
+          grouped: true,
           children: [
             TdsListRow(
               left: FigmaIcon(
@@ -379,6 +424,8 @@ class Dashboard extends StatelessWidget {
         ),
         FigmaSurface(
           margin: 12,
+          style: FigmaSurfaceStyle.glass,
+          grouped: true,
           children: [
             Item(retailer ? '내 사입 현황' : '오늘 업무', onTap: work),
             metric(

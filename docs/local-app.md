@@ -47,8 +47,9 @@ iOS 또는 Android는 `flutter run -d <device-id> --dart-define=LOCAL_MODE=true`
 
 앱 UI는 TDS의 기존 컴포넌트를 조합하고, 홈·가입·업무 화면은 Figma 01–04의 배치를
 따른다. 각 탭의 Navigator로 작성 화면과 스크롤을 유지하고, 탭 이동 전에 초안 저장을
-완료한다. 기존 코럴·베이지 테마와 Paperlogy를 유지하며 원본 Figma SVG는 TDS asset
-컴포넌트로 표시한다. 카드·탭 컨테이너는 배치만 담당한다.
+완료한다. Paperlogy와 원본 Figma SVG는 유지하고, 승인된 딥그린·라임 팔레트와
+사용자 제공 검정 로고를 적용했다. 이미지는 TDS asset 컴포넌트로 표시하고,
+카드·탭 컨테이너는 배치와 표면 장식만 담당한다.
 컴포넌트 대응표와 테마 적용 범위는 [Figma 배치 안내](figma-layout.md)를 참고한다.
 
 ## 데이터와 수량 처리

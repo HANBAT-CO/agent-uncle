@@ -160,6 +160,10 @@ class TdsThemeData {
   /// Optional exact brand fill. Null keeps the original TDS contrast adjustment.
   Color? get primaryButtonBackground => null;
 
+  /// Optional brand colors for weak buttons. Null retains TDS's contrast rules.
+  Color? get primaryButtonWeakBackground => null;
+  Color? get primaryButtonWeakForeground => null;
+
   /// Resolves a fixed light token while allowing application palette overrides.
   Color fixedColor(String name) =>
       copyWith(colorScheme: TdsColorPreference.light).color(name);

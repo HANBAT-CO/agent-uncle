@@ -447,9 +447,15 @@ flutter test
 ```
 
 Also run `flutter test` from `packages/tds_mobile_flutter`; root tests do not run
-dependency package tests. The package currently has 525 passing tests. The root
+dependency package tests. The root
 suite also covers the app's Google/Kakao OAuth-launch buttons, repositories and
 business flows. These tests do not perform real provider authentication.
+
+Application themes can override `primaryButtonBackground`,
+`primaryButtonWeakBackground`, and `primaryButtonWeakForeground`. Their default
+values are null, preserving the original TDS contrast rules. Weak overrides
+apply only to primary buttons; danger colors and disabled/loading behavior
+remain unchanged. The weak foreground also colors its dimmer and loader.
 
 Optional asset regeneration, from the root:
 

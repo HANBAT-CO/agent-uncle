@@ -107,8 +107,15 @@ class _SignInPageState extends State<SignInPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: AppLogo(),
+                    ),
+                  ),
                   const TdsTop(
-                    title: TdsTopTitleParagraph('Agent Uncle', size: 28),
+                    title: TdsTopTitleParagraph('사입삼춘', size: 28),
                     subtitleBottom: TdsTopSubtitleParagraph('Google 계정으로 시작해요'),
                   ),
                   if (_error != null)

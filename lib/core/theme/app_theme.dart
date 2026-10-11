@@ -13,7 +13,9 @@ class PaperlogyTheme extends TdsThemeData {
     Color? color,
   }) {
     final metrics = super.textStyle(
-      typography: typography, fontWeight: fontWeight, color: color,
+      typography: typography,
+      fontWeight: fontWeight,
+      color: color,
     );
     // TextStyle.copyWith retains the source package, which would resolve to
     // packages/tds_mobile_flutter/Paperlogy instead of the app's font asset.
@@ -40,9 +42,14 @@ class PaperlogyTheme extends TdsThemeData {
 }
 
 abstract final class AppColors {
-  static const primary = Color(0xFFD9704F);
-  static const background = Color(0xFFEDECE3);
-  static const charcoal = Color(0xFF101010);
+  static const primary = Color(0xFF0C483E);
+  static const background = Color(0xFFEFF4E4);
+  static const surface = Color(0xFFF2FFE8);
+  static const charcoal = Color(0xFF07231C);
+  static const secondary = Color(0xFF3D5C50);
+  static const sage = Color(0xFF6B8377);
+  static const lime = Color(0xFFC6FF3A);
+  static const glassTint = Color(0xFFFAFFF2);
 }
 
 /// App branding is resolved here so the TDS reference palette stays reusable.
@@ -57,38 +64,43 @@ class AppThemeData extends PaperlogyTheme {
   Color get primaryButtonBackground => primary;
 
   @override
+  Color get primaryButtonWeakBackground => primary.withValues(alpha: .12);
+
+  @override
+  Color get primaryButtonWeakForeground => primary;
+
+  @override
   Color color(String name) {
     if (isDark) return super.color(name);
     return switch (name) {
       'primary' || 'blue500' => primary,
-      'blue50' => const Color(0xFFF3E5DC),
-      'blue100' => const Color(0xFFEED6C8),
-      'blue200' => const Color(0xFFE9BBA7),
-      'blue300' => const Color(0xFFE4A38A),
-      'blue400' => const Color(0xFFDF896C),
-      'blue600' => const Color(0xFFB85538),
-      'blue700' || 'tBlueBadgeColor' => const Color(0xFF99452F),
-      'blue800' => const Color(0xFF7A3729),
-      'blue900' => const Color(0xFF5C2C25),
+      'blue50' => AppColors.surface,
+      'blue100' => const Color(0xFFD9E9DC),
+      'blue200' => const Color(0xFFB6D7C2),
+      'blue300' => const Color(0xFF3E9A57),
+      'blue400' => const Color(0xFF2E8C6B),
+      'blue600' || 'blue700' || 'tBlueBadgeColor' => primary,
+      'blue800' || 'blue900' => AppColors.charcoal,
       'tBlueBadgeBackground' => primary.withValues(alpha: .12),
       'background' => AppColors.background,
       'floatBackground' ||
       'layeredBackground' ||
       'backgroundLevel01' ||
       'backgroundLevel02' ||
-      'cardBgWhite' => const Color(0xFFF5F4EE),
+      'cardBgWhite' => AppColors.surface,
       'greyBackground' ||
       'backgroundLevelB01' ||
-      'pcScreenBg' => const Color(0xFFE4E3DA),
-      'grey50' => const Color(0xFFF3F2EB),
-      'grey100' => const Color(0xFFE4E3DA),
-      'grey200' || 'hairlineBorder' => const Color(0xFFD7D7D7),
-      'grey300' => const Color(0xFFBFBFBF),
-      'grey400' => const Color(0xFFA3A3A3),
-      'grey500' => const Color(0xFF808080),
-      'grey600' => const Color(0xFF636363),
-      'grey700' || 'tElephantBadgeColor' => const Color(0xFF484848),
-      'grey800' => const Color(0xFF2D2D2D),
+      'pcScreenBg' => const Color(0xFFE5EDDD),
+      'grey50' => AppColors.glassTint,
+      'grey100' => const Color(0xFFE0E9D9),
+      'grey200' || 'hairlineBorder' => const Color(0xFFCBDBCC),
+      'grey300' => const Color(0xFF9DB4A4),
+      'grey400' => AppColors.sage,
+      'grey500' ||
+      'grey600' ||
+      'grey700' ||
+      'tElephantBadgeColor' => AppColors.secondary,
+      'grey800' => const Color(0xFF173E31),
       'grey900' || 'black' => AppColors.charcoal,
       'greyOpacity50' ||
       'cardBgGrey' => AppColors.charcoal.withValues(alpha: .02),
@@ -116,6 +128,24 @@ class AppThemeData extends PaperlogyTheme {
     colorScheme: colorScheme ?? this.colorScheme,
     primary: primary ?? this.primary,
     platform: platform ?? this.platform,
+  );
+}
+
+/// The supplied symbol is kept in its original black and original aspect ratio.
+class AppLogo extends StatelessWidget {
+  const AppLogo({this.width = 112, super.key});
+  static const asset = 'assets/logos/saip_samchun_sc_symbol.svg';
+  final double width;
+
+  @override
+  Widget build(BuildContext context) => TdsAssetImage(
+    src: asset,
+    alt: '사입삼춘 로고',
+    frameShape: TdsAssetFrameShape(
+      width: width,
+      height: width * 254 / 415,
+      transparent: true,
+    ),
   );
 }
 

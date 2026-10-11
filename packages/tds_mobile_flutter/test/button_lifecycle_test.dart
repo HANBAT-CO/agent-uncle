@@ -25,6 +25,14 @@ Finder get glow => find.byWidgetPredicate(
       (widget.decoration! as BoxDecoration).gradient is RadialGradient,
 );
 
+class _BrandedButtonTheme extends TdsThemeData {
+  const _BrandedButtonTheme() : super(primary: const Color(0xff0c483e));
+  @override
+  Color get primaryButtonWeakBackground => primary.withValues(alpha: .12);
+  @override
+  Color get primaryButtonWeakForeground => primary;
+}
+
 double glowOpacity(WidgetTester tester) {
   RenderObject? node = tester.renderObject(glow);
   while (node != null) {
@@ -35,6 +43,29 @@ double glowOpacity(WidgetTester tester) {
 }
 
 void main() {
+  test('weak brand overrides preserve default and danger color behavior', () {
+    const brand = _BrandedButtonTheme();
+    const original = TdsThemeData(primary: Color(0xff0c483e));
+    TdsButtonColors weak(
+      TdsThemeData theme, [
+      TdsButtonColor color = TdsButtonColor.primary,
+    ]) => TdsButtonColors.resolve(theme, color, TdsButtonVariant.weak);
+    // Dark custom primaries otherwise use the original neutral fallback.
+    expect(weak(original).foreground, TdsPalette.grey700);
+    expect(weak(brand).foreground, brand.primary);
+    expect(weak(brand).background, brand.primary.withValues(alpha: .12));
+    expect(weak(brand).loader, brand.primary);
+    expect(weak(brand).dimmer, brand.primary);
+    expect(
+      weak(brand, TdsButtonColor.danger).background,
+      weak(original, TdsButtonColor.danger).background,
+    );
+    expect(
+      weak(brand, TdsButtonColor.danger).foreground,
+      weak(original, TdsButtonColor.danger).foreground,
+    );
+  });
+
   testWidgets('keyboard activation does not start pointer press visuals', (
     tester,
   ) async {

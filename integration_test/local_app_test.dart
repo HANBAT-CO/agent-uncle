@@ -5,16 +5,72 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'package:agent_uncle/app.dart';
+import 'package:agent_uncle/core/theme/app_theme.dart';
 import 'package:agent_uncle/local/app_services.dart';
+import 'package:agent_uncle/local/data/local_attachments.dart';
+import 'package:agent_uncle/local/data/local_session.dart';
+import 'package:agent_uncle/local/data/local_store.dart';
+import 'package:agent_uncle/local/data/local_workspace.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
+import 'package:agent_uncle/local/presentation/entry.dart';
 import 'package:agent_uncle/local/presentation/home.dart';
 import 'package:agent_uncle/local/presentation/requests.dart';
 import 'package:agent_uncle/local/presentation/social.dart';
 import 'package:agent_uncle/local/presentation/delivery.dart';
+import 'package:sembast/sembast_memory.dart' show databaseFactoryMemory;
 import '../test/local/workspace_test.dart' show Fixture;
+
+class _SocialPreviewSession extends LocalSessionRepository {
+  _SocialPreviewSession(super.store);
+  @override
+  bool get isRemote => true;
+}
 
 void main() {
   final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final platform = defaultTargetPlatform == TargetPlatform.iOS
+      ? 'ios'
+      : 'android';
+  var surfaceConverted = false;
+  setUp(() => surfaceConverted = false);
+  Future<void> capture(WidgetTester tester, String name) async {
+    if (platform == 'android' && !surfaceConverted) {
+      await binding.convertFlutterSurfaceToImage();
+      surfaceConverted = true;
+      await tester.pumpAndSettle();
+    }
+    await binding.takeScreenshot('saip-$platform-$name');
+  }
+
+  testWidgets('native onboarding and social entry display the original logo', (
+    tester,
+  ) async {
+    final store = LocalStore(
+      await databaseFactoryMemory.openDatabase('brand-entry'),
+    );
+    await store.initialize();
+    final session = _SocialPreviewSession(store);
+    final workspace = LocalWorkspaceRepository(store, session);
+    final services = AppServices(
+      session: session,
+      workspace: workspace,
+      attachments: LocalAttachmentRepository(store, session, workspace),
+    );
+    await tester.pumpWidget(AgentUncleApp(services: services));
+    await tester.pumpAndSettle();
+    expect(find.byType(AppLogo), findsOneWidget);
+    await capture(tester, 'onboarding');
+    await tester.tap(find.text('건너뛰기'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SocialLoginPage), findsOneWidget);
+    expect(find.byType(AppLogo), findsOneWidget);
+    await capture(tester, 'login');
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    services.dispose();
+    await store.close();
+  });
+
   testWidgets('native role screens, partial delivery and keyboard input', (
     tester,
   ) async {
@@ -33,14 +89,18 @@ void main() {
     );
     await tester.pumpWidget(AgentUncleApp(services: services));
     await tester.pumpAndSettle();
-    final platform = defaultTargetPlatform == TargetPlatform.iOS
-        ? 'ios'
-        : 'android';
-    if (platform == 'android') {
-      await binding.convertFlutterSurfaceToImage();
-      await tester.pumpAndSettle();
-    }
-    await binding.takeScreenshot('saip-$platform-retailer');
+    await capture(tester, 'retailer');
+    final homeScroll = find
+        .descendant(
+          of: find.byType(HomeTabPage).first,
+          matching: find.byType(SingleChildScrollView),
+        )
+        .first;
+    await tester.drag(homeScroll, const Offset(0, -350));
+    await tester.pumpAndSettle();
+    await capture(tester, 'home-scroll');
+    await tester.drag(homeScroll, const Offset(0, 700));
+    await tester.pumpAndSettle();
     unawaited(
       openPage(
         tester.element(find.byType(HomeTabPage).first),

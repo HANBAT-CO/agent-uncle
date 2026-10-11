@@ -4,7 +4,6 @@ import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
 import 'requests.dart';
-import 'social.dart';
 
 class DeliveryList extends StatefulWidget {
   const DeliveryList({this.peerId, this.onWork, super.key});
@@ -63,35 +62,41 @@ class _DeliveryListState extends State<DeliveryList> {
               onAction: widget.onWork,
             ),
           for (final group in groups.values)
-            Item(
-              app.workspace.profile(group.first.s('retailerId'))?.name ?? '거래처',
-              subtitle:
-                  '${group.first.s('address')} ${group.first.s('addressDetail')}\n${group.length}개 요청 · 전달 가능 ${group.fold<int>(0, (sum, r) => sum + r.available)}개',
-              onTap: () => openPage(
-                context,
-                DeliveryBatchPage(group.map((r) => r.id).toList()),
-              ),
+            FigmaSurface(
+              children: [
+                Item(
+                  app.workspace.profile(group.first.s('retailerId'))?.name ??
+                      '거래처',
+                  leading: const FigmaIcon('store'),
+                  subtitle:
+                      '${group.first.s('address')} ${group.first.s('addressDetail')}',
+                  onTap: () => openPage(
+                    context,
+                    DeliveryBatchPage(group.map((r) => r.id).toList()),
+                  ),
+                ),
+                QuantityRow('요청', '${group.length}건'),
+                QuantityRow(
+                  '전달 가능',
+                  '${group.fold<int>(0, (sum, r) => sum + r.available)}장',
+                ),
+              ],
             ),
           for (final r in requests.where((r) => r.n('held') > 0))
-            Item(
-              '${r.s('product')} · 보류 ${r.n('held')}개',
-              subtitle: '변경·취소·문제 처리 후 전달할 수 있어요.',
-              onTap: () => openPage(context, RequestDetailPage(r.id)),
+            FigmaSurface(
+              children: [
+                Item(
+                  '${r.s('product')} · 보류 ${r.n('held')}개',
+                  leading: const FigmaIcon('clock'),
+                  subtitle: '변경·취소·문제 처리 후 전달할 수 있어요.',
+                  onTap: () => openPage(context, RequestDetailPage(r.id)),
+                ),
+              ],
             ),
         ] else ...[
           if (rows.isEmpty)
             const EmptyState('전달 내역이 없어요', '실제 전달을 기록하면 회차별로 확인할 수 있어요.'),
-          for (final d in rows) ...[
-            DeliveryCard(d),
-            ActionButton(
-              '관련 채팅',
-              weak: true,
-              onPressed: () => openPage(
-                context,
-                ChatPage(d.s('retailerId'), requestId: d.s('requestId')),
-              ),
-            ),
-          ],
+          for (final d in rows) DeliveryCard(d),
         ],
       ],
     );

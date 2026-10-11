@@ -507,6 +507,7 @@ class _BusinessListState extends State<BusinessList> {
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
         retailer = app.session.current!.role == AppRole.retailer;
+    final search = query.trim().toLowerCase();
     final all = app.workspace
         .records('requests')
         .map((r) => RequestRecord(r.id, r.data))
@@ -525,7 +526,7 @@ class _BusinessListState extends State<BusinessList> {
       return match &&
           '${r.s('product')} ${r.s('wholesaler')} ${peer?.name ?? ''}'
               .toLowerCase()
-              .contains(query.toLowerCase());
+              .contains(search);
     }).toList();
     int priority(RequestRecord r) => r.n('openIssues') > 0
         ? 0
@@ -552,11 +553,9 @@ class _BusinessListState extends State<BusinessList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Inset(
-          child: TdsSearchField(
-            placeholder: '상품 또는 거래처 검색',
-            onChanged: (v) => setState(() => query = v),
-          ),
+        AppSearchField(
+          placeholder: '상품 또는 거래처 검색',
+          onChanged: (v) => setState(() => query = v),
         ),
         Choices(
           options: retailer
@@ -570,11 +569,12 @@ class _BusinessListState extends State<BusinessList> {
             children: [
               Item(
                 '새로 작성',
-                trailing: const FigmaIcon('bag', selected: true),
+                leading: const FigmaIcon('bag', selected: true),
                 onTap: () => openPage(context, const RequestEditor()),
               ),
               Item(
                 '임시저장·다시 요청',
+                leading: const FigmaIcon('clock'),
                 subtitle: '임시저장 ${app.workspace.records('drafts').length}건',
                 onTap: () => openPage(
                   context,
@@ -588,6 +588,7 @@ class _BusinessListState extends State<BusinessList> {
             children: [
               Item(
                 '전달할 물품',
+                leading: const FigmaIcon('bag'),
                 subtitle:
                     '전달 가능 ${all.fold<int>(0, (n, r) => n + r.available)}장',
                 onTap: () => openPage(
@@ -603,7 +604,9 @@ class _BusinessListState extends State<BusinessList> {
             onChanged: (v) => setState(() => group = v),
           ),
         ],
-        if (rows.isEmpty)
+        if (rows.isEmpty && search.isNotEmpty)
+          const EmptyState('검색 결과가 없어요', '상품명이나 거래처 이름을 다시 확인해 주세요.')
+        else if (rows.isEmpty)
           EmptyState(
             all.isEmpty ? '아직 사입 요청이 없어요' : '해당하는 요청이 없어요',
             app.workspace.partners.isEmpty

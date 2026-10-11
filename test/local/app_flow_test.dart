@@ -374,7 +374,13 @@ void main() {
       await tapButton(tester, '3장 수령 확인 · 요청 완료');
       expect(find.text('전달 내역'), findsOneWidget);
       expect(find.widgetWithText(TdsButton, '이번 전달분 수령 확인'), findsNothing);
-      expect(find.text('수령 확인'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byType(DeliveryCard).last,
+          matching: find.text('수령 확인'),
+        ),
+        findsOneWidget,
+      );
       expect(
         f.workspace.records('deliveries').single.b('receiptRecorded'),
         isTrue,

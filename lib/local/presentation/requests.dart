@@ -157,93 +157,113 @@ class _RequestEditorState extends State<RequestEditor> {
           },
         ),
         children: [
-          Item(
-            '담당 사입삼촌',
-            subtitle: selected?.name ?? '선택하지 않음 · 초안 저장 가능',
-            onTap: editing
-                ? null
-                : () async {
-                    final result = await openPage<String>(
-                      context,
-                      PageFrame(
-                        title: '사입삼촌 선택',
-                        children: [
-                          if (app.workspace.partners.isEmpty)
-                            const EmptyState(
-                              '연결된 사입삼촌이 없어요',
-                              '초안 작성 후 사입삼촌 탭에서 연결해 주세요.',
-                            ),
-                          for (final a in app.workspace.partners)
-                            Builder(
-                              builder: (context) => Item(
-                                a.name,
-                                subtitle:
-                                    '${a.s('pickupArea')} · ${a.s('deadline')}',
-                                onTap: () => Navigator.pop(context, a.id),
-                              ),
-                            ),
-                        ],
-                      ),
-                    );
-                    if (result != null && mounted) {
-                      peer = result;
-                      changed();
-                    }
-                  },
+          FigmaSurface(
+            children: [
+              Item(
+                '담당 사입삼촌',
+                subtitle: selected?.name ?? '선택하지 않음 · 초안 저장 가능',
+                onTap: editing
+                    ? null
+                    : () async {
+                        final result = await openPage<String>(
+                          context,
+                          PageFrame(
+                            title: '사입삼촌 선택',
+                            children: [
+                              if (app.workspace.partners.isEmpty)
+                                const EmptyState(
+                                  '연결된 사입삼촌이 없어요',
+                                  '초안 작성 후 사입삼촌 탭에서 연결해 주세요.',
+                                ),
+                              for (final a in app.workspace.partners)
+                                Builder(
+                                  builder: (context) => Item(
+                                    a.name,
+                                    subtitle:
+                                        '${a.s('pickupArea')} · ${a.s('deadline')}',
+                                    onTap: () => Navigator.pop(context, a.id),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        );
+                        if (result != null && mounted) {
+                          peer = result;
+                          changed();
+                        }
+                      },
+              ),
+            ],
           ),
           const Section('도매처'),
-          Field(
-            '도매처 이름',
-            controller: fields['wholesaler']!,
-            onChanged: (_) => changed(),
-          ),
-          Field(
-            '시장·상가·건물·층',
-            controller: fields['location']!,
-            onChanged: (_) => changed(),
+          FigmaSurface(
+            children: [
+              Field(
+                '도매처 이름',
+                controller: fields['wholesaler']!,
+                onChanged: (_) => changed(),
+              ),
+              Field(
+                '시장·상가·건물·층',
+                controller: fields['location']!,
+                onChanged: (_) => changed(),
+              ),
+            ],
           ),
           const Section('상품·옵션'),
-          Field(
-            '상품명',
-            controller: fields['product']!,
-            onChanged: (_) => changed(),
+          FigmaSurface(
+            children: [
+              Field(
+                '상품명',
+                controller: fields['product']!,
+                onChanged: (_) => changed(),
+              ),
+              Field(
+                '색상·사이즈 등 옵션',
+                controller: fields['option']!,
+                onChanged: (_) => changed(),
+              ),
+              Field(
+                '요청 수량',
+                controller: fields['quantity']!,
+                numeric: true,
+                onChanged: (_) => changed(),
+              ),
+            ],
           ),
-          Field(
-            '색상·사이즈 등 옵션',
-            controller: fields['option']!,
-            onChanged: (_) => changed(),
-          ),
-          Field(
-            '요청 수량',
-            controller: fields['quantity']!,
-            numeric: true,
-            onChanged: (_) => changed(),
-          ),
-          AttachmentField(
-            label: '상품 사진',
-            multiple: true,
-            ids: photos,
-            onChanged: (v) {
-              photos = v;
-              changed();
-            },
-          ),
-          Field(
-            '요청사항',
-            controller: fields['note']!,
-            multiline: true,
-            onChanged: (_) => changed(),
+          FigmaSurface(
+            children: [
+              AttachmentField(
+                label: '상품 사진',
+                multiple: true,
+                ids: photos,
+                onChanged: (v) {
+                  photos = v;
+                  changed();
+                },
+              ),
+              Field(
+                '요청사항',
+                controller: fields['note']!,
+                multiline: true,
+                onChanged: (_) => changed(),
+              ),
+            ],
           ),
           const Section('이번 요청의 배송지'),
-          Field(
-            '주소',
-            controller: fields['address']!,
-            onChanged: (_) => changed(),
-          ),
-          Field(
-            '상세주소',
-            controller: fields['addressDetail']!,
-            onChanged: (_) => changed(),
+          FigmaSurface(
+            children: [
+              Field(
+                '주소',
+                controller: fields['address']!,
+                onChanged: (_) => changed(),
+              ),
+              Field(
+                '상세주소',
+                controller: fields['addressDetail']!,
+                onChanged: (_) => changed(),
+              ),
+            ],
           ),
           if (!editing)
             Info(
@@ -280,6 +300,7 @@ class RequestHub extends StatelessWidget {
       children: [
         ActionButton(
           '새로 작성',
+          icon: 'plus',
           onPressed: () => openPage(context, const RequestEditor()),
         ),
         const Section('작성 중'),
@@ -288,6 +309,7 @@ class RequestHub extends StatelessWidget {
         for (final d in drafts) ...[
           Item(
             d.s('product').isEmpty ? '제목 없는 초안' : d.s('product'),
+            leading: const FigmaIcon('shirt'),
             subtitle: '${d.s('wholesaler')} · ${displayTime(d.s('updatedAt'))}',
             onTap: () => openPage(context, RequestEditor(draftId: d.id)),
           ),
@@ -313,6 +335,7 @@ class RequestHub extends StatelessWidget {
           ),
           ActionButton(
             '다시 작성',
+            icon: 'copy',
             weak: true,
             onPressed: () async {
               final id = await app.workspace.repeatRequest(r.id);
@@ -353,7 +376,21 @@ class RequestDetailPage extends StatelessWidget {
     final awaiting = deliveries
         .where((d) => !d.b('receiptRecorded'))
         .firstOrNull;
-    final primary = !r.ended && !retailer && r.s('status') == 'accepted'
+    final primary = !r.ended && !retailer && r.s('status') == 'pending'
+        ? ActionButton(
+            '요청 수락',
+            bottom: true,
+            onPressed: () async {
+              if (await confirm(
+                context,
+                '요청을 수락할까요?',
+                '상품·수량·도매처·배송지를 확인했어요.',
+              )) {
+                await app.workspace.act(id, 'accept', {}, r.version, newId());
+              }
+            },
+          )
+        : !r.ended && !retailer && r.s('status') == 'accepted'
         ? ActionButton(
             '이번 추가 확보 입력',
             bottom: true,
@@ -377,9 +414,43 @@ class RequestDetailPage extends StatelessWidget {
         : null;
     return PageFrame(
       title: '사입 요청 상세',
+      navigationSubtitle: '${r.s('product')} · ${r.statusLabel}',
       bottom: primary,
       children: [
-        PageHeading(
+        FigmaSurface(
+          children: [
+            Inset(
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  StatusBadge(
+                    r.statusLabel,
+                    attention: r.needsReply || r.n('openIssues') > 0,
+                  ),
+                  TdsText(
+                    displayTime(r.s('createdAt')),
+                    typography: TdsTypography.t7,
+                    color: TdsTheme.of(context).color('grey600'),
+                  ),
+                ],
+              ),
+            ),
+            PageHeading(
+              r.s('product'),
+              description: '${r.s('option')} · 요청 ${r.quantity}장',
+            ),
+            const TdsBorder(),
+            Item(
+              app.workspace.profile(peer)?.name ?? '거래처',
+              leading: const FigmaIcon('store'),
+              subtitle: retailer ? '담당 사입삼촌' : '요청한 소매업자',
+              onTap: () => openPage(context, PartnerPage(peer)),
+            ),
+          ],
+        ),
+        Info(
           retailer && r.needsReply
               ? '남은 미송 ${r.backorder}장을 결정해 주세요'
               : r.s('status') == 'pending'
@@ -389,21 +460,38 @@ class RequestDetailPage extends StatelessWidget {
               : r.ended
               ? '요청 처리를 마쳤어요'
               : '사입 진행 상황을 확인해요',
-          eyebrow: r.statusLabel,
-        ),
-        Item(
-          '${app.workspace.profile(peer)?.name ?? '거래처'} · ${r.s('product')}',
-          subtitle:
-              '${r.s('option')} · 요청 ${r.quantity}장\n${displayTime(r.s('createdAt'))} 요청',
         ),
         FigmaSurface(
           children: [
-            QuantityRow('누적 확보', '${r.acquired}장'),
-            QuantityRow('아직 전달하지 않은 상품', '${r.available}장'),
-            QuantityRow('누적 전달', '${r.delivered}장'),
-            QuantityRow(
-              r.b('resultShared') ? '남은 미송' : '아직 확인하지 않은 수량',
-              '${r.remaining}장',
+            LayoutBuilder(
+              builder: (context, constraints) => Wrap(
+                children: [
+                  for (final metric in {
+                    '누적 확보': r.acquired,
+                    '전달 대기': r.available,
+                    '누적 전달': r.delivered,
+                    r.b('resultShared') ? '남은 미송' : '미확인 수량': r.remaining,
+                  }.entries)
+                    SizedBox(
+                      width: constraints.maxWidth / 2,
+                      child: TdsListRow(
+                        contents: TdsListRowTexts(
+                          type: TdsListRowTextType.row2TypeD,
+                          top: Text(metric.key),
+                          bottom: Text('${metric.value}장'),
+                          topProps: const TdsListRowTextStyle(
+                            typography: TdsTypography.t7,
+                          ),
+                          bottomProps: TdsListRowTextStyle(
+                            typography: TdsTypography.t3,
+                            fontWeight: TdsFontWeight.bold,
+                            color: TdsTheme.of(context).color('grey900'),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             if (r.cancelled > 0) QuantityRow('취소', '${r.cancelled}장'),
             if (r.n('held') > 0) QuantityRow('처리 보류', '${r.n('held')}장'),
@@ -421,6 +509,7 @@ class RequestDetailPage extends StatelessWidget {
               ),
             ],
           ),
+        const Section('사입·배송 정보'),
         FigmaSurface(
           children: [
             Item(
@@ -434,107 +523,117 @@ class RequestDetailPage extends StatelessWidget {
             if (r.s('note').isNotEmpty) Item('요청사항', subtitle: r.s('note')),
           ],
         ),
-        for (final photo in r.list('photos'))
-          AttachmentPreview(photo, compact: true),
-        ActionButton(
-          '관련 채팅 열기',
-          weak: true,
-          onPressed: () => openPage(context, ChatPage(peer, requestId: id)),
-        ),
-        if (!r.ended) ...[
-          if (!retailer && r.s('status') == 'pending') ...[
-            ActionButton(
-              '요청 수락',
-              onPressed: () async {
-                if (await confirm(
-                  context,
-                  '요청을 수락할까요?',
-                  '상품·수량·도매처·배송지를 확인했어요.',
-                )) {
-                  await app.workspace.act(id, 'accept', {}, r.version, newId());
-                }
-              },
-            ),
-            ActionButton(
-              '요청 거절',
-              weak: true,
-              onPressed: () =>
-                  openPage(context, RequestActionPage(id, 'reject')),
-            ),
-          ],
-          if (retailer && r.s('status') == 'pending') ...[
-            ActionButton(
-              '내용 수정',
-              weak: true,
-              onPressed: () => openPage(context, RequestEditor(requestId: id)),
-            ),
-            ActionButton(
-              '요청 취소',
-              weak: true,
-              danger: true,
-              onPressed: () async {
-                if (await confirm(
-                  context,
-                  '요청을 취소할까요?',
-                  '취소하면 상대방이 수락할 수 없어요.',
-                )) {
-                  await app.workspace.act(id, 'cancel', {}, r.version, newId());
-                }
-              },
-            ),
-          ],
-          if (r.s('status') == 'accepted') ...[
-            if (!retailer && r.s('proposalId').isEmpty)
-              ActionButton(
-                '확보 수량 정정',
-                weak: true,
-                onPressed: () =>
-                    openPage(context, ProposalPage(id, 'correction')),
-              ),
-            if (r.s('proposalId').isEmpty) ...[
-              ActionButton(
-                '상품·수량·배송지 변경 협의',
-                weak: true,
-                onPressed: () => openPage(context, ProposalPage(id, 'change')),
-              ),
-              ActionButton(
-                '취소 협의',
-                weak: true,
-                onPressed: () => openPage(context, ProposalPage(id, 'cancel')),
-              ),
+        if (r.list('photos').isNotEmpty)
+          FigmaSurface(
+            children: [
+              for (final photo in r.list('photos'))
+                AttachmentPreview(photo, compact: true),
             ],
+          ),
+        const Section('요청 관리'),
+        FigmaSurface(
+          children: [
+            Item(
+              '관련 채팅 열기',
+              leading: const FigmaIcon('chat'),
+              onTap: () => openPage(context, ChatPage(peer, requestId: id)),
+            ),
+            if (!r.ended) ...[
+              if (!retailer && r.s('status') == 'pending') ...[
+                Item(
+                  '요청 거절',
+                  leading: const FigmaIcon('x_circle'),
+                  onTap: () =>
+                      openPage(context, RequestActionPage(id, 'reject')),
+                ),
+              ],
+              if (retailer && r.s('status') == 'pending') ...[
+                Item(
+                  '내용 수정',
+                  leading: const FigmaIcon('pencil'),
+                  onTap: () => openPage(context, RequestEditor(requestId: id)),
+                ),
+                ActionButton(
+                  '요청 취소',
+                  weak: true,
+                  danger: true,
+                  onPressed: () async {
+                    if (await confirm(
+                      context,
+                      '요청을 취소할까요?',
+                      '취소하면 상대방이 수락할 수 없어요.',
+                    )) {
+                      await app.workspace.act(
+                        id,
+                        'cancel',
+                        {},
+                        r.version,
+                        newId(),
+                      );
+                    }
+                  },
+                ),
+              ],
+              if (r.s('status') == 'accepted') ...[
+                if (!retailer && r.s('proposalId').isEmpty)
+                  Item(
+                    '확보 수량 정정',
+                    leading: const FigmaIcon('refresh'),
+                    onTap: () =>
+                        openPage(context, ProposalPage(id, 'correction')),
+                  ),
+                if (r.s('proposalId').isEmpty) ...[
+                  Item(
+                    '상품·수량·배송지 변경 협의',
+                    leading: const FigmaIcon('pencil'),
+                    onTap: () => openPage(context, ProposalPage(id, 'change')),
+                  ),
+                  Item(
+                    '취소 협의',
+                    leading: const FigmaIcon('x_circle'),
+                    onTap: () => openPage(context, ProposalPage(id, 'cancel')),
+                  ),
+                ],
+              ],
+            ],
+            if (retailer &&
+                !['pending', 'cancelled', 'rejected'].contains(r.s('status')))
+              Item(
+                '문제 알리기',
+                leading: const FigmaIcon('bell'),
+                onTap: () => openPage(context, RequestActionPage(id, 'issue')),
+              ),
+            if (!retailer && r.s('status') == 'accepted')
+              Item(
+                '상품 전달하기',
+                leading: const FigmaIcon('truck'),
+                subtitle: '실제로 전달한 수량을 기록해요',
+                onTap: () => openPage(context, DeliveryBatchPage([id])),
+              ),
           ],
-        ],
-        if (retailer &&
-            !['pending', 'cancelled', 'rejected'].contains(r.s('status')))
-          ActionButton(
-            '문제 알리기',
-            weak: true,
-            onPressed: () => openPage(context, RequestActionPage(id, 'issue')),
-          ),
-        if (!retailer && r.s('status') == 'accepted')
-          Item(
-            '상품 전달하기',
-            subtitle: '실제로 전달한 수량을 기록해요',
-            onTap: () => openPage(context, DeliveryBatchPage([id])),
-          ),
+        ),
         if (proposals.isNotEmpty) const Section('변경·취소·정정'),
         for (final p in proposals) ProposalCard(p),
         const Section('전달·수령 내역'),
-        if (deliveries.isEmpty) const Info('아직 전달 기록이 없어요.'),
+        if (deliveries.isEmpty)
+          const FigmaSurface(children: [Info('아직 전달 기록이 없어요.')]),
         for (final d in deliveries) DeliveryCard(d),
         if (issues.isNotEmpty) const Section('문제와 조치'),
         for (final issue in issues) IssueCard(issue),
         const Section('처리 이력'),
-        for (final e
-            in app.workspace
-                .records('events')
-                .where((e) => e.s('requestId') == id))
-          Item(
-            e.s('title'),
-            subtitle: displayTime(e.s('createdAt')),
-            onTap: () => openPage(context, EventPage(e)),
-          ),
+        FigmaSurface(
+          children: [
+            for (final e
+                in app.workspace
+                    .records('events')
+                    .where((e) => e.s('requestId') == id))
+              Item(
+                e.s('title'),
+                subtitle: displayTime(e.s('createdAt')),
+                onTap: () => openPage(context, EventPage(e)),
+              ),
+          ],
+        ),
       ],
     );
   }
@@ -551,25 +650,30 @@ class EventPage extends StatelessWidget {
       title: '처리 이력',
       subtitle: displayTime(record.s('createdAt')),
       children: [
-        Info(record.s('title')),
-        for (final e in {
-          'product': '상품',
-          'option': '옵션',
-          'quantity': record.s('deliveryId').isEmpty ? '요청 수량' : '이번 전달 수량',
-          'acquired': '확보 수량',
-          'delivered': '전달 수량',
-          'received': '수령 수량',
-          'cancelled': '취소 수량',
-          'address': '배송지',
-          'addressDetail': '상세주소',
-          'recheck': '재확인일',
-          'status': '처리 상태',
-        }.entries)
-          if (before[e.key] != after[e.key])
-            Item(
-              e.value,
-              subtitle: '${before[e.key] ?? '없음'} → ${after[e.key] ?? '없음'}',
-            ),
+        PageHeading(record.s('title')),
+        FigmaSurface(
+          children: [
+            for (final e in {
+              'product': '상품',
+              'option': '옵션',
+              'quantity': record.s('deliveryId').isEmpty ? '요청 수량' : '이번 전달 수량',
+              'acquired': '확보 수량',
+              'delivered': '전달 수량',
+              'received': '수령 수량',
+              'cancelled': '취소 수량',
+              'address': '배송지',
+              'addressDetail': '상세주소',
+              'recheck': '재확인일',
+              'status': '처리 상태',
+            }.entries)
+              if (before[e.key] != after[e.key])
+                Item(
+                  e.value,
+                  subtitle:
+                      '${before[e.key] ?? '없음'} → ${after[e.key] ?? '없음'}',
+                ),
+          ],
+        ),
       ],
     );
   }
@@ -715,9 +819,13 @@ class _RequestActionPageState extends State<RequestActionPage> {
       children: [
         if (widget.action == 'issue') ...[
           const PageHeading('받은 상품이 다른 점'),
-          for (final label in const ['상품·옵션이 달라요', '수량이 부족해요', '오염·파손이 있어요'])
-            FigmaSurface(
-              children: [
+          FigmaSurface(
+            children: [
+              for (final label in const [
+                '상품·옵션이 달라요',
+                '수량이 부족해요',
+                '오염·파손이 있어요',
+              ])
                 Inset(
                   child: TdsCheckbox(
                     inputType: TdsCheckboxInputType.radio,
@@ -726,58 +834,68 @@ class _RequestActionPageState extends State<RequestActionPage> {
                     child: Text(label),
                   ),
                 ),
-              ],
-            ),
-          const Section('문제가 있는 전달 회차'),
-          Choices(
-            options: const ['요청 전체', '전달 회차 선택'],
-            value: issueDelivery.isEmpty ? '요청 전체' : '전달 회차 선택',
-            onChanged: (value) async {
-              if (value == '요청 전체') {
-                setState(() => issueDelivery = '');
-                return;
-              }
-              final selected = await openPage<String>(
-                context,
-                PageFrame(
-                  title: '전달 회차 선택',
-                  children: [
-                    for (final d
-                        in app.workspace
-                            .records('deliveries')
-                            .where((d) => d.s('requestId') == widget.id))
-                      Builder(
-                        builder: (context) => Item(
-                          '${displayTime(d.s('createdAt'))} · ${d.n('quantity')}개',
-                          subtitle: '${d.s('product')} · ${d.s('option')}',
-                          onTap: () => Navigator.pop(context, d.id),
-                        ),
-                      ),
-                    if (!app.workspace
-                        .records('deliveries')
-                        .any((d) => d.s('requestId') == widget.id))
-                      const EmptyState('전달 내역이 없어요', '요청 전체의 문제로 알려 주세요.'),
-                  ],
-                ),
-              );
-              if (mounted && selected != null) {
-                setState(() => issueDelivery = selected);
-              }
-            },
+            ],
           ),
-          Field('보류할 미전달 확보 수량', controller: held, numeric: true),
-          Info('현재 전달 가능 ${r.available}개예요. 해당 물량만 다음 처리를 보류해요.'),
-          Item(
-            '문제 상품 사진 보내기',
-            subtitle: '이 요청에 연결된 채팅에 사진을 남겨요',
-            onTap: () =>
-                openPage(context, ChatPage(r.s('uncleId'), requestId: r.id)),
+          const Section('문제가 있는 전달 회차'),
+          FigmaSurface(
+            children: [
+              Choices(
+                options: const ['요청 전체', '전달 회차 선택'],
+                value: issueDelivery.isEmpty ? '요청 전체' : '전달 회차 선택',
+                onChanged: (value) async {
+                  if (value == '요청 전체') {
+                    setState(() => issueDelivery = '');
+                    return;
+                  }
+                  final selected = await openPage<String>(
+                    context,
+                    PageFrame(
+                      title: '전달 회차 선택',
+                      children: [
+                        for (final d
+                            in app.workspace
+                                .records('deliveries')
+                                .where((d) => d.s('requestId') == widget.id))
+                          Builder(
+                            builder: (context) => Item(
+                              '${displayTime(d.s('createdAt'))} · ${d.n('quantity')}개',
+                              subtitle: '${d.s('product')} · ${d.s('option')}',
+                              onTap: () => Navigator.pop(context, d.id),
+                            ),
+                          ),
+                        if (!app.workspace
+                            .records('deliveries')
+                            .any((d) => d.s('requestId') == widget.id))
+                          const EmptyState('전달 내역이 없어요', '요청 전체의 문제로 알려 주세요.'),
+                      ],
+                    ),
+                  );
+                  if (mounted && selected != null) {
+                    setState(() => issueDelivery = selected);
+                  }
+                },
+              ),
+              Field('보류할 미전달 확보 수량', controller: held, numeric: true),
+              Info('현재 전달 가능 ${r.available}개예요. 해당 물량만 다음 처리를 보류해요.'),
+              Item(
+                '문제 상품 사진 보내기',
+                subtitle: '이 요청에 연결된 채팅에 사진을 남겨요',
+                onTap: () => openPage(
+                  context,
+                  ChatPage(r.s('uncleId'), requestId: r.id),
+                ),
+              ),
+            ],
           ),
         ],
-        Field(
-          widget.action == 'receive' ? '수량 차이 설명 (일치하면 선택)' : '사유·설명·조치 내용',
-          controller: reason,
-          multiline: true,
+        FigmaSurface(
+          children: [
+            Field(
+              widget.action == 'receive' ? '수량 차이 설명 (일치하면 선택)' : '사유·설명·조치 내용',
+              controller: reason,
+              multiline: true,
+            ),
+          ],
         ),
       ],
     );
@@ -813,14 +931,19 @@ class _RequestActionPageState extends State<RequestActionPage> {
           '이번에 추가로 확보한 수량',
           eyebrow: app.workspace.profile(initial.s('retailerId'))?.name,
         ),
-        Item(
-          initial.s('product'),
-          subtitle:
-              '${initial.s('option')} · 요청 ${initial.quantity}장\n이전 누적 확보 ${initial.acquired}장 · 이전 전달 ${initial.delivered}장',
+        FigmaSurface(
+          children: [
+            Item(
+              initial.s('product'),
+              subtitle:
+                  '${initial.s('option')} · 요청 ${initial.quantity}장\n이전 누적 확보 ${initial.acquired}장 · 이전 전달 ${initial.delivered}장',
+            ),
+          ],
         ),
         const Section('이번 추가 확보'),
         FigmaSurface(
           children: [
+            const TdsSpacing(12),
             Center(
               child: TdsNumericSpinner(
                 size: TdsNumericSpinnerSize.large,
@@ -834,6 +957,7 @@ class _RequestActionPageState extends State<RequestActionPage> {
           ],
         ),
         Info('추가 가능한 수량 0–${initial.remaining}장'),
+        const Section('저장 후 진행 상황'),
         FigmaSurface(
           children: [
             QuantityRow('기존 확보', '${initial.acquired}장'),
@@ -843,19 +967,24 @@ class _RequestActionPageState extends State<RequestActionPage> {
           ],
         ),
         if (remaining > 0) ...[
-          Item(
-            '재확인일',
-            subtitle: date,
-            onTap: () async {
-              final value = await openPage<String>(context, DatePage(date));
-              if (value != null && mounted) setState(() => date = value);
-            },
-          ),
-          Field('미송 사유', controller: reason, multiline: true),
-          Toggle(
-            '소매업자 응답 요청',
-            value: needsReply,
-            onChanged: (v) => setState(() => needsReply = v),
+          const Section('남은 미송'),
+          FigmaSurface(
+            children: [
+              Item(
+                '재확인일',
+                subtitle: date,
+                onTap: () async {
+                  final value = await openPage<String>(context, DatePage(date));
+                  if (value != null && mounted) setState(() => date = value);
+                },
+              ),
+              Field('미송 사유', controller: reason, multiline: true),
+              Toggle(
+                '소매업자 응답 요청',
+                value: needsReply,
+                onChanged: (v) => setState(() => needsReply = v),
+              ),
+            ],
           ),
         ],
         if (current.version != version)
@@ -903,11 +1032,16 @@ class _RequestActionPageState extends State<RequestActionPage> {
       ),
       children: [
         PageHeading('이번에 받은 ${current.n('quantity')}장이 맞나요?'),
-        Item(
-          '${app.workspace.profile(r.s('uncleId'))?.name ?? '사입삼촌'} · ${current.s('product')}',
-          subtitle:
-              '${current.s('option')} · 전체 받을 수량 ${r.quantity - r.cancelled}장',
+        FigmaSurface(
+          children: [
+            Item(
+              '${app.workspace.profile(r.s('uncleId'))?.name ?? '사입삼촌'} · ${current.s('product')}',
+              subtitle:
+                  '${current.s('option')} · 전체 받을 수량 ${r.quantity - r.cancelled}장',
+            ),
+          ],
         ),
+        const Section('전달 회차'),
         FigmaSurface(
           children: [
             for (var i = 0; i < batches.length; i++)
@@ -935,21 +1069,28 @@ class _RequestActionPageState extends State<RequestActionPage> {
             ),
           ],
         ),
-        Item('상품이나 수량이 달라요', onTap: () => setState(() => mismatch = !mismatch)),
-        if (mismatch) ...[
-          Field(
-            '실제 받은 수량',
-            controller: quantity,
-            numeric: true,
-            onChanged: (_) => setState(() {}),
-          ),
-          Field('수량 차이 설명 (일치하면 선택)', controller: reason, multiline: true),
-          Item(
-            '상품·옵션 문제 알리기',
-            onTap: () =>
-                openPage(context, RequestActionPage(widget.id, 'issue')),
-          ),
-        ],
+        FigmaSurface(
+          children: [
+            Item(
+              '상품이나 수량이 달라요',
+              onTap: () => setState(() => mismatch = !mismatch),
+            ),
+            if (mismatch) ...[
+              Field(
+                '실제 받은 수량',
+                controller: quantity,
+                numeric: true,
+                onChanged: (_) => setState(() {}),
+              ),
+              Field('수량 차이 설명 (일치하면 선택)', controller: reason, multiline: true),
+              Item(
+                '상품·옵션 문제 알리기',
+                onTap: () =>
+                    openPage(context, RequestActionPage(widget.id, 'issue')),
+              ),
+            ],
+          ],
+        ),
       ],
     );
   }
@@ -1088,57 +1229,74 @@ class _ProposalPageState extends State<ProposalPage> {
         Info(
           '요청 ${r.quantity} · 확보 ${r.acquired} · 전달 ${r.delivered} · 수령 ${r.received} · 취소 ${r.cancelled}',
         ),
-        if (widget.kind == 'change') ...[
-          for (final e in {
-            'product': '상품명',
-            'option': '옵션',
-            'wholesaler': '도매처',
-            'location': '도매처 위치',
-            'address': '배송지',
-            'addressDetail': '상세주소',
-            'note': '요청사항',
-          }.entries)
-            Field(e.value, controller: fields[e.key]!),
-          Field('변경 후 요청 수량', controller: fields['quantity']!, numeric: true),
-        ],
-        if (widget.kind == 'cancel') ...[
-          Field('이번 취소 수량', controller: fields['quantity']!, numeric: true),
-          Field(
-            '취소 수량 중 이미 확보한 수량',
-            controller: fields['acquiredCancelled']!,
-            numeric: true,
-          ),
-          const Info('이미 전달한 물량은 바로 취소할 수 없어요. 확보한 물품의 처리 방법을 사유에 함께 기록해 주세요.'),
-        ],
-        if (widget.kind == 'correction') ...[
-          if (widget.deliveryId != null)
+        FigmaSurface(
+          children: [
+            if (widget.kind == 'change') ...[
+              for (final e in {
+                'product': '상품명',
+                'option': '옵션',
+                'wholesaler': '도매처',
+                'location': '도매처 위치',
+                'address': '배송지',
+                'addressDetail': '상세주소',
+                'note': '요청사항',
+              }.entries)
+                Field(e.value, controller: fields[e.key]!),
+              Field(
+                '변경 후 요청 수량',
+                controller: fields['quantity']!,
+                numeric: true,
+              ),
+            ],
+            if (widget.kind == 'cancel') ...[
+              Field('이번 취소 수량', controller: fields['quantity']!, numeric: true),
+              Field(
+                '취소 수량 중 이미 확보한 수량',
+                controller: fields['acquiredCancelled']!,
+                numeric: true,
+              ),
+              const Info(
+                '이미 전달한 물량은 바로 취소할 수 없어요. 확보한 물품의 처리 방법을 사유에 함께 기록해 주세요.',
+              ),
+            ],
+            if (widget.kind == 'correction') ...[
+              if (widget.deliveryId != null)
+                Field(
+                  '정정 후 이번 전달 수량',
+                  controller: fields['quantity']!,
+                  numeric: true,
+                ),
+              Field(
+                '정정 후 누적 확보 수량',
+                controller: fields['acquired']!,
+                numeric: true,
+              ),
+              if (widget.deliveryId != null)
+                Field(
+                  '정정 후 이번 수령 확인 수량',
+                  controller: fields['received']!,
+                  numeric: true,
+                ),
+              const Info('원래 기록과 정정 사유를 남기고 상대방이 확인한 뒤 반영해요.'),
+              Item(
+                '정정 후 미송이 남으면 재확인할 날짜',
+                subtitle: recheck,
+                onTap: () async {
+                  final value = await openPage<String>(
+                    context,
+                    DatePage(recheck),
+                  );
+                  if (value != null && mounted) setState(() => recheck = value);
+                },
+              ),
+            ],
             Field(
-              '정정 후 이번 전달 수량',
-              controller: fields['quantity']!,
-              numeric: true,
+              '사유·협의할 처리 방법',
+              controller: fields['reason']!,
+              multiline: true,
             ),
-          Field(
-            '정정 후 누적 확보 수량',
-            controller: fields['acquired']!,
-            numeric: true,
-          ),
-          if (widget.deliveryId != null)
-            Field(
-              '정정 후 이번 수령 확인 수량',
-              controller: fields['received']!,
-              numeric: true,
-            ),
-          const Info('원래 기록과 정정 사유를 남기고 상대방이 확인한 뒤 반영해요.'),
-          Item(
-            '정정 후 미송이 남으면 재확인할 날짜',
-            subtitle: recheck,
-            onTap: () async {
-              final value = await openPage<String>(context, DatePage(recheck));
-              if (value != null && mounted) setState(() => recheck = value);
-            },
-          ),
-        ],
-        Field('사유·협의할 처리 방법', controller: fields['reason']!, multiline: true),
+          ],
+        ),
       ],
     );
   }
@@ -1236,16 +1394,46 @@ class DeliveryCard extends StatelessWidget {
     final retailer = app.session.current!.role == AppRole.retailer;
     return FigmaSurface(
       children: [
-        Item(
-          '${d.s('product')} · ${d.s('option')} · 전달 ${d.n('quantity')}개',
-          subtitle:
-              '${displayTime(d.s('createdAt'))}\n${d.s('address')} ${d.s('addressDetail')}\n수령 확인 ${d.n('received')}개${d.data.containsKey('actual') ? ' · 실제 ${d.n('actual')}개' : ''}',
-          trailing: StatusBadge(
-            d.b('receiptRecorded')
-                ? (d.n('received') == d.n('quantity') ? '수령 확인' : '수량 차이')
-                : '수령 대기',
+        Inset(
+          child: Wrap(
+            spacing: 12,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              StatusBadge(
+                d.b('receiptRecorded')
+                    ? (d.n('received') == d.n('quantity') ? '수령 확인' : '수량 차이')
+                    : '수령 대기',
+                attention:
+                    d.b('receiptRecorded') &&
+                    d.n('received') != d.n('quantity'),
+              ),
+              TdsText(
+                displayTime(d.s('createdAt')),
+                typography: TdsTypography.t7,
+                color: TdsTheme.of(context).color('grey600'),
+              ),
+            ],
           ),
+        ),
+        Item(
+          d.s('product'),
+          subtitle: d.s('option'),
           onTap: () => openPage(context, RequestDetailPage(r.id)),
+        ),
+        QuantityRow('이번 전달', '${d.n('quantity')}장'),
+        QuantityRow('확인한 수량', '${d.n('received')}장'),
+        if (d.data.containsKey('actual'))
+          QuantityRow('실제 받은 수량', '${d.n('actual')}장'),
+        const TdsBorder(),
+        Item('수령지', subtitle: '${d.s('address')} ${d.s('addressDetail')}'),
+        Item(
+          '관련 채팅',
+          leading: const FigmaIcon('chat'),
+          onTap: () => openPage(
+            context,
+            ChatPage(r.s(retailer ? 'uncleId' : 'retailerId'), requestId: r.id),
+          ),
         ),
         if (retailer && !d.b('receiptRecorded'))
           ActionButton(
@@ -1256,10 +1444,9 @@ class DeliveryCard extends StatelessWidget {
             ),
           ),
         if (!retailer && r.s('proposalId').isEmpty)
-          ActionButton(
+          Item(
             '전달 기록 정정',
-            weak: true,
-            onPressed: () => openPage(
+            onTap: () => openPage(
               context,
               ProposalPage(r.id, 'correction', deliveryId: d.id),
             ),

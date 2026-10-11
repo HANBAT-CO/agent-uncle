@@ -1,251 +1,80 @@
-import 'dart:async';
-
-import 'package:agent_uncle/features/auth/domain/auth_repository.dart';
+import 'core/theme/app_theme.dart';
 import 'package:flutter/widgets.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import 'features/auth/domain/auth_repository.dart';
+import 'features/auth/presentation/google_auth_app.dart';
+import 'local/app_services.dart';
+import 'local/presentation/entry.dart';
 
-class AgentUncleApp extends StatefulWidget {
-  const AgentUncleApp({required this.authRepository, super.key});
-
-  final AuthRepository authRepository;
-
-  @override
-  State<AgentUncleApp> createState() => _AgentUncleAppState();
-}
-
-class _AgentUncleAppState extends State<AgentUncleApp> {
-  StreamSubscription<User?>? _authSubscription;
-  User? _user;
-
-  @override
-  void initState() {
-    super.initState();
-    _user = widget.authRepository.currentUser;
-    _authSubscription = widget.authRepository.userChanges.listen((user) {
-      if (mounted) {
-        setState(() => _user = user);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    unawaited(_authSubscription?.cancel());
-    super.dispose();
-  }
-
+class AgentUncleApp extends StatelessWidget {
+  const AgentUncleApp({this.services, this.authRepository, super.key})
+    : assert(services != null || authRepository != null);
+  final AppServices? services;
+  // Legacy authentication harness remains injectable for isolated auth tests.
+  final AuthRepository? authRepository;
   @override
   Widget build(BuildContext context) {
-    return WidgetsApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Agent Uncle',
-      color: TdsPalette.background,
-      builder: (context, child) => TdsMobileAITProvider(child: child!),
-      home: _user == null
-          ? SignInPage(authRepository: widget.authRepository)
-          : SignedInPage(authRepository: widget.authRepository, user: _user!),
-      pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
-        settings: settings,
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            builder(context),
-      ),
-    );
-  }
-}
-
-class SignInPage extends StatefulWidget {
-  const SignInPage({required this.authRepository, super.key});
-
-  final AuthRepository authRepository;
-
-  @override
-  State<SignInPage> createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  String? _loadingProvider;
-  String? _error;
-
-  Future<void> _signIn({
-    required String providerName,
-    required Future<bool> Function() authenticate,
-  }) async {
-    setState(() {
-      _loadingProvider = providerName;
-      _error = null;
-    });
-
-    try {
-      final launched = await authenticate();
-      if (!launched) {
-        throw StateError('$providerName 로그인 페이지를 열 수 없습니다.');
-      }
-    } on AuthException catch (error) {
-      if (mounted) setState(() => _error = error.message);
-    } on Object catch (error) {
-      if (mounted) setState(() => _error = '로그인 실패: $error');
-    } finally {
-      if (mounted) {
-        setState(() => _loadingProvider = null);
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: TdsPalette.background,
-      child: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const TdsTop(
-                    title: TdsTopTitleParagraph('Agent Uncle', size: 28),
-                    subtitleBottom: TdsTopSubtitleParagraph('Google 계정으로 시작해요'),
-                  ),
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                      child: Semantics(
-                        liveRegion: true,
-                        child: TdsText(_error!, color: TdsPalette.red600),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TdsButton(
-                      display: TdsButtonDisplay.block,
-                      disabled: _loadingProvider != null,
-                      loading: _loadingProvider == 'Google',
-                      onPressed: _loadingProvider == null
-                          ? () => _signIn(
-                              providerName: 'Google',
-                              authenticate:
-                                  widget.authRepository.signInWithGoogle,
-                            )
-                          : null,
-                      child: const Text('Google로 로그인'),
-                    ),
-                  ),
-                  const TdsSpacing(24),
-                  // TODO(auth): Re-enable after Kakao Biz App registration.
-                  // const SizedBox(height: 12),
-                  // TdsButton(
-                  //   onPressed: _loadingProvider == null
-                  //       ? () => _signIn(
-                  //           providerName: 'Kakao',
-                  //           authenticate: widget.authRepository.signInWithKakao,
-                  //         )
-                  //       : null,
-                  //   loading: _loadingProvider == 'Kakao',
-                  //   child: const Text('카카오로 로그인'),
-                  // ),
-                ],
-              ),
+    if (services == null) return GoogleAuthApp(authRepository: authRepository!);
+    return AppScope(
+      services: services!,
+      child: WidgetsApp(
+        debugShowCheckedModeBanner: false,
+        title: '사입삼춘',
+        color: AppColors.background,
+        builder: (context, child) => Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: MediaQuery.removeViewInsets(
+            context: context,
+            removeBottom: true,
+            child: StableViewport(
+              child: TdsMobileAITProvider(child: AppTheme(child: child!)),
             ),
           ),
+        ),
+        home: const SessionGate(),
+        pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
+          settings: settings,
+          pageBuilder: (context, a, b) => builder(context),
         ),
       ),
     );
   }
 }
 
-class SignedInPage extends StatefulWidget {
-  const SignedInPage({
-    required this.authRepository,
-    required this.user,
-    super.key,
-  });
-
-  final AuthRepository authRepository;
-  final User user;
-
+/// Android can briefly report a zero-size surface when starting or opening a
+/// native picker. Keep the last valid layout and its navigation/form state.
+class StableViewport extends StatefulWidget {
+  const StableViewport({required this.child, super.key});
+  final Widget child;
   @override
-  State<SignedInPage> createState() => _SignedInPageState();
+  State<StableViewport> createState() => _StableViewportState();
 }
 
-class _SignedInPageState extends State<SignedInPage> {
-  bool _isLoading = false;
-  String? _error;
-
-  Future<void> _signOut() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      await widget.authRepository.signOut();
-    } on AuthException catch (error) {
-      if (mounted) setState(() => _error = error.message);
-    } on Object catch (error) {
-      if (mounted) setState(() => _error = '로그아웃 실패: $error');
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    }
-  }
-
+class _StableViewportState extends State<StableViewport> {
+  Size? lastSize;
   @override
-  Widget build(BuildContext context) {
-    final metadata = widget.user.userMetadata;
-    final displayName =
-        metadata?['full_name'] as String? ??
-        metadata?['name'] as String? ??
-        '사용자';
-
-    return ColoredBox(
-      color: TdsPalette.background,
-      child: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 480),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TdsTop(
-                    title: TdsTopTitleParagraph(
-                      '$displayName님, 반가워요',
-                      size: 28,
-                    ),
-                    subtitleBottom: TdsTopSubtitleParagraph(
-                      widget.user.email ?? widget.user.id,
-                    ),
-                  ),
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                      child: Semantics(
-                        liveRegion: true,
-                        child: TdsText(_error!, color: TdsPalette.red600),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TdsButton(
-                      display: TdsButtonDisplay.block,
-                      variant: TdsButtonVariant.weak,
-                      disabled: _isLoading,
-                      loading: _isLoading,
-                      onPressed: _isLoading ? null : _signOut,
-                      child: const Text('로그아웃'),
-                    ),
-                  ),
-                  const TdsSpacing(24),
-                ],
-              ),
-            ),
-          ),
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      if (constraints.maxWidth > 0 &&
+          constraints.maxHeight > 0 &&
+          constraints.hasBoundedWidth &&
+          constraints.hasBoundedHeight) {
+        lastSize = constraints.biggest;
+      }
+      final size = lastSize;
+      if (size == null) return const SizedBox.shrink();
+      return OverflowBox(
+        minWidth: size.width,
+        maxWidth: size.width,
+        minHeight: size.height,
+        maxHeight: size.height,
+        child: MediaQuery(
+          data: MediaQuery.of(context).copyWith(size: size),
+          child: widget.child,
         ),
-      ),
-    );
-  }
+      );
+    },
+  );
 }

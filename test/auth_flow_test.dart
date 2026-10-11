@@ -13,16 +13,15 @@ void main() {
     await tester.pumpWidget(AgentUncleApp(authRepository: repository));
 
     expect(find.text('Google로 로그인'), findsOneWidget);
-    // TODO(auth): Restore after Kakao Biz App registration.
-    // expect(find.text('카카오로 로그인'), findsOneWidget);
+    expect(find.text('카카오로 로그인'), findsOneWidget);
 
     await tester.tap(find.text('Google로 로그인'));
     await tester.pump();
     expect(repository.googleSignInCount, 1);
 
-    // await tester.tap(find.text('카카오로 로그인'));
-    // await tester.pump();
-    // expect(repository.kakaoSignInCount, 1);
+    await tester.tap(find.text('카카오로 로그인'));
+    await tester.pump();
+    expect(repository.kakaoSignInCount, 1);
   });
 }
 
@@ -30,7 +29,7 @@ final class FakeAuthRepository implements AuthRepository {
   final _controller = StreamController<User?>.broadcast();
 
   int googleSignInCount = 0;
-  // int kakaoSignInCount = 0;
+  int kakaoSignInCount = 0;
 
   @override
   User? get currentUser => null;
@@ -44,11 +43,11 @@ final class FakeAuthRepository implements AuthRepository {
     return true;
   }
 
-  // @override
-  // Future<bool> signInWithKakao() async {
-  //   kakaoSignInCount += 1;
-  //   return true;
-  // }
+  @override
+  Future<bool> signInWithKakao() async {
+    kakaoSignInCount += 1;
+    return true;
+  }
 
   @override
   Future<void> signOut() async {}

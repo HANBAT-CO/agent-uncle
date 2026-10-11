@@ -7,8 +7,7 @@ abstract interface class AuthRepository {
 
   Future<bool> signInWithGoogle();
 
-  // TODO(auth): Re-enable after Kakao Biz App registration is complete.
-  // Future<bool> signInWithKakao();
+  Future<bool> signInWithKakao();
 
   Future<void> signOut();
 }

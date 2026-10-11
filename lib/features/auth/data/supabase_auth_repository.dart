@@ -20,16 +20,17 @@ final class SupabaseAuthRepository implements AuthRepository {
     return _signInWithOAuth(OAuthProvider.google);
   }
 
-  // TODO(auth): Re-enable after Kakao Biz App registration is complete.
-  // @override
-  // Future<bool> signInWithKakao() {
-  //   return _signInWithOAuth(OAuthProvider.kakao);
-  // }
+  @override
+  Future<bool> signInWithKakao() {
+    return _signInWithOAuth(OAuthProvider.kakao);
+  }
 
   Future<bool> _signInWithOAuth(OAuthProvider provider) {
     return _client.auth.signInWithOAuth(
       provider,
-      redirectTo: kIsWeb ? Uri.base.origin : SupabaseConfig.mobileAuthCallback,
+      redirectTo: kIsWeb
+          ? SupabaseConfig.webAuthCallback
+          : SupabaseConfig.mobileAuthCallback,
       authScreenLaunchMode: kIsWeb
           ? LaunchMode.platformDefault
           : LaunchMode.externalApplication,

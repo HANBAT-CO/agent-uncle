@@ -12,4 +12,8 @@ abstract final class SupabaseConfig {
   );
 
   static const mobileAuthCallback = 'com.hanbatco.agentuncle://login-callback/';
+  static String get webAuthCallback {
+    const configured = String.fromEnvironment('AUTH_WEB_REDIRECT_URL');
+    return configured.isNotEmpty ? configured : '${Uri.base.origin}/';
+  }
 }

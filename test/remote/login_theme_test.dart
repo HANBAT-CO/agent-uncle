@@ -43,11 +43,8 @@ void main() {
     await tester.pumpWidget(AgentUncleApp(services: services));
     expect(find.byType(SocialLoginPage), findsOneWidget);
     expect(find.text('로컬 계정 만들기'), findsNothing);
-    for (final entry in {
-      'Google로 로그인': 'google',
-      '카카오로 로그인': 'kakao',
-    }.entries) {
-      final button = find.text(entry.key);
+    for (final entry in {'Google로 로그인': 'google', '카카오 로그인': 'kakao'}.entries) {
+      final button = find.bySemanticsLabel(entry.key);
       await tester.ensureVisible(button);
       await tester.tap(button);
       await tester.pumpAndSettle();

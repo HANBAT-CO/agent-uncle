@@ -5,6 +5,7 @@ import 'package:agent_uncle/features/auth/domain/auth_repository.dart';
 import 'package:flutter/widgets.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import 'social_login_buttons.dart';
 
 class GoogleAuthApp extends StatefulWidget {
   const GoogleAuthApp({required this.authRepository, super.key});
@@ -56,43 +57,10 @@ class _GoogleAuthAppState extends State<GoogleAuthApp> {
   }
 }
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends StatelessWidget {
   const SignInPage({required this.authRepository, super.key});
 
   final AuthRepository authRepository;
-
-  @override
-  State<SignInPage> createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
-  String? _loadingProvider;
-  String? _error;
-
-  Future<void> _signIn({
-    required String providerName,
-    required Future<bool> Function() authenticate,
-  }) async {
-    setState(() {
-      _loadingProvider = providerName;
-      _error = null;
-    });
-
-    try {
-      final launched = await authenticate();
-      if (!launched) {
-        throw StateError('$providerName 로그인 페이지를 열 수 없습니다.');
-      }
-    } on AuthException catch (error) {
-      if (mounted) setState(() => _error = error.message);
-    } on Object catch (error) {
-      if (mounted) setState(() => _error = '로그인 실패: $error');
-    } finally {
-      if (mounted) {
-        setState(() => _loadingProvider = null);
-      }
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,49 +84,20 @@ class _SignInPageState extends State<SignInPage> {
                   ),
                   const TdsTop(
                     title: TdsTopTitleParagraph('사입삼춘', size: 28),
-                    subtitleBottom: TdsTopSubtitleParagraph('Google 계정으로 시작해요'),
+                    subtitleBottom: TdsTopSubtitleParagraph('소셜 계정으로 시작해요'),
                   ),
-                  if (_error != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                      child: Semantics(
-                        liveRegion: true,
-                        child: TdsText(_error!, color: TdsPalette.red600),
-                      ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TdsButton(
-                      display: TdsButtonDisplay.block,
-                      disabled: _loadingProvider != null,
-                      loading: _loadingProvider == 'Google',
-                      onPressed: _loadingProvider == null
-                          ? () => _signIn(
-                              providerName: 'Google',
-                              authenticate:
-                                  widget.authRepository.signInWithGoogle,
-                            )
-                          : null,
-                      child: const Text('Google로 로그인'),
-                    ),
-                  ),
-                  const TdsSpacing(24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: TdsButton(
-                      display: TdsButtonDisplay.block,
-                      variant: TdsButtonVariant.weak,
-                      disabled: _loadingProvider != null,
-                      onPressed: _loadingProvider == null
-                          ? () => _signIn(
-                              providerName: 'Kakao',
-                              authenticate:
-                                  widget.authRepository.signInWithKakao,
-                            )
-                          : null,
-                      loading: _loadingProvider == 'Kakao',
-                      child: const Text('카카오로 로그인'),
-                    ),
+                  SocialLoginButtons(
+                    onSignIn: (provider) async {
+                      final launched = await switch (provider) {
+                        SocialLoginProvider.google =>
+                          authRepository.signInWithGoogle(),
+                        SocialLoginProvider.kakao =>
+                          authRepository.signInWithKakao(),
+                      };
+                      if (!launched) {
+                        throw StateError('${provider.label} 페이지를 열 수 없습니다.');
+                      }
+                    },
                   ),
                 ],
               ),

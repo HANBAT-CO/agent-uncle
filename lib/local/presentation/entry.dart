@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
+import '../../features/auth/presentation/social_login_buttons.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -65,14 +66,8 @@ class SocialLoginPage extends StatelessWidget {
       bottom: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ActionButton(
-            'Google로 로그인',
-            onPressed: () => session.signInWithSocial('google'),
-          ),
-          ActionButton(
-            '카카오로 로그인',
-            weak: true,
-            onPressed: () => session.signInWithSocial('kakao'),
+          SocialLoginButtons(
+            onSignIn: (provider) => session.signInWithSocial(provider.name),
           ),
           const TdsSpacing(12),
         ],
@@ -213,10 +208,9 @@ class _LocalLoginPageState extends State<LocalLoginPage> {
         const PageHeading('사입의 시작부터 수령까지'),
         const Info('지금은 이 기기에 저장하는 로컬 체험 모드예요. 계정을 나누어 만들면 양쪽 역할을 확인할 수 있어요.'),
         const Inset(
-          child: TdsButton(
-            display: TdsButtonDisplay.block,
+          child: SocialLoginButton(
+            provider: SocialLoginProvider.google,
             disabled: true,
-            child: Text('Google로 로그인'),
           ),
         ),
         const Info('Google 계정 연결은 준비 중이에요.'),

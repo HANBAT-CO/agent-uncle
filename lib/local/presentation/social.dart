@@ -579,10 +579,11 @@ class _ChatListState extends State<ChatList> {
   String query = '';
   @override
   Widget build(BuildContext context) {
+    final search = query.trim().toLowerCase();
     final app = AppScope.of(context),
         messages = app.workspace.records('messages'),
         partners = app.workspace.partners
-            .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
+            .where((p) => p.name.toLowerCase().contains(search))
             .toList();
     partners.sort((a, b) {
       String latest(String id) =>
@@ -595,14 +596,18 @@ class _ChatListState extends State<ChatList> {
     });
     return Column(
       children: [
-        Inset(
-          child: TdsSearchField(
-            placeholder: '거래처 검색',
-            onChanged: (v) => setState(() => query = v),
-          ),
+        AppSearchField(
+          placeholder: '거래처 검색',
+          onChanged: (v) => setState(() => query = v),
         ),
-        if (partners.isEmpty)
-          const EmptyState('대화할 거래처가 없어요', '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.'),
+        if (partners.isEmpty && search.isNotEmpty)
+          const EmptyState('검색 결과가 없어요', '거래처 이름을 다시 확인해 주세요.')
+        else if (partners.isEmpty)
+          const EmptyState(
+            '대화할 거래처가 없어요',
+            '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.',
+            icon: 'chat',
+          ),
         for (final a in partners)
           Builder(
             builder: (context) {
@@ -616,15 +621,47 @@ class _ChatListState extends State<ChatList> {
                         !m.b('read'),
                   )
                   .length;
-              return Item(
-                a.name,
-                subtitle: rows.isEmpty
-                    ? '대화를 시작해 보세요'
-                    : rows.first.s('body').isEmpty
-                    ? '사진'
-                    : rows.first.s('body'),
-                trailing: unread == 0 ? null : StatusBadge('$unread'),
-                onTap: () => openPage(context, ChatPage(a.id)),
+              return FigmaSurface(
+                children: [
+                  TdsListRow(
+                    left: ProfileAvatar(a),
+                    contents: TdsListRowTexts(
+                      type: TdsListRowTextType.row2TypeA,
+                      top: Text(a.name),
+                      topProps: const TdsListRowTextStyle(maxLines: 1),
+                      bottomProps: const TdsListRowTextStyle(
+                        maxLines: 2,
+                        typography: TdsTypography.t7,
+                      ),
+                      bottom: Text(
+                        rows.isEmpty
+                            ? '대화를 시작해 보세요'
+                            : rows.first.s('body').isEmpty
+                            ? '사진'
+                            : rows.first.s('body'),
+                      ),
+                    ),
+                    right: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        if (rows.isNotEmpty)
+                          TdsText(
+                            displayTime(
+                              rows.first.s('createdAt'),
+                            ).split(' ').last,
+                            typography: TdsTypography.t7,
+                            color: TdsTheme.of(context).color('grey600'),
+                          ),
+                        if (unread > 0) ...[
+                          const TdsSpacing(6),
+                          StatusBadge('$unread'),
+                        ],
+                      ],
+                    ),
+                    onPressed: () => openPage(context, ChatPage(a.id)),
+                  ),
+                ],
               );
             },
           ),
@@ -642,6 +679,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final body = TextEditingController();
+  final conversationScroll = ScrollController();
   List<String> photos = [];
   String messageId = newId();
   late String requestId = widget.requestId;
@@ -670,6 +708,11 @@ class _ChatPageState extends State<ChatPage> {
           if (body.text == sentBody) body.clear();
           photos.removeWhere(sentPhotos.contains);
           messageId = newId();
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted && conversationScroll.hasClients) {
+            conversationScroll.jumpTo(0);
+          }
         });
       }
     } catch (e) {
@@ -715,6 +758,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     body.dispose();
+    conversationScroll.dispose();
     super.dispose();
   }
 
@@ -731,7 +775,8 @@ class _ChatPageState extends State<ChatPage> {
               m.s('recipientId') == widget.peerId,
         )
         .toList()
-        .reversed;
+        .reversed
+        .toList();
     final unread = rows
         .where(
           (m) =>
@@ -754,29 +799,68 @@ class _ChatPageState extends State<ChatPage> {
     }
     return PageFrame(
       title: peer?.name ?? '채팅',
-      bottom: Column(
-        mainAxisSize: MainAxisSize.min,
+      navigationLeading: peer == null
+          ? null
+          : ExcludeSemantics(child: ProfileAvatar(peer, size: 36)),
+      navigationSubtitle: peer == null
+          ? '1:1 대화'
+          : '${peer.role?.label ?? '거래처'} · 1:1 대화',
+      scrollKey: 'chat-${widget.peerId}',
+      reverse: true,
+      scrollController: conversationScroll,
+      trailing: me.role == AppRole.retailer
+          ? TdsIconButton(
+              semanticLabel: '새 사입 요청',
+              onPressed: () =>
+                  openPage(context, RequestEditor(peerId: widget.peerId)),
+              child: const FigmaIcon('plus'),
+            )
+          : null,
+      header: requestId.isNotEmpty && MediaQuery.sizeOf(context).height > 600
+          ? FigmaSurface(
+              children: [
+                TdsListRow(
+                  left: const FigmaIcon('bag'),
+                  contents: TdsListRowTexts(
+                    type: TdsListRowTextType.row2TypeD,
+                    top: const Text('연결된 요청 보기'),
+                    bottom: Text(
+                      app.workspace.request(requestId)?.s('product') ?? '사입 요청',
+                    ),
+                    bottomProps: const TdsListRowTextStyle(
+                      maxLines: 1,
+                      typography: TdsTypography.t6,
+                    ),
+                  ),
+                  withArrow: true,
+                  onPressed: () =>
+                      openPage(context, RequestDetailPage(requestId)),
+                ),
+              ],
+            )
+          : null,
+      bottom: FigmaSurface(
+        margin: 12,
         children: [
           if (sendError != null) Info(sendError!, error: true),
-          TdsListRow(
-            contents: TdsListRowTexts(
-              type: TdsListRowTextType.row1TypeA,
-              top: Text(
-                requestId.isEmpty
-                    ? '요청 연결하기'
-                    : '현재 요청 · ${app.workspace.request(requestId)?.s('product') ?? ''}',
-              ),
-            ),
-            withArrow: true,
-            onPressed: sending ? null : chooseRequest,
+          TdsTextField(
+            controller: body,
+            placeholder: '메시지를 입력하세요',
+            semanticLabel: '메시지',
+            variant: TdsTextFieldVariant.box,
+            paddingTop: 0,
+            paddingBottom: 8,
+            onSubmitted: (_) => send(),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                TdsTextButton(
-                  size: TdsTextButtonSize.small,
+                TdsIconButton(
+                  semanticLabel: photos.isEmpty
+                      ? '사진 첨부'
+                      : '사진 추가, ${photos.length}장 첨부됨',
+                  disabled: sending,
                   onPressed: sending
                       ? null
                       : () async {
@@ -793,24 +877,36 @@ class _ChatPageState extends State<ChatPage> {
                             }
                           }
                         },
-                  child: Text(photos.isEmpty ? '사진' : '사진 ${photos.length}'),
+                  child: FigmaIcon('camera', selected: photos.isNotEmpty),
                 ),
+                if (photos.isNotEmpty) StatusBadge('${photos.length}'),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: TdsTextField(
-                    controller: body,
-                    placeholder: '메시지를 입력하세요',
-                    semanticLabel: '메시지',
-                    variant: TdsTextFieldVariant.box,
-                  ),
+                TdsIconButton(
+                  semanticLabel: requestId.isEmpty ? '요청 연결' : '연결된 요청 변경',
+                  disabled: sending,
+                  variant: requestId.isEmpty
+                      ? TdsIconButtonVariant.clear
+                      : TdsIconButtonVariant.fill,
+                  backgroundColor: TdsTheme.of(context).color('blue50'),
+                  onPressed: sending ? null : chooseRequest,
+                  child: FigmaIcon('link', selected: requestId.isNotEmpty),
                 ),
+                const Spacer(),
                 const SizedBox(width: 8),
                 TdsButton(
-                  size: TdsButtonSize.small,
+                  size: TdsButtonSize.large,
+                  semanticLabel: '메시지 전송',
                   loading: sending,
                   disabled: sending,
                   onPressed: send,
-                  child: const Text('전송'),
+                  child: FigmaIcon(
+                    'send',
+                    color: TdsButtonColors.resolve(
+                      TdsTheme.of(context),
+                      TdsButtonColor.primary,
+                      TdsButtonVariant.fill,
+                    ).foreground,
+                  ),
                 ),
               ],
             ),
@@ -818,84 +914,127 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
       children: [
-        if (me.role == AppRole.retailer)
-          ActionButton(
-            '이 거래처에 새 요청',
-            weak: true,
-            onPressed: () =>
-                openPage(context, RequestEditor(peerId: widget.peerId)),
-          ),
-        if (requestId.isNotEmpty)
-          Item(
-            '연결된 요청 보기',
-            subtitle: app.workspace.request(requestId)?.s('product'),
-            onTap: () => openPage(context, RequestDetailPage(requestId)),
-          ),
         if (rows.isEmpty)
-          const EmptyState('아직 메시지가 없어요', '요청에 관한 이야기를 나눠 보세요.'),
-        for (final m in rows)
-          Inset(
-            child: Align(
-              alignment: m.s('senderId') == me.id
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: m.s('senderId') == me.id
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  TdsBubble(
-                    withTail: false,
-                    background: m.s('senderId') == me.id
-                        ? TdsBubbleBackground.blue
-                        : TdsBubbleBackground.grey,
-                    child: Text(m.s('body').isEmpty ? '사진' : m.s('body')),
-                  ),
-                  for (final id in m.list('attachments'))
-                    AttachmentPreview(id, compact: true),
-                  if (m.s('requestId').isNotEmpty)
-                    TdsTextButton(
-                      size: TdsTextButtonSize.small,
-                      onPressed: () => openPage(
-                        context,
-                        RequestDetailPage(m.s('requestId')),
-                      ),
-                      child: const Text('관련 요청 열기'),
-                    ),
-                  TdsText(
-                    '${displayTime(m.s('createdAt'))}${m.s('status') == 'failed'
-                        ? ' · 전송 실패'
-                        : m.s('senderId') == me.id
-                        ? ' · ${m.b('read') ? '읽음' : '안 읽음'}'
-                        : ''}',
-                    typography: TdsTypography.t7,
-                    color: TdsTheme.of(context).color('grey600'),
-                  ),
-                  if (m.s('status') == 'failed' && m.s('senderId') == me.id)
-                    ActionButton(
-                      '메시지 다시 보내기',
-                      weak: true,
-                      onPressed: () async {
-                        await app.workspace.sendMessage(
-                          widget.peerId,
-                          m.id,
-                          m.s('body'),
-                          m.list('attachments'),
-                          requestId: m.s('requestId'),
-                        );
-                        if (mounted && messageId == m.id) {
-                          setState(() {
-                            body.clear();
-                            photos = [];
-                            messageId = newId();
-                          });
-                        }
-                      },
-                    ),
-                ],
+          const EmptyState('아직 메시지가 없어요', '요청에 관한 이야기를 나눠 보세요.', icon: 'chat'),
+        for (final (index, m) in rows.indexed) ...[
+          if (index == 0 ||
+              displayTime(
+                    rows[index - 1].s('createdAt'),
+                  ).split(' ').take(2).join(' ') !=
+                  displayTime(m.s('createdAt')).split(' ').take(2).join(' '))
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: TdsText(
+                  displayTime(m.s('createdAt')).split(' ').take(2).join(' '),
+                  typography: TdsTypography.t7,
+                  color: TdsTheme.of(context).color('grey600'),
+                ),
               ),
             ),
-          ),
+          if (m.b('system'))
+            FigmaSurface(
+              margin: 32,
+              children: [
+                TdsListRow(
+                  verticalPadding: TdsListRowVerticalPadding.small,
+                  contents: TdsListRowTexts(
+                    type: TdsListRowTextType.row2TypeD,
+                    top: Text(
+                      '업무 기록 · ${displayTime(m.s('createdAt')).split(' ').last}',
+                    ),
+                    bottom: Text(m.s('body')),
+                    topProps: const TdsListRowTextStyle(
+                      typography: TdsTypography.t7,
+                    ),
+                    bottomProps: const TdsListRowTextStyle(
+                      typography: TdsTypography.t6,
+                      fontWeight: TdsFontWeight.medium,
+                    ),
+                  ),
+                  withArrow: m.s('requestId').isNotEmpty,
+                  onPressed: m.s('requestId').isEmpty
+                      ? null
+                      : () => openPage(
+                          context,
+                          RequestDetailPage(m.s('requestId')),
+                        ),
+                ),
+              ],
+            )
+          else
+            Inset(
+              child: Align(
+                alignment: m.s('senderId') == me.id
+                    ? Alignment.centerRight
+                    : Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: m.s('senderId') == me.id
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    TdsBubble(
+                      withTail: false,
+                      background: m.s('senderId') == me.id
+                          ? TdsBubbleBackground.blue
+                          : TdsBubbleBackground.grey,
+                      child: TdsText(
+                        m.s('body').isEmpty ? '사진' : m.s('body'),
+                        typography: TdsTypography.t6,
+                        color: TdsTheme.of(
+                          context,
+                        ).color(m.s('senderId') == me.id ? 'white' : 'grey900'),
+                      ),
+                    ),
+                    for (final id in m.list('attachments'))
+                      AttachmentPreview(id, compact: true),
+                    if (m.s('requestId').isNotEmpty &&
+                        (index == 0 ||
+                            rows[index - 1].s('requestId') != m.s('requestId')))
+                      TdsTextButton(
+                        size: TdsTextButtonSize.small,
+                        onPressed: () => openPage(
+                          context,
+                          RequestDetailPage(m.s('requestId')),
+                        ),
+                        child: const Text('관련 요청 열기'),
+                      ),
+                    const TdsSpacing(4),
+                    TdsText(
+                      '${displayTime(m.s('createdAt')).split(' ').last}${m.s('status') == 'failed'
+                          ? ' · 전송 실패'
+                          : m.s('senderId') == me.id
+                          ? ' · ${m.b('read') ? '읽음' : '안 읽음'}'
+                          : ''}',
+                      typography: TdsTypography.t7,
+                      color: TdsTheme.of(context).color('grey600'),
+                    ),
+                    if (m.s('status') == 'failed' && m.s('senderId') == me.id)
+                      ActionButton(
+                        '메시지 다시 보내기',
+                        weak: true,
+                        onPressed: () async {
+                          await app.workspace.sendMessage(
+                            widget.peerId,
+                            m.id,
+                            m.s('body'),
+                            m.list('attachments'),
+                            requestId: m.s('requestId'),
+                          );
+                          if (mounted && messageId == m.id) {
+                            setState(() {
+                              body.clear();
+                              photos = [];
+                              messageId = newId();
+                            });
+                          }
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+        ],
         if (requestId.isNotEmpty &&
             me.role == AppRole.retailer &&
             app.workspace.request(requestId)?.needsReply == true) ...[

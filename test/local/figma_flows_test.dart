@@ -184,7 +184,7 @@ void main() {
             tester.view.viewInsets = const FakeViewPadding(bottom: 300);
             await settle(tester);
             expect(
-              tester.getBottomRight(find.widgetWithText(TdsButton, '전송')).dy,
+              tester.getBottomRight(find.bySemanticsLabel('메시지 전송')).dy,
               lessThanOrEqualTo(544),
             );
             expect(tester.takeException(), isNull);

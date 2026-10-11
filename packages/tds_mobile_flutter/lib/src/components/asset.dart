@@ -2,6 +2,8 @@
 // source optional-field presence separately from non-null public getters.
 // ignore_for_file: prefer_initializing_formals
 
+import 'dart:typed_data';
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
@@ -302,9 +304,30 @@ class TdsAssetImage extends StatelessWidget {
     this.accessoryPosition = TdsAssetAccessoryPosition.bottomRight,
     this.accessoryMasking = false,
     this.contentMasker,
+    this.placeholder,
+    this.errorBuilder,
     super.key,
-  });
+  }) : bytes = null;
+
+  /// 저장소에서 읽은 사진을 URL로 공개하지 않고 같은 TDS 프레임에 표시한다.
+  const TdsAssetImage.memory(
+    Uint8List this.bytes, {
+    this.alt,
+    this.frameShape = const TdsAssetFrameShape(),
+    this.backgroundColor,
+    this.scaleType = TdsAssetScaleType.fit,
+    this.scale = 1,
+    this.accessory,
+    this.accessoryPosition = TdsAssetAccessoryPosition.bottomRight,
+    this.accessoryMasking = false,
+    this.contentMasker,
+    this.placeholder,
+    this.errorBuilder,
+    super.key,
+  }) : src = '',
+       package = null;
   final String src;
+  final Uint8List? bytes;
   final String? alt, package;
   final TdsAssetFrameShape frameShape;
   final Color? backgroundColor;
@@ -314,6 +337,8 @@ class TdsAssetImage extends StatelessWidget {
   final TdsAssetAccessoryPosition accessoryPosition;
   final bool accessoryMasking;
   final Widget Function(Widget)? contentMasker;
+  final Widget? placeholder;
+  final ImageErrorWidgetBuilder? errorBuilder;
   @override
   Widget build(BuildContext context) {
     final network = src.startsWith('https:') || src.startsWith('http:');
@@ -321,7 +346,25 @@ class TdsAssetImage extends StatelessWidget {
     final fit = scaleType == TdsAssetScaleType.fit
         ? BoxFit.contain
         : BoxFit.cover;
-    final Widget image = svg
+    Widget frameBuilder(
+      BuildContext context,
+      Widget child,
+      int? frame,
+      bool synchronouslyLoaded,
+    ) => frame == null ? placeholder! : child;
+
+    final Widget image = bytes != null
+        ? Image.memory(
+            bytes!,
+            width: frameShape.width,
+            height: frameShape.height,
+            fit: fit,
+            semanticLabel: alt,
+            excludeFromSemantics: alt == null,
+            frameBuilder: placeholder == null ? null : frameBuilder,
+            errorBuilder: errorBuilder,
+          )
+        : svg
         ? (network
               ? SvgPicture.network(
                   src,
@@ -330,6 +373,10 @@ class TdsAssetImage extends StatelessWidget {
                   fit: fit,
                   semanticsLabel: alt,
                   excludeFromSemantics: alt == null,
+                  placeholderBuilder: placeholder == null
+                      ? null
+                      : (_) => placeholder!,
+                  errorBuilder: errorBuilder,
                 )
               : SvgPicture.asset(
                   src,
@@ -339,6 +386,10 @@ class TdsAssetImage extends StatelessWidget {
                   fit: fit,
                   semanticsLabel: alt,
                   excludeFromSemantics: alt == null,
+                  placeholderBuilder: placeholder == null
+                      ? null
+                      : (_) => placeholder!,
+                  errorBuilder: errorBuilder,
                 ))
         : (network
               ? Image.network(
@@ -348,6 +399,8 @@ class TdsAssetImage extends StatelessWidget {
                   fit: fit,
                   semanticLabel: alt,
                   excludeFromSemantics: alt == null,
+                  frameBuilder: placeholder == null ? null : frameBuilder,
+                  errorBuilder: errorBuilder,
                 )
               : Image.asset(
                   src,
@@ -357,6 +410,8 @@ class TdsAssetImage extends StatelessWidget {
                   fit: fit,
                   semanticLabel: alt,
                   excludeFromSemantics: alt == null,
+                  frameBuilder: placeholder == null ? null : frameBuilder,
+                  errorBuilder: errorBuilder,
                 ));
     return TdsAssetFrame(
       shape: frameShape,

@@ -51,6 +51,13 @@ class Account extends Record {
     _ => null,
   };
   String get name => s('name').isEmpty ? s('label', '새 계정') : s('name');
+
+  /// 무작위로 발급된 계정 ID를 사용해 재로그인·이름 변경에도 같은 얼굴을 유지한다.
+  String get defaultAvatarUrl => Uri.https(
+    'api.dicebear.com',
+    '/9.x/lorelei/png',
+    {'seed': id, 'size': '160'},
+  ).toString();
   bool get complete => b('complete');
 }
 

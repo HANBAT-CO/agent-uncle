@@ -24,10 +24,10 @@ class LocalBootstrap extends StatefulWidget {
 }
 
 class _LocalBootstrapState extends State<LocalBootstrap> {
-  /// 로고와 문구가 읽히도록 스플래시를 최소 3초 보여 준다. 최소 시간은 여기서만
+  /// 로고와 문구가 읽히도록 스플래시를 최소 1초 보여 준다. 최소 시간은 여기서만
   /// 재고, 이후 계정 확인 스플래시(AccountLanding)는 실제 로딩 시간만큼만 이어져
-  /// 두 단계가 각각 3초씩 기다리지 않는다.
-  static const minimumSplash = Duration(seconds: 3);
+  /// 두 단계가 각각 1초씩 기다리지 않는다.
+  static const minimumSplash = Duration(seconds: 1);
   late Future<AppServices> startup;
   Timer? _minimumHold;
   bool _holding = true;

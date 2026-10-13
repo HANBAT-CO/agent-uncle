@@ -255,6 +255,14 @@ bool isGuardedSource(String relPath) =>
 
 bool _isThemeLayer(String relPath) => relPath.startsWith('lib/core/theme/');
 
+/// 사용자 승인: 표준 iOS 뒤로가기만 공통 내비게이션 계층에 허용한다.
+/// Cupertino 위젯의 추가 노출, 재수출, 다른 파일의 import는 계속 금지한다.
+bool _isApprovedNavigationImport(String relPath, String directive) =>
+    relPath == 'lib/core/navigation/app_page_route.dart' &&
+    RegExp(
+      r'''^\s*import ['"]package:flutter/cupertino\.dart['"] show CupertinoPageRoute;\s*$''',
+    ).hasMatch(directive);
+
 /// Rule id → 1-based line of every match, in source order.
 Map<String, List<int>> scanSource(String relPath, String source) {
   final code = stripCommentsAndStrings(source);
@@ -297,6 +305,10 @@ Map<String, List<int>> scanSource(String relPath, String source) {
           continue;
         }
         if (rule.pattern.hasMatch(directive.group(0)!)) {
+          if (rule.id == 'cupertino-import' &&
+              _isApprovedNavigationImport(relPath, directive.group(0)!)) {
+            continue;
+          }
           lines.add(lineOf(directive.start));
         }
       }

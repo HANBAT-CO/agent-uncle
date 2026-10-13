@@ -1,4 +1,5 @@
 import 'core/theme/app_theme.dart';
+import 'core/navigation/app_page_route.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'features/auth/domain/auth_repository.dart';
@@ -34,10 +35,8 @@ class AgentUncleApp extends StatelessWidget {
           ),
         ),
         home: const SessionGate(),
-        pageRouteBuilder: <T>(settings, builder) => PageRouteBuilder<T>(
-          settings: settings,
-          pageBuilder: (context, a, b) => builder(context),
-        ),
+        pageRouteBuilder: <T>(settings, builder) =>
+            appPageRoute<T>(settings: settings, builder: builder),
       ),
     );
   }

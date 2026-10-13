@@ -9,6 +9,8 @@
 
 - import는 `package:tds_mobile_flutter/tds_mobile_flutter.dart` 하나다. `material.dart`, `cupertino.dart`,
   `dart:ui`, 패키지 `src/` 내부 import는 쓰지 않는다.
+  사용자 승인된 iOS 스와이프 뒤로가기는 `lib/core/navigation/app_page_route.dart`에서
+  `CupertinoPageRoute`만 가져오는 예외를 사용한다. 범위는 [정책 문서](docs/tds-ui-policy.md)를 따른다.
 - 사용할 컴포넌트는 [docs/tds-components.md](docs/tds-components.md)에서 찾고, 생성자·파라미터는
   `packages/tds_mobile_flutter/lib/src/`의 소스에서 확인한다. 이름이나 파라미터를 추측하지 않는다.
 - 이미 있는 앱 조합 위젯(`PageFrame`, `Section`, `Inset`, `FigmaSurface`, `FigmaIcon` 등)을 재사용한다.

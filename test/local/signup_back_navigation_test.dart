@@ -109,15 +109,16 @@ void main() {
         expect(session.signOutCalls, 1);
         final draft = store.snapshot.get('accounts', accountId)!;
         expect(draft.b('complete'), isFalse);
-        expect(draft.s('phone'), '010-1234-5678');
+        expect(draft.s('phone'), '01012345678');
         expect(
           store.snapshot.get('signupProgress', accountId)!.s('stage'),
           isNot('completed'),
         );
 
         // 같은 소셜 계정으로 재로그인해도 업무 홈으로 통과하지 않는다.
-        await tester.runAsync(() => session.signIn(accountId));
+        final signingIn = session.signIn(accountId);
         await settle(tester);
+        await signingIn;
         expect(find.byType(ProfileForm), findsOneWidget);
         expect(find.byType(HomeShell), findsNothing);
         expect(session.current!.complete, isFalse);
@@ -133,8 +134,9 @@ void main() {
     expect(find.byType(SocialLoginPage), findsOneWidget);
     expect(session.current, isNull);
     expect(store.snapshot.get('accounts', accountId)!.b('complete'), isFalse);
-    await tester.runAsync(() => session.signIn(accountId));
+    final signingIn = session.signIn(accountId);
     await settle(tester);
+    await signingIn;
     expect(find.byType(RolePage), findsOneWidget);
     await tester.tap(find.byType(TdsTopNavigationBackButton));
     await settle(tester);

@@ -125,6 +125,28 @@ private final class GlassControl: NSObject, FlutterPlatformView, UITabBarControl
     let nextLabels = items.map { $0["label"] as? String ?? "" }
     if labels != nextLabels {
       labels = nextLabels
+      if let asset = data["fontAsset"] as? String,
+        let path = Bundle.main.path(forResource: registrar.lookupKey(forAsset: asset), ofType: nil)
+      {
+        CTFontManagerRegisterFontsForURL(URL(fileURLWithPath: path) as CFURL, .process, nil)
+        if let font = UIFont(name: "Paperlogy-5Medium", size: 10) {
+          // UITab의 화면은 선택할 때 만들어지므로 항목 생성 전에 공통 글꼴을 적용한다.
+          // UIKit의 소재와 선택 효과를 유지하고 다섯 항목의 공간을 균등하게 배분한다.
+          let appearance = controller.tabBar.standardAppearance
+          appearance.stackedItemPositioning = .fill
+          for layout in [
+            appearance.stackedLayoutAppearance,
+            appearance.inlineLayoutAppearance,
+            appearance.compactInlineLayoutAppearance,
+          ] {
+            layout.normal.titleTextAttributes[.font] = font
+            layout.selected.titleTextAttributes[.font] = font
+          }
+          controller.tabBar.standardAppearance = appearance
+          controller.tabBar.scrollEdgeAppearance = appearance
+        }
+      }
+      controller.tabBar.itemPositioning = .fill
       controller.tabs = items.enumerated().map { index, item in
         UITab(
           title: labels[index], image: UIImage(systemName: item["symbol"] as? String ?? "circle"),
@@ -135,26 +157,18 @@ private final class GlassControl: NSObject, FlutterPlatformView, UITabBarControl
           return content
         }
       }
-      if let asset = data["fontAsset"] as? String,
-        let path = Bundle.main.path(forResource: registrar.lookupKey(forAsset: asset), ofType: nil)
-      {
-        CTFontManagerRegisterFontsForURL(URL(fileURLWithPath: path) as CFURL, .process, nil)
-        if let font = UIFont(name: "Paperlogy-5Medium", size: 10) {
-          // Change typography only; leave the system material/selection intact.
-          for tab in controller.tabs {
-            tab.viewController?.tabBarItem.setTitleTextAttributes([.font: font], for: .normal)
-            tab.viewController?.tabBarItem.setTitleTextAttributes([.font: font], for: .selected)
-          }
-        }
-      }
     }
     for (index, item) in items.enumerated() {
       let count = item["badge"] as? Int ?? 0
       controller.tabs[index].badgeValue = count > 0 ? String(count) : nil
     }
     controller.tabBar.tintColor = tint
-    selected = min(max(data["selected"] as? Int ?? 0, 0), items.count - 1)
-    controller.selectedTab = controller.tabs[selected]
+    let nextSelected = min(max(data["selected"] as? Int ?? 0, 0), items.count - 1)
+    selected = nextSelected
+    let nextTab = controller.tabs[nextSelected]
+    if controller.selectedTab !== nextTab {
+      controller.selectedTab = nextTab
+    }
     container.setNeedsLayout()
   }
 

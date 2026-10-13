@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/theme/app_theme.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -108,6 +109,64 @@ class _RequestEditorState extends State<RequestEditor> {
     super.dispose();
   }
 
+  String draftStatusText() =>
+      saver!.error ??
+      (saver!.saving ? '작성 중인 내용을 자동 저장하고 있어요.' : '작성 중 나가도 초안을 이어서 보낼 수 있어요.');
+
+  String requestSummary(Account? selected) =>
+      '담당: ${selected?.name ?? '미선택'}\n도매처: ${fields['wholesaler']!.text} · ${fields['location']!.text}\n상품: ${fields['product']!.text} / ${fields['option']!.text}\n수량: ${fields['quantity']!.text}개\n배송지: ${fields['address']!.text} ${fields['addressDetail']!.text}';
+
+  Future<void> submit(AppServices app, Account? selected) async {
+    if (!editing) {
+      saver!.change(values());
+      await saver!.flush();
+    }
+    if (!mounted) return;
+    final confirmed = await confirm(
+      context,
+      editing ? '이 내용으로 수정할까요?' : '요청을 보낼까요?',
+      requestSummary(selected),
+    );
+    if (!confirmed || !mounted) return;
+    if (editing) {
+      await app.workspace.updateRequest(id, values(), version, operation);
+    } else {
+      await app.workspace.sendDraft(id, operation);
+    }
+    if (!mounted) return;
+    setState(() => leaving = true);
+    Navigator.of(context).pushReplacement(
+      PageRouteBuilder<void>(
+        pageBuilder: (context, a, b) => RequestDetailPage(id),
+      ),
+    );
+  }
+
+  Future<void> choosePeer(AppServices app) async {
+    final result = await openPage<String>(
+      context,
+      PageFrame(
+        title: '사입삼촌 선택',
+        children: [
+          if (app.workspace.partners.isEmpty)
+            const EmptyState('연결된 사입삼촌이 없어요', '초안 작성 후 사입삼촌 탭에서 연결해 주세요.'),
+          for (final a in app.workspace.partners)
+            Builder(
+              builder: (context) => Item(
+                a.name,
+                subtitle: '${a.s('pickupArea')} · ${a.s('deadline')}',
+                onTap: () => Navigator.pop(context, a.id),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (result != null && mounted) {
+      peer = result;
+      changed();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
@@ -121,156 +180,103 @@ class _RequestEditorState extends State<RequestEditor> {
       },
       child: PageFrame(
         title: editing ? '요청 내용 수정' : '새 사입 요청',
-        subtitle: editing ? '수락 전 최신 내용으로 수정해요' : '상품·옵션 하나를 요청에 담아요',
+        showHeaderDivider: false,
         bottom: ActionButton(
           editing ? '수정 내용 확인' : '요청 내용 확인',
           bottom: true,
-          onPressed: () async {
-            if (!editing) {
-              saver!.change(values());
-              await saver!.flush();
-            }
-            if (!context.mounted) return;
-            final confirmed = await confirm(
-              context,
-              editing ? '이 내용으로 수정할까요?' : '요청을 보낼까요?',
-              '담당: ${selected?.name ?? '미선택'}\n도매처: ${fields['wholesaler']!.text} · ${fields['location']!.text}\n상품: ${fields['product']!.text} / ${fields['option']!.text}\n수량: ${fields['quantity']!.text}개\n배송지: ${fields['address']!.text} ${fields['addressDetail']!.text}',
-            );
-            if (!confirmed) return;
-            if (editing) {
-              await app.workspace.updateRequest(
-                id,
-                values(),
-                version,
-                operation,
-              );
-            } else {
-              await app.workspace.sendDraft(id, operation);
-            }
-            if (!context.mounted) return;
-            setState(() => leaving = true);
-            Navigator.of(context).pushReplacement(
-              PageRouteBuilder<void>(
-                pageBuilder: (context, a, b) => RequestDetailPage(id),
-              ),
-            );
-          },
+          onPressed: () => submit(app, selected),
         ),
         children: [
-          FigmaSurface(
-            children: [
-              Item(
-                '담당 사입삼촌',
-                subtitle: selected?.name ?? '선택하지 않음 · 초안 저장 가능',
-                onTap: editing
-                    ? null
-                    : () async {
-                        final result = await openPage<String>(
-                          context,
-                          PageFrame(
-                            title: '사입삼촌 선택',
-                            children: [
-                              if (app.workspace.partners.isEmpty)
-                                const EmptyState(
-                                  '연결된 사입삼촌이 없어요',
-                                  '초안 작성 후 사입삼촌 탭에서 연결해 주세요.',
-                                ),
-                              for (final a in app.workspace.partners)
-                                Builder(
-                                  builder: (context) => Item(
-                                    a.name,
-                                    subtitle:
-                                        '${a.s('pickupArea')} · ${a.s('deadline')}',
-                                    onTap: () => Navigator.pop(context, a.id),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                        if (result != null && mounted) {
-                          peer = result;
-                          changed();
-                        }
-                      },
-              ),
-            ],
+          PageHeading(
+            editing ? '상품과 배송지를\n다시 확인해 주세요' : '어떤 상품을\n사입할까요?',
+            description: '상품·옵션 하나씩 요청할 수 있어요.',
           ),
-          const Section('도매처'),
-          FigmaSurface(
-            children: [
-              Field(
-                '도매처 이름',
-                controller: fields['wholesaler']!,
-                onChanged: (_) => changed(),
-              ),
-              Field(
-                '시장·상가·건물·층',
-                controller: fields['location']!,
-                onChanged: (_) => changed(),
-              ),
-            ],
-          ),
-          const Section('상품·옵션'),
-          FigmaSurface(
-            children: [
-              Field(
-                '상품명',
-                controller: fields['product']!,
-                onChanged: (_) => changed(),
-              ),
-              Field(
-                '색상·사이즈 등 옵션',
-                controller: fields['option']!,
-                onChanged: (_) => changed(),
-              ),
-              Field(
-                '요청 수량',
-                controller: fields['quantity']!,
-                numeric: true,
-                onChanged: (_) => changed(),
-              ),
-            ],
-          ),
-          FigmaSurface(
-            children: [
-              AttachmentField(
-                label: '상품 사진',
-                multiple: true,
-                ids: photos,
-                onChanged: (v) {
-                  photos = v;
-                  changed();
-                },
-              ),
-              Field(
-                '요청사항',
-                controller: fields['note']!,
-                multiline: true,
-                onChanged: (_) => changed(),
-              ),
-            ],
-          ),
-          const Section('이번 요청의 배송지'),
-          FigmaSurface(
-            children: [
-              Field(
-                '주소',
-                controller: fields['address']!,
-                onChanged: (_) => changed(),
-              ),
-              Field(
-                '상세주소',
-                controller: fields['addressDetail']!,
-                onChanged: (_) => changed(),
-              ),
-            ],
-          ),
-          if (!editing)
-            Info(
-              saver!.error ??
-                  (saver!.saving ? '초안을 저장하고 있어요' : '초안은 나만 볼 수 있어요.'),
-              error: saver!.error != null,
+          ProfileInputTheme(
+            child: FigmaSurface(
+              children: [
+                Item(
+                  '담당 사입삼촌',
+                  leading: const FigmaIcon('person', selected: true),
+                  subtitle: selected == null
+                      ? '선택해 주세요 · 연결 전에도 작성할 수 있어요'
+                      : '${selected.name} · ${selected.s('pickupArea')}',
+                  onTap: editing ? null : () => choosePeer(app),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: TdsBorder(),
+                ),
+                const Section('상품 정보'),
+                Field(
+                  '상품명',
+                  controller: fields['product']!,
+                  placeholder: '예: 스트라이프 셔츠',
+                  onChanged: (_) => changed(),
+                ),
+                Field(
+                  '색상·사이즈 등 옵션',
+                  controller: fields['option']!,
+                  placeholder: '예: 아이보리 · M',
+                  onChanged: (_) => changed(),
+                ),
+                Field(
+                  '요청 수량',
+                  controller: fields['quantity']!,
+                  numeric: true,
+                  onChanged: (_) => changed(),
+                ),
+                AttachmentField(
+                  label: '상품 사진',
+                  multiple: true,
+                  ids: photos,
+                  onChanged: (v) {
+                    photos = v;
+                    changed();
+                  },
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: TdsBorder(),
+                ),
+                const Section('도매처'),
+                Field(
+                  '도매처 이름',
+                  controller: fields['wholesaler']!,
+                  onChanged: (_) => changed(),
+                ),
+                Field(
+                  '시장·상가·건물·층',
+                  controller: fields['location']!,
+                  placeholder: '예: 디오트 2층 A-18',
+                  onChanged: (_) => changed(),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  child: TdsBorder(),
+                ),
+                const Section('받을 곳'),
+                Field(
+                  '주소',
+                  controller: fields['address']!,
+                  onChanged: (_) => changed(),
+                ),
+                Field(
+                  '상세주소',
+                  controller: fields['addressDetail']!,
+                  onChanged: (_) => changed(),
+                ),
+                Field(
+                  '요청사항',
+                  controller: fields['note']!,
+                  multiline: true,
+                  placeholder: '삼촌에게 전할 내용이 있으면 적어주세요',
+                  onChanged: (_) => changed(),
+                ),
+                const TdsSpacing(8),
+              ],
             ),
+          ),
+          if (!editing) Info(draftStatusText(), error: saver!.error != null),
           if (saver!.error != null)
             ActionButton(
               '초안 저장 다시 시도',

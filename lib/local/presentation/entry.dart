@@ -1,5 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+
+import '../../core/address/address_models.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/presentation/app_splash.dart';
@@ -7,24 +9,48 @@ import '../../features/auth/presentation/social_login_buttons.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import '../domain/profile_validation.dart';
+
+import 'address_search.dart';
 import 'common.dart';
 import 'home.dart';
 import 'profile_avatar.dart';
 import 'profile_time_field.dart';
+import 'region_selection.dart';
 import 'welcome.dart';
 
 export 'welcome.dart';
 
-class SessionGate extends StatelessWidget {
+class SessionGate extends StatefulWidget {
   const SessionGate({super.key});
+
+  @override
+  State<SessionGate> createState() => _SessionGateState();
+}
+
+class _SessionGateState extends State<SessionGate> {
+  GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  String? accountId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final nextAccountId = AppScope.of(context).session.current?.id;
+    if (nextAccountId != accountId) {
+      accountId = nextAccountId;
+      navigatorKey = GlobalKey<NavigatorState>();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final session = AppScope.of(context).session;
-    return Navigator(
-      key: ValueKey(session.current?.id ?? 'signed-out'),
-      onGenerateRoute: (settings) => appPageRoute<void>(
-        settings: settings,
-        builder: (context) => const AccountLanding(),
+    return NavigatorPopHandler<Object?>(
+      onPopWithResult: (_) => navigatorKey.currentState?.maybePop(),
+      child: Navigator(
+        key: navigatorKey,
+        onGenerateRoute: (settings) => appPageRoute<void>(
+          settings: settings,
+          builder: (context) => const AccountLanding(),
+        ),
       ),
     );
   }
@@ -188,6 +214,10 @@ class ProfileForm extends StatefulWidget {
 
 class _ProfileFormState extends State<ProfileForm> {
   static const retailerMarketOptions = ['동대문', '남대문'];
+  static const activityHourPresets = {
+    '주간 09–18': ('09:00', '18:00'),
+    '야간 22–06': ('22:00', '06:00'),
+  };
 
   final fields = <String, TextEditingController>{};
   final focusNodes = <String, FocusNode>{};
@@ -195,6 +225,7 @@ class _ProfileFormState extends State<ProfileForm> {
   final scrollController = ScrollController();
   Map<String, String> errors = {};
   bool submitting = false;
+  bool navigatingBack = false;
   bool ready = false,
       terms = false,
       privacy = false,
@@ -208,6 +239,7 @@ class _ProfileFormState extends State<ProfileForm> {
   List<String> markets = [], activityDays = [], otherMarkets = [];
   bool marketOtherSelected = false, marketOtherDirty = false;
   int step = 0;
+  int? reviewReturnStep;
   FormSaver? saver;
 
   static final phoneNumberFormat = TdsTextFieldFormat(
@@ -238,6 +270,18 @@ class _ProfileFormState extends State<ProfileForm> {
     },
   );
 
+  static final feeFormat = TdsTextFieldFormat(
+    reset: (value) => value.replaceAll(',', '').trim(),
+    transform: (value) {
+      final digits = value.replaceAll(',', '').trim();
+      if (!RegExp(r'^\d+$').hasMatch(digits)) return digits;
+      return digits.replaceAllMapped(
+        RegExp(r'(\d)(?=(\d\d\d)+(?!\d))'),
+        (match) => '${match[1]},',
+      );
+    },
+  );
+
   bool get retailer =>
       AppScope.read(context).session.current!.role == AppRole.retailer;
   List<int> get steps =>
@@ -251,11 +295,17 @@ class _ProfileFormState extends State<ProfileForm> {
     final app = AppScope.read(context), a = app.session.current!;
     for (final key in [
       'name',
+      'nickname',
       'contact',
       'phone',
+      'fee',
       'businessName',
       'businessNumber',
       'address',
+      'postcode',
+      'addressSource',
+      'addressRoad',
+      'addressJibun',
       'addressDetail',
       'deliveryNote',
       'pickupArea',
@@ -267,12 +317,14 @@ class _ProfileFormState extends State<ProfileForm> {
       'activityEnd',
       'marketOther',
     ]) {
-      final stored = a.s(key);
+      final stored = key == 'fee' ? a.fee?.toString() ?? '' : a.s(key);
       fields[key] = TextEditingController(
         text: key == 'phone'
             ? phoneNumberFormat.transform(phoneNumberFormat.reset!(stored))
             : key == 'businessNumber'
             ? businessNumberFormat.transform(stored)
+            : key == 'fee'
+            ? feeFormat.transform(stored)
             : stored,
       );
       focusNodes[key] = FocusNode();
@@ -280,6 +332,18 @@ class _ProfileFormState extends State<ProfileForm> {
     salesChannel = a.s('salesChannel');
     transport = a.s('transport');
     activityHours = a.s('activityHours');
+    if (!retailer) {
+      if (fields['activityStart']!.text.isEmpty &&
+          fields['activityEnd']!.text.isEmpty) {
+        final preset = activityHourPresets[activityHours];
+        if (preset != null) {
+          fields['activityStart']!.text = preset.$1;
+          fields['activityEnd']!.text = preset.$2;
+        }
+      } else {
+        activityHours = activityTimeChoice;
+      }
+    }
     final storedMarkets = [
       for (final market
           in a.list('markets').map((value) => value.toString().trim()))
@@ -357,6 +421,12 @@ class _ProfileFormState extends State<ProfileForm> {
   Data values() => {
     for (final e in fields.entries)
       if (e.key != 'marketOther') e.key: e.value.text.trim(),
+    'nickname': fields['nickname']!.text.trim().isEmpty
+        ? null
+        : fields['nickname']!.text.trim(),
+    'fee': feeFormat.reset!(fields['fee']!.text).isEmpty
+        ? null
+        : feeFormat.reset!(fields['fee']!.text),
     if (!retailer) 'name': fields['contact']!.text.trim(),
     'documentId': document,
     'photoId': photo,
@@ -400,6 +470,8 @@ class _ProfileFormState extends State<ProfileForm> {
           ? phoneNumberFormat
           : key == 'businessNumber'
           ? businessNumberFormat
+          : key == 'fee'
+          ? feeFormat
           : null,
       keyboardType: key == 'phone' ? TextInputType.phone : null,
       numeric: numeric,
@@ -428,40 +500,151 @@ class _ProfileFormState extends State<ProfileForm> {
       error: errors[key],
       onChanged: (value) {
         fields[key]!.text = value;
+        if (key == 'activityStart' || key == 'activityEnd') {
+          activityHours = activityTimeChoice;
+        }
         changed();
       },
     ),
   );
 
-  Widget transportChoice() => TdsGridList(
-    columns: TdsTheme.of(context).platform.fontScale > 130
-        ? 1
-        : MediaQuery.sizeOf(context).width < 390
-        ? 2
-        : 3,
+  Future<void> selectRegion(String key, String title) async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final result = await openPage<String>(
+      context,
+      RegionSelectionPage(title: title, value: fields[key]!.text),
+    );
+    if (!mounted || result == null) return;
+    fields[key]!.text = result;
+    changed();
+  }
+
+  Widget regionField(String key, String title) => ProfileInputTheme(
+    key: anchor(key),
+    child: TdsTextFieldButton(
+      key: ValueKey('$key-selector'),
+      variant: TdsTextFieldVariant.box,
+      label: title,
+      labelOption: TdsTextFieldLabelOption.sustain,
+      value: fields[key]!.text,
+      placeholder: '지역 선택',
+      paddingTop: 10,
+      paddingBottom: 10,
+      hasError: errors[key] != null,
+      help: errors[key] == null ? null : Text(errors[key]!),
+      onPressed: () => selectRegion(key, title),
+    ),
+  );
+
+  static const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
+
+  String get activityTimeChoice {
+    final times = (fields['activityStart']!.text, fields['activityEnd']!.text);
+    if (times == ('', '')) return '';
+    for (final preset in activityHourPresets.entries) {
+      if (preset.value == times) return preset.key;
+    }
+    return '직접 설정';
+  }
+
+  String get scheduleSummary {
+    final days = [
+      for (final day in weekdays)
+        if (activityDays.contains(day)) day,
+    ];
+    final dayText = days.length == 7
+        ? '매일'
+        : days.isEmpty
+        ? '요일 미선택'
+        : '${days.join('·')}요일';
+    final start = fields['activityStart']!.text;
+    final end = fields['activityEnd']!.text;
+    final timeText = start.isNotEmpty && end.isNotEmpty
+        ? '$start – ${end.compareTo(start) < 0 ? '다음 날 ' : ''}$end'
+        : activityHours == '일정에 따라 달라요'
+        ? activityHours
+        : start.isNotEmpty
+        ? '$start부터 · 종료 미선택'
+        : end.isNotEmpty
+        ? '시작 미선택 · $end까지'
+        : activityHours.isNotEmpty
+        ? activityHours
+        : '시간 미선택';
+    return '$dayText · $timeText';
+  }
+
+  void selectActivityHours(String value) {
+    activityHours = value;
+    final (start, end) = activityHourPresets[value] ?? ('', '');
+    fields['activityStart']!.text = start;
+    fields['activityEnd']!.text = end;
+    changed();
+  }
+
+  Widget activitySchedule() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      for (final option in const ['도보', '오토바이', '승용차', '화물차', '기타'])
-        ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 44),
-          child: Semantics(
-            selected: transport == option,
-            child: TdsButton(
-              size: TdsButtonSize.medium,
-              display: TdsButtonDisplay.block,
-              color: transport == option
-                  ? TdsButtonColor.primary
-                  : TdsButtonColor.dark,
-              variant: transport == option
-                  ? TdsButtonVariant.fill
-                  : TdsButtonVariant.weak,
-              onPressed: () {
-                transport = option;
-                changed();
-              },
-              child: Text(option),
-            ),
-          ),
+      const Section('활동 일정 (선택)'),
+      const Info('활동하는 요일과 시간을 함께 정해 주세요.'),
+      Inset(
+        child: TdsChip(
+          wrap: true,
+          variant: TdsChipVariant.weak,
+          margin: TdsChipMargin.none,
+          children: [
+            for (final preset in {
+              '평일': weekdays.take(5).toList(),
+              '주말': weekdays.skip(5).toList(),
+              '매일': weekdays,
+            }.entries)
+              TdsChipItem(
+                text: preset.key,
+                selected:
+                    activityDays.length == preset.value.length &&
+                    preset.value.every(activityDays.contains),
+                onPressed: () {
+                  activityDays =
+                      activityDays.length == preset.value.length &&
+                          preset.value.every(activityDays.contains)
+                      ? []
+                      : List.of(preset.value);
+                  changed();
+                },
+              ),
+          ],
         ),
+      ),
+      Inset(
+        child: TdsChip(
+          wrap: true,
+          variant: TdsChipVariant.weak,
+          margin: TdsChipMargin.none,
+          children: [
+            for (final day in weekdays)
+              TdsChipItem(
+                text: day,
+                selected: activityDays.contains(day),
+                onPressed: () {
+                  if (activityDays.contains(day)) {
+                    activityDays.remove(day);
+                  } else {
+                    activityDays.add(day);
+                  }
+                  changed();
+                },
+              ),
+          ],
+        ),
+      ),
+      Choices(
+        options: const ['주간 09–18', '야간 22–06', '일정에 따라 달라요'],
+        value: activityHours,
+        onChanged: selectActivityHours,
+      ),
+      timeField('activityStart', '활동 시작', initialHour: 22, optional: true),
+      timeField('activityEnd', '활동 종료', initialHour: 6, optional: true),
+      Info(scheduleSummary),
+      const Info('종료가 시작보다 이르면 다음 날 종료예요.'),
     ],
   );
   @override
@@ -477,35 +660,41 @@ class _ProfileFormState extends State<ProfileForm> {
     super.dispose();
   }
 
-  Future<void> leave() async {
-    if (submitting) return;
+  Future<void> leave({bool selectRole = false}) async {
+    if (submitting || navigatingBack) return;
+    setState(() => navigatingBack = true);
     try {
       if (widget.signup) await saver!.flush();
       if (!mounted) return;
-      if (widget.signup && step > 0) {
+      if (widget.signup && !selectRole && reviewReturnStep != null) {
+        final target = reviewReturnStep!;
+        reviewReturnStep = null;
+        goToStep(target);
+        return;
+      }
+      if (widget.signup && !selectRole && step > 0) {
         goToStep(steps[steps.indexOf(step) - 1]);
         return;
       }
       if (widget.signup) {
-        await chooseRole();
+        await openPage(context, const RolePage(closeOnSelect: true));
+        if (mounted) {
+          errors.clear();
+          reviewReturnStep = null;
+          goToStep(0);
+        }
         return;
       }
       setState(() => leaving = true);
       Navigator.maybePop(context);
     } catch (_) {
       /* Saver displays the failure and retains the form. */
+    } finally {
+      if (mounted) setState(() => navigatingBack = false);
     }
   }
 
-  Future<void> chooseRole() async {
-    await saver!.flush();
-    if (!mounted) return;
-    await openPage(context, const RolePage(closeOnSelect: true));
-    if (mounted) {
-      errors.clear();
-      goToStep(0);
-    }
-  }
+  Future<void> chooseRole() => leave(selectRole: true);
 
   void goToStep(int next) {
     FocusManager.instance.primaryFocus?.unfocus();
@@ -526,38 +715,29 @@ class _ProfileFormState extends State<ProfileForm> {
       if (retailer) 'name',
       'contact',
       'phone',
+      'nickname',
       if (retailer) 'salesChannel',
     ],
     1 => ['businessName', 'businessNumber', 'documentId'],
     2 =>
       retailer
           ? ['address', 'addressDetail']
-          : ['pickupArea', 'deliveryArea', 'deadline'],
+          : ['pickupArea', 'deliveryArea', 'fee', 'deadline'],
     3 => retailer ? [] : ['activityStart', 'activityEnd'],
     5 => ['terms', 'privacy'],
     _ => [],
   };
 
-  bool validate() {
-    final current = fieldErrors();
-    final keys = !widget.signup || step >= 4
-        ? [
-            for (final n in steps)
-              if (step == 5 || !widget.signup || n != 5) ...keysForStep(n),
-          ]
-        : keysForStep(step);
-    final failures = {
-      for (final key in keys)
-        if (current.containsKey(key)) key: current[key]!,
-    };
-    setState(() => errors = failures);
-    if (failures.isEmpty) return true;
-    final first = failures.keys.first;
+  void focusFailure(String first) {
     if (widget.signup) {
       final targetStep = steps.firstWhere(
         (n) => keysForStep(n).contains(first),
+        orElse: () => step,
       );
-      if (step != targetStep) goToStep(targetStep);
+      if (step != targetStep) {
+        if (!retailer && step >= 4) reviewReturnStep = step;
+        goToStep(targetStep);
+      }
     }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
@@ -578,51 +758,137 @@ class _ProfileFormState extends State<ProfileForm> {
         curve: TdsMotion.quick,
       );
     });
+  }
+
+  void applyFailures(Map<String, String> failures) {
+    setState(() => errors = failures);
+    if (failures.isEmpty) return;
+    focusFailure(failures.keys.first);
+  }
+
+  bool validate() {
+    final current = fieldErrors();
+    final keys = !widget.signup || step >= 4
+        ? [
+            for (final n in steps)
+              if (step == 5 || !widget.signup || n != 5) ...keysForStep(n),
+          ]
+        : keysForStep(step);
+    final failures = {
+      for (final key in keys)
+        if (current.containsKey(key)) key: current[key]!,
+    };
+    applyFailures(failures);
+    if (failures.isEmpty) return true;
     return false;
   }
 
+  String phoneAvailabilityMessage(Object error) {
+    if (error is AppFailure) return error.message;
+    return '연락처 중복 여부를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.';
+  }
+
+  Future<bool> ensurePhoneAvailable() async {
+    final session = AppScope.read(context).session;
+    while (mounted) {
+      final phone = fields['phone']!.text.trim();
+      if (!isValidKoreanPhone(phone)) {
+        applyFailures({'phone': '연락처를 010-1234-5678 형식으로 입력해 주세요.'});
+        return false;
+      }
+      final normalized = normalizeKoreanPhone(phone);
+      try {
+        final available = await session.checkPhoneAvailable(normalized);
+        if (!mounted) return false;
+        if (normalizeKoreanPhone(fields['phone']!.text) != normalized) continue;
+        if (available) return true;
+        applyFailures({'phone': '이미 가입된 연락처예요.'});
+        return false;
+      } catch (error) {
+        if (!mounted) return false;
+        if (normalizeKoreanPhone(fields['phone']!.text) != normalized) continue;
+        applyFailures({'phone': phoneAvailabilityMessage(error)});
+        return false;
+      }
+    }
+    return false;
+  }
+
+  Future<void> openAddressSearch() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final result = await openPage<AddressSearchResult>(
+      context,
+      const AddressSearchPage(),
+    );
+    if (!mounted || result == null) return;
+    if (fields['address']!.text.trim() != result.displayAddress) {
+      fields['addressDetail']!.clear();
+    }
+    fields['address']!.text = result.displayAddress;
+    fields['postcode']!.text = result.postcode;
+    fields['addressSource']!.text = result.source;
+    fields['addressRoad']!.text = result.roadAddress;
+    fields['addressJibun']!.text = result.jibunAddress;
+    changed();
+  }
+
   Future<void> submit() async {
-    if (!validate()) return;
+    if (submitting || navigatingBack || !validate()) return;
+    final needsPhoneAvailability =
+        !widget.signup || step == 0 || (widget.signup && step == 5);
     final app = AppScope.read(context);
     setState(() => submitting = true);
     try {
+      if (needsPhoneAvailability && !await ensurePhoneAvailable()) return;
+      if (!mounted || !validate()) return;
+      final checkedPhone = normalizeKoreanPhone(fields['phone']!.text);
       if (widget.signup) await saver!.flush();
       if (!mounted) return;
+      if (needsPhoneAvailability &&
+          checkedPhone != normalizeKoreanPhone(fields['phone']!.text) &&
+          !await ensurePhoneAvailable()) {
+        return;
+      }
+      if (!mounted || !validate()) return;
       if (widget.signup && step != 5) {
-        goToStep(steps[steps.indexOf(step) + 1]);
+        final target = reviewReturnStep ?? steps[steps.indexOf(step) + 1];
+        reviewReturnStep = null;
+        goToStep(target);
         return;
       }
       await app.session.saveProfile(values(), complete: true);
       if (!widget.signup && mounted) Navigator.pop(context);
+    } catch (error) {
+      if (!mounted) return;
+      final message = error.toString();
+      if (message.contains('연락처') &&
+          (message.contains('이미') || message.contains('중복'))) {
+        applyFailures({'phone': '이미 가입된 연락처예요.'});
+        return;
+      }
+      rethrow;
     } finally {
       if (mounted) setState(() => submitting = false);
     }
   }
 
-  Widget multiChoice(
-    String label,
-    List<String> options,
-    List<String> selected,
-  ) => Column(
-    crossAxisAlignment: CrossAxisAlignment.stretch,
-    children: [
-      Section(label),
-      for (final option in options)
-        Inset(
-          child: TdsCheckbox(
-            checked: selected.contains(option),
-            child: Text(option),
-            onChanged: (v) {
-              if (v) {
-                selected.add(option);
-              } else {
-                selected.remove(option);
-              }
-              changed();
-            },
-          ),
-        ),
-    ],
+  Widget addressField() => ProfileInputTheme(
+    key: anchor('address'),
+    child: TdsTextFieldButton(
+      key: const ValueKey('address-selector'),
+      variant: TdsTextFieldVariant.box,
+      label: '주소',
+      labelOption: TdsTextFieldLabelOption.sustain,
+      value: fields['address']!.text.trim().isEmpty
+          ? null
+          : fields['address']!.text.trim(),
+      placeholder: '주소 검색',
+      paddingTop: 10,
+      paddingBottom: 10,
+      hasError: errors['address'] != null,
+      help: errors['address'] == null ? null : Text(errors['address']!),
+      onPressed: openAddressSearch,
+    ),
   );
 
   Widget otherMarketField() => field(
@@ -648,15 +914,148 @@ class _ProfileFormState extends State<ProfileForm> {
                 selected: markets.contains(option),
                 onPressed: () => toggleRetailerMarket(option),
               ),
-            TdsChipItem(
-              text: '그외',
-              selected: marketOtherSelected,
-              onPressed: toggleOtherMarket,
-            ),
           ],
         ),
       ),
+      Inset(
+        child: Center(
+          child: TdsChip(
+            wrap: true,
+            variant: TdsChipVariant.weak,
+            margin: TdsChipMargin.none,
+            children: [
+              TdsChipItem(
+                text: '그 외',
+                selected: marketOtherSelected,
+                onPressed: toggleOtherMarket,
+              ),
+            ],
+          ),
+        ),
+      ),
       if (marketOtherSelected) otherMarketField(),
+    ],
+  );
+
+  Widget reviewSection(String title, int target, List<Widget> children) =>
+      FigmaSurface(
+        children: [
+          TdsListRow(
+            contents: TdsListRowTexts(
+              type: TdsListRowTextType.row1TypeA,
+              top: Text(title),
+            ),
+            right: TdsTextButton(
+              key: ValueKey('review-edit-$target'),
+              size: TdsTextButtonSize.small,
+              onPressed: () {
+                reviewReturnStep = 4;
+                goToStep(target);
+              },
+              child: const Text('수정'),
+            ),
+          ),
+          ...children,
+        ],
+      );
+
+  Widget uncleReview() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      reviewSection('연락처 정보', 0, [
+        Item(
+          fields['contact']!.text,
+          subtitle: fields['phone']!.text,
+          leading: ProfileAvatar(
+            AppScope.read(context).session.current!,
+            photoId: photo,
+          ),
+        ),
+        if (fields['nickname']!.text.trim().isNotEmpty)
+          QuantityRow('검색용 별명', fields['nickname']!.text.trim()),
+      ]),
+      reviewSection('활동 지역·운영 정보', 2, [
+        Item('도매 픽업 지역', subtitle: fields['pickupArea']!.text),
+        Item('소매 배송 지역', subtitle: fields['deliveryArea']!.text),
+        QuantityRow('요청 마감시간', fields['deadline']!.text),
+        if (fields['fee']!.text.trim().isNotEmpty)
+          QuantityRow('거래 수수료', '${fields['fee']!.text.trim()}원/건'),
+        QuantityRow('업무 상태', working ? '업무 중' : '휴무'),
+        if (fields['holiday']!.text.trim().isNotEmpty)
+          Item('휴무·안내사항', subtitle: fields['holiday']!.text),
+        if (fields['intro']!.text.trim().isNotEmpty)
+          Item('소개', subtitle: fields['intro']!.text),
+      ]),
+      reviewSection('사입 시장·활동 일정', 3, [
+        Item(
+          '사입 시장',
+          subtitle: selectedMarkets().isEmpty
+              ? '미선택'
+              : selectedMarkets().join(' · '),
+        ),
+        Item('활동 일정', subtitle: scheduleSummary),
+      ]),
+    ],
+  );
+
+  void openConsentPolicy() => openPage(
+    context,
+    PolicyPage(
+      '가입 동의 안내',
+      AppScope.read(context).session.isRemote
+          ? '현재 개발 검증 중인 서비스입니다. 정식 약관과 개인정보 처리방침은 확정 전입니다. 가입정보·거래 기록·첨부파일은 서버에 저장되며, 거래에 필요한 정보는 연결된 상대방과 공유됩니다. 사업자 서류는 상대방에게 공개되지 않습니다.'
+          : '현재는 로컬 개발용 가입 흐름입니다. 정식 약관과 개인정보 처리방침은 확정 전이며, 입력과 첨부는 이 기기에 저장됩니다.',
+    ),
+  );
+
+  Widget uncleConsent() => FigmaSurface(
+    children: [
+      TdsAgreementV3SingleCheckboxField(
+        '필수 항목 전체 동의',
+        key: const ValueKey('uncle-consent-all'),
+        type: TdsAgreementV3Size.big,
+        checked: terms && privacy,
+        withBorder: true,
+        onCheckedChange: (value) {
+          terms = privacy = value;
+          changed();
+        },
+      ),
+      const TdsSpacing(12),
+      TdsAgreementV3SingleCheckboxField(
+        '서비스 이용 동의 확인',
+        key: anchor('terms'),
+        type: TdsAgreementV3Size.medium,
+        checked: terms,
+        necessity: TdsAgreementV3Necessity.mandatory,
+        arrowType: TdsAgreementV3Arrow.link,
+        onArrowPressEnd: openConsentPolicy,
+        onCheckedChange: (value) {
+          terms = value;
+          changed();
+        },
+      ),
+      if (errors['terms'] != null)
+        Semantics(liveRegion: true, child: Info(errors['terms']!, error: true)),
+      TdsAgreementV3SingleCheckboxField(
+        '개인정보 처리 동의 확인',
+        key: anchor('privacy'),
+        type: TdsAgreementV3Size.medium,
+        checked: privacy,
+        necessity: TdsAgreementV3Necessity.mandatory,
+        arrowType: TdsAgreementV3Arrow.link,
+        onArrowPressEnd: openConsentPolicy,
+        onCheckedChange: (value) {
+          privacy = value;
+          changed();
+        },
+      ),
+      if (errors['privacy'] != null)
+        Semantics(
+          liveRegion: true,
+          child: Info(errors['privacy']!, error: true),
+        ),
+      const TdsSpacing(12),
     ],
   );
 
@@ -668,10 +1067,10 @@ class _ProfileFormState extends State<ProfileForm> {
     final headings = [
       '연락받을 정보를 알려주세요',
       '사업자 정보를 확인해 주세요',
-      retailer ? '상품을 받을 곳을 알려주세요' : '활동 구역을 알려주세요',
-      retailer ? '어디에서 사입하시나요?' : '어떻게 활동하시나요?',
-      '입력한 정보를 확인해 주세요',
-      '이용에 필요한 동의를 확인해요',
+      retailer ? '상품을 받을 곳을 알려주세요' : '활동 지역을 알려주세요',
+      retailer ? '어디에서 사입하시나요?' : '사입 시장과 일정을 알려주세요',
+      retailer ? '입력한 정보를 확인해 주세요' : '가입 정보를 확인해 주세요',
+      retailer ? '이용에 필요한 동의를 확인해요' : '동의하고 가입을 마무리해요',
     ];
     return PopScope(
       canPop: leaving || !widget.signup,
@@ -687,7 +1086,13 @@ class _ProfileFormState extends State<ProfileForm> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ActionButton(
-              widget.signup ? (step == 5 ? '가입 완료' : '다음') : '저장하기',
+              !widget.signup
+                  ? '저장하기'
+                  : step == 5
+                  ? '가입 완료'
+                  : reviewReturnStep != null
+                  ? '수정 완료'
+                  : '다음',
               bottom: true,
               hasPaddingBottom: !widget.signup || retailer,
               key: ValueKey('profile-submit-$step'),
@@ -702,7 +1107,7 @@ class _ProfileFormState extends State<ProfileForm> {
                 child: TdsTextButton(
                   size: TdsTextButtonSize.small,
                   colorToken: 'grey600',
-                  disabled: submitting,
+                  disabled: submitting || navigatingBack,
                   onPressed: leave,
                   child: retailer
                       ? const Padding(
@@ -730,6 +1135,11 @@ class _ProfileFormState extends State<ProfileForm> {
                 if (retailer) field('name', '매장명'),
                 field('contact', retailer ? '담당자명' : '이름(실명)'),
                 field('phone', '연락처', placeholder: '010-1234-5678'),
+                field(
+                  'nickname',
+                  '검색용 별명 (선택)',
+                  placeholder: '없으면 기존 표시 이름을 사용해요',
+                ),
                 AttachmentField(
                   label: '프로필 사진',
                   ids: photo.isEmpty ? [] : [photo],
@@ -817,16 +1227,23 @@ class _ProfileFormState extends State<ProfileForm> {
               children: [
                 if (retailer) ...[
                   if (!widget.signup) const Section('기본 배송지'),
-                  field('address', '주소'),
+                  addressField(),
+                  if (fields['postcode']!.text.trim().isNotEmpty)
+                    Info('우편번호 ${fields['postcode']!.text.trim()}'),
                   field('addressDetail', '상세주소'),
                   if (!widget.signup)
                     field('deliveryNote', '배송 참고사항', multiline: true),
                   if (!widget.signup) const Info('변경한 기본 배송지는 새 요청부터 적용돼요.'),
                 ] else ...[
                   if (!widget.signup) const Section('활동·운영 정보'),
-                  field('pickupArea', '도매 픽업 구역'),
-                  const Info('시장·상가·건물·층까지 입력해 주세요.'),
-                  field('deliveryArea', '소매 배송 지역'),
+                  regionField('pickupArea', '도매 픽업 지역'),
+                  regionField('deliveryArea', '소매 배송 지역'),
+                  field(
+                    'fee',
+                    '거래 수수료 (원/건, 선택)',
+                    numeric: true,
+                    placeholder: '예: 3000',
+                  ),
                   timeField('deadline', '요청 마감시간', initialHour: 23),
                   field('holiday', '휴무·안내사항', multiline: true),
                   field('intro', '소개', multiline: true),
@@ -844,49 +1261,10 @@ class _ProfileFormState extends State<ProfileForm> {
             ),
           if (show(3))
             FigmaSurface(
-              children: [
-                if (retailer)
-                  marketChoice()
-                else
-                  multiChoice('사입 시장 (선택)', const ['동대문', '남대문'], markets),
-                if (!retailer) ...[
-                  const Section('이동 수단 (선택)'),
-                  transportChoice(),
-                  const Section('활동 시간대 (선택)'),
-                  Choices(
-                    options: const ['주간 09–18', '야간 22–06', '일정에 따라 달라요'],
-                    value: activityHours,
-                    onChanged: (v) {
-                      activityHours = v;
-                      changed();
-                    },
-                  ),
-                  timeField(
-                    'activityStart',
-                    '활동 시작',
-                    initialHour: 22,
-                    optional: true,
-                  ),
-                  timeField(
-                    'activityEnd',
-                    '활동 종료',
-                    initialHour: 6,
-                    optional: true,
-                  ),
-                  const Info('종료가 시작보다 이르면 다음 날 종료예요. 요청 마감과 휴무 안내는 별도로 적용돼요.'),
-                  multiChoice('활동 요일 (선택)', const [
-                    '월',
-                    '화',
-                    '수',
-                    '목',
-                    '금',
-                    '토',
-                    '일',
-                  ], activityDays),
-                ],
-              ],
+              children: [marketChoice(), if (!retailer) activitySchedule()],
             ),
-          if (widget.signup && step == 4) ...[
+          if (widget.signup && step == 4 && !retailer) uncleReview(),
+          if (widget.signup && step == 4 && retailer) ...[
             FigmaSurface(
               children: [
                 Item(
@@ -894,17 +1272,26 @@ class _ProfileFormState extends State<ProfileForm> {
                   subtitle:
                       '${fields['contact']!.text} · ${fields['phone']!.text}',
                 ),
+                if (fields['nickname']!.text.trim().isNotEmpty)
+                  QuantityRow('검색용 별명', fields['nickname']!.text.trim()),
                 QuantityRow('역할', a.role!.label),
                 if (retailer) ...[
                   QuantityRow('판매 채널', salesChannel),
                   Item('사업자명', subtitle: fields['businessName']!.text),
                   Item('사업자등록번호', subtitle: fields['businessNumber']!.text),
                   QuantityRow('사업자 서류', document.isEmpty ? '미첨부' : '첨부 완료'),
+                  if (fields['postcode']!.text.trim().isNotEmpty)
+                    QuantityRow('우편번호', fields['postcode']!.text.trim()),
+                ] else if (fields['fee']!.text.trim().isNotEmpty) ...[
+                  QuantityRow('거래 수수료', '${fields['fee']!.text.trim()}원/건'),
                 ],
                 Item(
                   retailer ? '기본 배송지' : '활동 구역',
                   subtitle: retailer
-                      ? '${fields['address']!.text} ${fields['addressDetail']!.text}'
+                      ? [
+                          fields['address']!.text.trim(),
+                          fields['addressDetail']!.text.trim(),
+                        ].where((value) => value.isNotEmpty).join(' ')
                       : '${fields['pickupArea']!.text} · ${fields['deliveryArea']!.text}',
                 ),
                 Item(
@@ -917,7 +1304,8 @@ class _ProfileFormState extends State<ProfileForm> {
             ),
             Item('정보 수정하기', onTap: () => goToStep(0)),
           ],
-          if (widget.signup && step == 5) ...[
+          if (widget.signup && step == 5 && !retailer) uncleConsent(),
+          if (widget.signup && step == 5 && retailer) ...[
             FigmaSurface(
               children: [
                 Inset(
@@ -952,18 +1340,7 @@ class _ProfileFormState extends State<ProfileForm> {
                     liveRegion: true,
                     child: Info(errors['privacy']!, error: true),
                   ),
-                Item(
-                  '약관·개인정보 처리 안내',
-                  onTap: () => openPage(
-                    context,
-                    PolicyPage(
-                      '가입 동의 안내',
-                      app.session.isRemote
-                          ? '현재 개발 검증 중인 서비스입니다. 정식 약관과 개인정보 처리방침은 확정 전입니다. 가입정보·거래 기록·첨부파일은 서버에 저장되며, 거래에 필요한 정보는 연결된 상대방과 공유됩니다. 사업자 서류는 상대방에게 공개되지 않습니다.'
-                          : '현재는 로컬 개발용 가입 흐름입니다. 정식 약관과 개인정보 처리방침은 확정 전이며, 입력과 첨부는 이 기기에 저장됩니다.',
-                    ),
-                  ),
-                ),
+                Item('약관·개인정보 처리 안내', onTap: openConsentPolicy),
               ],
             ),
           ],
@@ -1134,7 +1511,7 @@ class MyPage extends StatelessWidget {
               infoRow('사입 시장', markets.isEmpty ? '등록 전' : markets.join(' · ')),
             ] else ...[
               infoRow(
-                '도매 픽업 구역',
+                '도매 픽업 지역',
                 a.s('pickupArea').trim().isEmpty
                     ? '픽업 구역을 등록해 주세요'
                     : a.s('pickupArea').trim(),

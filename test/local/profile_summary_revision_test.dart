@@ -6,10 +6,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
-import 'app_flow_test.dart' show drainClose, enter, settle, tapButton;
+import 'app_flow_test.dart' show drainClose, settle, tapButton;
 import 'brand_surfaces_test.dart' show branded;
 import 'workspace_test.dart' show Fixture;
 import '../support/profile_time_picker.dart';
+import '../support/service_region_picker.dart';
 
 Future<AppServices> showHomeShell(
   WidgetTester tester,
@@ -118,7 +119,7 @@ void main() {
     await openProfileTab(tester, '내 정보');
 
     expect(find.widgetWithText(TdsButton, '프로필 수정'), findsOneWidget);
-    expect(find.text('도매 픽업 구역'), findsOneWidget);
+    expect(find.text('도매 픽업 지역'), findsOneWidget);
     expect(find.text('소매 배송 지역'), findsOneWidget);
     expect(find.text('업무 상태'), findsOneWidget);
     expect(find.text('요청 마감시간'), findsOneWidget);
@@ -130,8 +131,8 @@ void main() {
     await tapButton(tester, '프로필 수정');
     expect(find.byType(ProfileForm), findsOneWidget);
 
-    await enter(tester, '도매 픽업 구역', '남대문 2층 12호');
-    await enter(tester, '소매 배송 지역', '경기 북부 · 의정부');
+    await selectRegion(tester, 'pickupArea', '서울', district: '중구', replace: true);
+    await selectRegion(tester, 'deliveryArea', '경기', city: '의정부시', replace: true);
     await selectTime(tester, '요청 마감시간', '23:30');
     final working = find.byType(TdsSwitch);
     await tester.ensureVisible(working);
@@ -140,8 +141,8 @@ void main() {
     await tapButton(tester, '저장하기');
 
     expect(find.byType(ProfileForm), findsNothing);
-    expect(find.text('남대문 2층 12호'), findsOneWidget);
-    expect(find.text('경기 북부 · 의정부'), findsOneWidget);
+    expect(find.text('서울 중구'), findsOneWidget);
+    expect(find.text('경기 의정부시'), findsOneWidget);
     expect(find.text('휴무 중'), findsOneWidget);
     expect(find.text('23:30'), findsOneWidget);
     expect(tester.takeException(), isNull);

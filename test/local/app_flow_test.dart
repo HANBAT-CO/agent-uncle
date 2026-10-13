@@ -15,6 +15,8 @@ import 'package:agent_uncle/local/presentation/requests.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
 import 'workspace_test.dart' show Fixture;
 
+import '../support/address_search.dart';
+
 class PickableAttachment implements AttachmentRepository {
   PickableAttachment(this.delegate);
   final AttachmentRepository delegate;
@@ -129,7 +131,7 @@ void main() {
     expect(session.current!.s('contact'), '담당자');
     await tapButton(tester, '사업자등록증 (필수) 첨부');
     await tapButton(tester, '다음');
-    await enter(tester, '주소', '서울 중구');
+    await selectAddress(tester);
     await enter(tester, '상세주소', '101호');
     await tapButton(tester, '다음');
     await tester.tap(find.widgetWithText(TdsChipItem, '동대문'));
@@ -183,16 +185,14 @@ void main() {
       await settle(tester);
       await tester.tap(find.text('삼촌한테 사입하기'));
       await settle(tester);
-      await enter(tester, '상품명', '자동 저장 셔츠');
+      await enter(tester, '도매처 이름', '자동 저장 셔츠');
       await tapButton(tester, '초안 저장 후 닫기');
       await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
       await settle(tester);
       expect(find.byType(RequestEditor), findsNothing);
       await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
       await settle(tester);
-      await tester.ensureVisible(find.text('사입 내역 전체 보기'));
-      await tester.tap(find.text('사입 내역 전체 보기'));
-      await settle(tester);
+      await tester.ensureVisible(find.text('임시저장·다시 요청'));
       await tester.tap(find.text('임시저장·다시 요청'));
       await settle(tester);
       await tester.tap(find.text('자동 저장 셔츠'));
@@ -206,7 +206,7 @@ void main() {
       await settle(tester);
       expect(find.text('자동 저장 셔츠'), findsOneWidget);
       final productInput = find.descendant(
-        of: find.byWidgetPredicate((w) => w is Field && w.label == '상품명'),
+        of: find.byWidgetPredicate((w) => w is Field && w.label == '도매처 이름'),
         matching: find.byType(EditableText),
       );
       await tester.ensureVisible(productInput);
@@ -223,24 +223,20 @@ void main() {
       FocusManager.instance.primaryFocus?.unfocus();
       await settle(tester);
       await tapButton(tester, '초안 저장 후 닫기');
-      expect(f.workspace.records('drafts').single.s('product'), '자동 저장 셔츠');
+      expect(f.workspace.records('drafts').single.s('wholesaler'), '자동 저장 셔츠');
       await tester.tap(find.text('자동 저장 셔츠'));
       await settle(tester);
       expect(find.byType(RequestEditor), findsOneWidget);
-      for (final e in {
-        '도매처 이름': '도매',
-        '시장·상가·건물·층': '상가 1층',
-        '색상·사이즈 등 옵션': '검정 L',
-        '요청 수량': '3',
-      }.entries) {
+      for (final e in {'도매처 이름': '도매', '위치': '상가 1층'}.entries) {
         await enter(tester, e.key, e.value);
       }
-      final choose = find.text('담당 사입삼촌');
+      final choose = find.text('담당 삼촌 변경');
       await tester.ensureVisible(choose);
       await tester.tap(choose);
       await settle(tester);
       await tester.tap(find.text('사입 업체'));
       await settle(tester);
+      await tapButton(tester, '선택한 삼촌으로 계속');
       await tapButton(tester, '요청 내용 확인');
       await tester.tap(find.text('확인').last);
       // 확인창 퇴장 이후 저장과 상세 화면 전환이 차례로 끝날 때까지 기다린다.
@@ -254,6 +250,7 @@ void main() {
       expect(find.byType(RequestDetailPage), findsOneWidget);
       expect(f.workspace.records('drafts'), isEmpty);
       expect(f.workspace.records('requests'), hasLength(1));
+      expect(f.workspace.records('requests').single.n('quantity'), 1);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await drainClose(tester, f.close());
@@ -279,7 +276,10 @@ void main() {
     expect(find.widgetWithText(TdsTextButton, '사입하기'), findsNothing);
     await tester.tap(find.widgetWithText(TdsTextButton, '업무'));
     await settle(tester);
-    await tester.tap(find.text('전달할 물품'));
+    await tester.tap(find.text('사입 업무 시작하기'));
+    await settle(tester);
+    await tester.ensureVisible(find.text('상품 전달하기'));
+    await tester.tap(find.text('상품 전달하기'));
     await settle(tester);
     expect(find.text('지금 전달할 물품이 없어요'), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -311,10 +311,7 @@ void main() {
       for (var i = 1; i < positions.length; i++) {
         expect(positions[i], greaterThan(positions[i - 1]));
       }
-      await tester.ensureVisible(find.text('사입 내역 전체 보기'));
-      await tester.tap(find.text('사입 내역 전체 보기'));
-      await settle(tester);
-      expect(find.byType(TdsLiquidTabBar), findsNothing);
+      expect(find.byType(TdsLiquidTabBar), findsOneWidget);
       final scroller = find.byWidgetPredicate(
         (widget) =>
             widget is SingleChildScrollView &&
@@ -344,8 +341,6 @@ void main() {
         tester.state<ScrollableState>(scrollable.first).position.pixels,
         offset,
       );
-      await tester.tap(find.byType(TdsTopNavigationBackButton));
-      await settle(tester);
       await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
       await settle(tester);
       await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
@@ -395,7 +390,7 @@ void main() {
         findsOneWidget,
       );
       await tapButton(tester, '이번 전달분 수령 확인');
-      await tapButton(tester, '3장 수령 확인 · 요청 완료');
+      await tapButton(tester, '3장 수령 확인');
       expect(find.text('전달 내역'), findsOneWidget);
       expect(find.widgetWithText(TdsButton, '이번 전달분 수령 확인'), findsNothing);
       expect(
@@ -436,11 +431,11 @@ void main() {
     await tester.tap(find.text('삼촌한테 사입하기'));
     await settle(tester);
     f.store.failNextWrite = true;
-    await enter(tester, '상품명', '저장 실패 후 복원');
+    await enter(tester, '도매처 이름', '저장 실패 후 복원');
     expect(find.widgetWithText(TdsButton, '초안 저장 다시 시도'), findsOneWidget);
     expect(f.workspace.records('drafts'), isEmpty);
     await tapButton(tester, '초안 저장 다시 시도');
-    expect(f.workspace.records('drafts').single.s('product'), '저장 실패 후 복원');
+    expect(f.workspace.records('drafts').single.s('wholesaler'), '저장 실패 후 복원');
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await drainClose(tester, f.close());

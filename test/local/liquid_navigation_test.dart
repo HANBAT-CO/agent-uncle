@@ -3,8 +3,11 @@ import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/domain/models.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/home.dart';
+import 'package:agent_uncle/local/presentation/retailer_orders.dart';
 import 'package:agent_uncle/local/presentation/retailer_purchase.dart';
 import 'package:agent_uncle/local/presentation/social.dart';
+import 'package:agent_uncle/local/presentation/uncle_home.dart';
+import 'package:agent_uncle/local/presentation/uncle_orders.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
@@ -43,8 +46,11 @@ void main() {
         final business = tester.getCenter(
           find.widgetWithText(TdsTextButton, role.tabLabel(AppTab.business)),
         );
-        final chat = tester.getCenter(find.widgetWithText(TdsTextButton, '채팅'));
+        final chat = tester.getCenter(
+          find.widgetWithText(TdsTextButton, role.tabLabel(AppTab.chat)),
+        );
         expect(business.dx, lessThan(chat.dx));
+        expect(home.dx, lessThan(business.dx));
         if (role == AppRole.retailer) {
           expect(home.dx, lessThan(business.dx));
           expect(bar.items.map((i) => i.label), [
@@ -55,13 +61,20 @@ void main() {
             '내 프로필',
           ]);
         } else {
-          expect(chat.dx, lessThan(home.dx));
+          expect(bar.items.map((i) => i.label), [
+            '홈',
+            '업무',
+            '대화',
+            '거래처',
+            '내 정보',
+          ]);
         }
-        await tester.ensureVisible(find.text('사입 내역 전체 보기'));
-        await settle(tester);
-        await tester.tap(find.text('사입 내역 전체 보기'));
-        await settle(tester);
         if (role == AppRole.retailer) {
+          expect(find.byType(RetailerOrdersSection), findsOneWidget);
+          final waiting = find.widgetWithText(TdsListRow, '대기');
+          await tester.ensureVisible(waiting);
+          await tester.tap(waiting);
+          await settle(tester);
           expect(find.byType(TdsLiquidTabBar), findsNothing);
           expect(find.text('사입 내역'), findsOneWidget);
           await tester.tap(find.byType(TdsTopNavigationBackButton));
@@ -77,15 +90,34 @@ void main() {
           await settle(tester);
           expect(find.byType(RetailerPurchaseTab), findsOneWidget);
         } else {
+          await tester.ensureVisible(find.text('업무 내역 전체 보기'));
+          await tester.tap(find.text('업무 내역 전체 보기'));
+          await settle(tester);
+          expect(find.byType(TdsLiquidTabBar), findsNothing);
+          expect(find.byType(UncleOrdersPage), findsOneWidget);
+          await tester.tap(find.byType(TdsTopNavigationBackButton));
+          await settle(tester);
           expect(
             tester
                 .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
                 .selectedIndex,
-            0,
+            homeIndex,
           );
-          expect(find.byType(BusinessList), findsOneWidget);
+          await tester.ensureVisible(find.text('업무 시작하기'));
+          await tester.tap(find.text('업무 시작하기'));
+          await settle(tester);
+          expect(find.byType(UncleWorkTab), findsOneWidget);
+          expect(find.text('내 업무 현황'), findsNothing);
+          expect(find.text('업무 내역 전체 보기'), findsNothing);
+          await tester.tap(find.text('사입 업무 시작하기'));
+          await settle(tester);
+          expect(find.byType(UncleOrdersPage), findsOneWidget);
+          await tester.tap(find.byType(TdsTopNavigationBackButton));
+          await settle(tester);
         }
-        await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
+        await tester.tap(
+          find.widgetWithText(TdsTextButton, role.tabLabel(AppTab.chat)),
+        );
         await settle(tester);
         expect(find.byType(ChatList), findsOneWidget);
         expect(tester.takeException(), isNull);

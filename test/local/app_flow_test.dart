@@ -102,16 +102,20 @@ void main() {
     await tapButton(tester, '시작하기');
     await enter(tester, '계정 이름', '첫 매장');
     await tapButton(tester, '로컬 계정 만들기');
-    await tester.tap(find.widgetWithText(TdsCheckbox, '소매업자'));
+    await tester.tap(find.text('소매업자'));
     await settle(tester);
     await tapButton(tester, '선택한 역할로 계속');
     for (final e in {
-      '매장명·쇼핑몰명': '첫 매장',
-      '이름·담당자명': '담당자',
+      '매장명': '첫 매장',
+      '담당자명': '담당자',
       '연락처': '01012345678',
     }.entries) {
       await enter(tester, e.key, e.value);
     }
+    final online = find.widgetWithText(TdsChipItem, '온라인');
+    await tester.ensureVisible(online);
+    await tester.tap(online);
+    await settle(tester);
     await tapButton(tester, '다음');
     await enter(tester, '사업자명', '첫 매장');
     await enter(tester, '사업자등록번호', '1234567890');
@@ -124,7 +128,7 @@ void main() {
     await enter(tester, '주소', '서울 중구');
     await enter(tester, '상세주소', '101호');
     await tapButton(tester, '다음');
-    await tester.tap(find.widgetWithText(TdsCheckbox, '동대문'));
+    await tester.tap(find.widgetWithText(TdsChipItem, '동대문'));
     await settle(tester);
     await tapButton(tester, '다음');
     expect(session.current!.s('address'), '서울 중구');
@@ -141,8 +145,8 @@ void main() {
     for (final label in AppRole.retailer.tabs) {
       expect(find.widgetWithText(TdsTextButton, label), findsOneWidget);
     }
-    expect(find.text('아직 사입 요청이 없어요'), findsOneWidget);
-    await tester.tap(find.widgetWithText(TdsTextButton, '내 정보'));
+    expect(find.text('주문 넣기'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TdsTextButton, '내 프로필'));
     await settle(tester);
     await tapButton(tester, '로그아웃');
     await tester.tap(find.text('확인').last);
@@ -152,7 +156,7 @@ void main() {
     await tester.ensureVisible(find.text('첫 매장'));
     await tester.tap(find.text('첫 매장'));
     await settle(tester);
-    expect(find.text('아직 사입 요청이 없어요'), findsOneWidget);
+    expect(find.text('주문 넣기'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     await drainClose(tester, store.close());
@@ -171,16 +175,19 @@ void main() {
       );
       await tester.pumpWidget(AgentUncleApp(services: app));
       await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '사입하기'));
       await settle(tester);
-      await tester.tap(find.text('새로 작성'));
+      await tester.tap(find.text('삼촌한테 사입하기'));
       await settle(tester);
       await enter(tester, '상품명', '자동 저장 셔츠');
       await tapButton(tester, '초안 저장 후 닫기');
       await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
       await settle(tester);
       expect(find.byType(RequestEditor), findsNothing);
-      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+      await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
+      await settle(tester);
+      await tester.ensureVisible(find.text('사입 내역 전체 보기'));
+      await tester.tap(find.text('사입 내역 전체 보기'));
       await settle(tester);
       await tester.tap(find.text('임시저장·다시 요청'));
       await settle(tester);
@@ -265,7 +272,7 @@ void main() {
     for (final label in AppRole.uncle.tabs) {
       expect(find.widgetWithText(TdsTextButton, label), findsOneWidget);
     }
-    expect(find.widgetWithText(TdsTextButton, '사입'), findsNothing);
+    expect(find.widgetWithText(TdsTextButton, '사입하기'), findsNothing);
     await tester.tap(find.widgetWithText(TdsTextButton, '업무'));
     await settle(tester);
     await tester.tap(find.text('전달할 물품'));
@@ -276,7 +283,7 @@ void main() {
     await drainClose(tester, f.close());
   });
   testWidgets(
-    'tabs keep scroll and filters, detail returns to the same request list',
+    'separate order history retains scroll when returning from request detail',
     (tester) async {
       final f = Fixture();
       await tester.runAsync(() async {
@@ -300,15 +307,19 @@ void main() {
       for (var i = 1; i < positions.length; i++) {
         expect(positions[i], greaterThan(positions[i - 1]));
       }
-      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+      await tester.ensureVisible(find.text('사입 내역 전체 보기'));
+      await tester.tap(find.text('사입 내역 전체 보기'));
       await settle(tester);
-      final scroller = find.byKey(
-        PageStorageKey('${f.retailer}-tab-${AppTab.business.index}'),
+      expect(find.byType(TdsLiquidTabBar), findsNothing);
+      final scroller = find.byWidgetPredicate(
+        (widget) =>
+            widget is SingleChildScrollView &&
+            widget.scrollDirection == Axis.vertical,
       );
-      await tester.drag(scroller, const Offset(0, -600));
+      await tester.drag(scroller.first, const Offset(0, -600));
       await settle(tester);
       final scrollable = find.descendant(
-        of: scroller,
+        of: scroller.first,
         matching: find.byType(Scrollable),
       );
       final offset = tester
@@ -316,24 +327,26 @@ void main() {
           .position
           .pixels;
       expect(offset, greaterThan(0));
-      final card = find.byType(RequestCard).hitTestable().first;
-      final requestId = tester.widget<RequestCard>(card).request.id;
+      final card = find.text('셔츠 · 흰색 M').hitTestable().first;
       await tester.tap(card);
       await settle(tester);
-      expect(
-        tester.widget<RequestDetailPage>(find.byType(RequestDetailPage)).id,
-        requestId,
-      );
+      final requestId = tester
+          .widget<RequestDetailPage>(find.byType(RequestDetailPage))
+          .id;
+      expect(f.workspace.request(requestId)?.s('product'), '셔츠');
       await tester.tap(find.byType(TdsTopNavigationBackButton));
-      await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
-      await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
       await settle(tester);
       expect(
         tester.state<ScrollableState>(scrollable.first).position.pixels,
         offset,
       );
+      await tester.tap(find.byType(TdsTopNavigationBackButton));
+      await settle(tester);
+      await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
+      await settle(tester);
+      await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
+      await settle(tester);
+      expect(find.text('내 사입 현황'), findsOneWidget);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox());
       await drainClose(tester, f.close());
@@ -414,9 +427,9 @@ void main() {
     );
     await tester.pumpWidget(AgentUncleApp(services: app));
     await settle(tester);
-    await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+    await tester.tap(find.widgetWithText(TdsTextButton, '사입하기'));
     await settle(tester);
-    await tester.tap(find.text('새로 작성'));
+    await tester.tap(find.text('삼촌한테 사입하기'));
     await settle(tester);
     f.store.failNextWrite = true;
     await enter(tester, '상품명', '저장 실패 후 복원');

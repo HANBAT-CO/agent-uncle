@@ -35,8 +35,13 @@ void main() {
         );
         await settle(tester);
 
-        for (final tab in ['사입', '채팅', '사입삼촌']) {
-          await tester.tap(find.widgetWithText(TdsTextButton, tab));
+        for (final tab in ['사입 내역', '채팅', '사입삼촌']) {
+          if (tab == '사입 내역') {
+            await tester.ensureVisible(find.text('사입 내역 전체 보기'));
+            await tester.tap(find.text('사입 내역 전체 보기'));
+          } else {
+            await tester.tap(find.widgetWithText(TdsTextButton, tab));
+          }
           await settle(tester);
           final search = find.byType(TdsSearchField);
           final input = find.descendant(
@@ -66,7 +71,7 @@ void main() {
           );
 
           // 앞뒤 공백이 있는 검색어도 원래 결과를 찾는다.
-          final matchingQuery = tab == '사입' ? '셔츠' : '사입 업체';
+          final matchingQuery = tab == '사입 내역' ? '셔츠' : '사입 업체';
           await tester.enterText(input, '  $matchingQuery  ');
           await settle(tester);
           expect(find.text('검색 결과가 없어요'), findsNothing);
@@ -96,6 +101,11 @@ void main() {
           expect(find.text('검색 결과가 없어요'), findsNothing);
           expect(find.textContaining(matchingQuery), findsWidgets);
           expect(tester.takeException(), isNull);
+          if (tab == '사입 내역') {
+            FocusManager.instance.primaryFocus?.unfocus();
+            await tester.tap(find.byType(TdsTopNavigationBackButton));
+            await settle(tester);
+          }
         }
 
         await tester.pumpWidget(const SizedBox());

@@ -10,7 +10,7 @@ import 'workspace_test.dart' show Fixture;
 
 void main() {
   testWidgets(
-    'status clocks respect pending work, visibility and reduced motion',
+    'uncle status clocks respect pending work, visibility and reduced motion',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 600);
@@ -21,7 +21,7 @@ void main() {
         final request = await f.request();
         await f.accept(request);
         await f.result(request, 2, 1);
-        await f.session.signIn(f.retailer);
+        await f.session.signIn(f.uncle);
       });
       final services = AppServices(
         session: f.session,
@@ -60,8 +60,7 @@ void main() {
         ),
       );
       await show();
-      // No pending acknowledgement for the retailer after the request is accepted.
-      expect(motion('waiting-clock'), findsNothing);
+      // 삼촌의 미송 답변 대기 시계는 화면에 들어올 때만 동작한다.
       expect(motion('recheck-clock'), findsNothing);
       await tester.ensureVisible(find.byKey(const ValueKey('recheck-clock')));
       await tester.pump();

@@ -1254,6 +1254,12 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
                 textOf(existing, 'recipientId') != peerId)) {
           throw const AppFailure('본인이 작성한 메시지만 다시 보낼 수 있어요.');
         }
+        if (existing != null &&
+            (flagOf(existing, 'deleted') ||
+                flagOf(existing, 'system') ||
+                textOf(existing, 'status') != 'failed')) {
+          throw const AppFailure('이미 보낸 메시지는 다시 보낼 수 없어요.');
+        }
         if (requestId.isNotEmpty) {
           final r = _request(s, requestId, user);
           if (_other(r, user) != peerId) {
@@ -1313,6 +1319,72 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       }
       rethrow;
     }
+  }
+
+  @override
+  Future<void> editMessage(
+    String messageId,
+    String body,
+    int version,
+    String operationId,
+  ) async {
+    final user = actor;
+    await store.write(user, operationId, (s) {
+      final message = _editableMessage(s, messageId, user, version);
+      final text = body.trim();
+      if (text.isEmpty && stringsOf(message, 'attachments').isEmpty) {
+        throw const AppFailure('메시지나 사진을 추가해 주세요.');
+      }
+      s.put('messages', messageId, {
+        ...message,
+        'body': text,
+        'editedAt': DateTime.now().toIso8601String(),
+        'version': version + 1,
+      });
+      return messageId;
+    });
+  }
+
+  @override
+  Future<void> deleteMessage(
+    String messageId,
+    int version,
+    String operationId,
+  ) async {
+    final user = actor;
+    await store.write(user, operationId, (s) {
+      final message = _editableMessage(s, messageId, user, version);
+      s.put('messages', messageId, {
+        ...message,
+        'body': '',
+        'attachments': <String>[],
+        'requestId': '',
+        'deleted': true,
+        'deletedAt': DateTime.now().toIso8601String(),
+        'version': version + 1,
+      });
+      return messageId;
+    });
+  }
+
+  Data _editableMessage(
+    MutableWorkspace s,
+    String id,
+    String user,
+    int version,
+  ) {
+    final message = s.require('messages', id);
+    if (textOf(message, 'senderId') != user) {
+      throw const AppFailure('본인이 보낸 메시지만 수정하거나 삭제할 수 있어요.');
+    }
+    if (flagOf(message, 'deleted')) {
+      throw const AppFailure('이미 삭제된 메시지는 변경할 수 없어요.');
+    }
+    if (flagOf(message, 'system') || textOf(message, 'status') != 'sent') {
+      throw const AppFailure('전송된 일반 메시지만 수정하거나 삭제할 수 있어요.');
+    }
+    _checkVersion(message, version);
+    return message;
   }
 
   @override

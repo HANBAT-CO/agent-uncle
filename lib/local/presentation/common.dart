@@ -746,12 +746,13 @@ class FormSaver extends ChangeNotifier {
     if (next == null) return;
     pending = null;
     saving = true;
-    error = null;
     notifyListeners();
     final completer = Completer<void>();
     _running = completer.future;
     try {
       await save(next);
+      // 재시도 도중에는 오류를 유지해 입력할 때마다 안내가 깜빡이지 않게 한다.
+      error = null;
       completer.complete();
     } catch (e) {
       pending ??= next;

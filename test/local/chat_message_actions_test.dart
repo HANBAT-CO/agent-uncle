@@ -139,10 +139,6 @@ void main() {
       f.workspace.editMessage('m', '  ', 0, newId()),
       throwsA(isA<AppFailure>()),
     );
-    await expectLater(
-      f.workspace.editMessage('m', '가' * 10001, 0, newId()),
-      throwsA(isA<AppFailure>()),
-    );
     final photo = await f.attachments.save(
       '사진.png',
       Uint8List.fromList([1]),

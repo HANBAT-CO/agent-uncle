@@ -247,6 +247,9 @@ class HomeTabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), a = app.session.current!;
+    final homeName = a.role == AppRole.uncle && !a.name.trim().endsWith('삼촌')
+        ? '${a.name.trim()} 삼촌'
+        : a.name;
     final notices = app.workspace
         .records('notices')
         .where(
@@ -263,7 +266,7 @@ class HomeTabPage extends StatelessWidget {
       _ => const MyPage(),
     };
     return PageFrame(
-      title: index == AppTab.home.index ? a.name : a.role!.tabs[index],
+      title: index == AppTab.home.index ? homeName : a.role!.tabs[index],
       back: false,
       showHeaderDivider: false,
       navigationLeading: index == AppTab.home.index

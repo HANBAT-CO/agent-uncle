@@ -1,4 +1,5 @@
 import '../domain/models.dart';
+import '../domain/profile_validation.dart';
 import 'local_store.dart';
 
 class LocalSessionRepository extends SessionRepository {
@@ -133,49 +134,31 @@ class LocalSessionRepository extends SessionRepository {
         for (final key in profileFields)
           if (fields.containsKey(key)) key: fields[key],
       };
-      if (complete || flagOf(old, 'complete')) {
-        final required = {
-          'name': '표시 이름',
-          'contact': '담당자',
-          'phone': '연락처',
-          'businessName': '사업자명',
-          'businessNumber': '사업자등록번호',
-          'documentId': '사업자등록증',
-          if (textOf(next, 'role') == 'retailer') ...{
-            'address': '배송지',
-            'addressDetail': '상세주소',
-          } else ...{
-            'pickupArea': '도매 픽업 구역',
-            'deliveryArea': '소매 배송 지역',
-            'deadline': '요청 마감시간',
-          },
-        };
-        for (final entry in required.entries) {
-          if (textOf(next, entry.key).trim().isEmpty) {
-            if (entry.key == 'documentId') {
-              throw const AppFailure('사업자등록증을 첨부해 주세요.');
-            }
-            throw AppFailure('${entry.value} 항목을 입력해 주세요.');
-          }
-        }
-        if (textOf(next, 'role').isEmpty) {
-          throw const AppFailure('역할을 선택해 주세요.');
-        }
-        if (!RegExp(
-          r'^\d{10}$',
-        ).hasMatch(textOf(next, 'businessNumber').replaceAll('-', ''))) {
-          throw const AppFailure('사업자등록번호 10자리를 확인해 주세요.');
-        }
-        if (!RegExp(r'^\+?[\d -]{9,16}$').hasMatch(textOf(next, 'phone'))) {
-          throw const AppFailure('연락처를 확인해 주세요.');
-        }
-        final document = s.require('attachments', textOf(next, 'documentId'));
+      if (textOf(next, 'role') == 'uncle' &&
+          (!flagOf(old, 'complete') || textOf(next, 'name').trim().isEmpty) &&
+          textOf(next, 'contact').trim().isNotEmpty) {
+        next['name'] = textOf(next, 'contact').trim();
+      }
+      final documentId = textOf(next, 'documentId');
+      if (documentId.isNotEmpty) {
+        final document = s.require('attachments', documentId);
         if (textOf(document, 'ownerId') != id) {
           throw const AppFailure('본인의 사업자 서류를 등록해 주세요.');
         }
-        if (!flagOf(next, 'terms') || !flagOf(next, 'privacy')) {
-          throw const AppFailure('필수 동의를 확인해 주세요.');
-        }
+      }
+      if (complete || flagOf(old, 'complete')) {
+        final role = switch (textOf(next, 'role')) {
+          'retailer' => AppRole.retailer,
+          'uncle' => AppRole.uncle,
+          _ => throw const AppFailure('역할을 선택해 주세요.'),
+        };
+        final errors = profileFieldErrors(
+          next,
+          role: role,
+          requireSalesChannel:
+              role == AppRole.retailer && !flagOf(old, 'complete'),
+        );
+        if (errors.isNotEmpty) throw AppFailure(errors.values.first);
         next['complete'] = true;
       }
       next['version'] = numberOf(old, 'version') + 1;

@@ -191,6 +191,8 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
   }
 }
 
+const _networkErrorMessage = '와이파이에 연결해주세요!';
+
 String friendlyError(Object error) {
   if (error is AppFailure) return error.message;
   if (error is PostgrestException && error.code == 'P0001') {
@@ -199,9 +201,54 @@ String friendlyError(Object error) {
   if (error is PostgrestException && error.code == 'PGRST202') {
     return '서버 준비가 아직 완료되지 않았어요. 잠시 후 다시 시도해 주세요.';
   }
+  if (_isNetworkError(error)) return _networkErrorMessage;
   if (error is AuthException) return '인증을 완료하지 못했어요. 로그인 화면에서 다시 시도해 주세요.';
   if (error is StorageException) {
     return '첨부파일을 저장하거나 읽지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요.';
   }
-  return '서버에 연결하지 못했어요. 입력을 유지했으니 연결 상태를 확인하고 다시 시도해 주세요.';
+  return _networkErrorMessage;
+}
+
+bool _isNetworkError(Object error) {
+  if (error is TimeoutException) return true;
+  if (error is AuthRetryableFetchException) return true;
+  if (error is AuthUnknownException) {
+    return _looksLikeNetworkText('${error.message} ${error.originalError}');
+  }
+  if (error is StorageException) {
+    return error.statusCode == null ||
+        _looksLikeNetworkText('${error.message} ${error.error ?? ''}');
+  }
+  if (error is PostgrestException && error.code == null) {
+    return _looksLikeNetworkText(
+      '${error.message} ${error.details ?? ''} ${error.hint ?? ''}',
+    );
+  }
+  return _looksLikeNetworkText(error.toString());
+}
+
+bool _looksLikeNetworkText(String value) {
+  final text = value.toLowerCase();
+  const markers = [
+    'socketexception',
+    'clientexception',
+    'failed host lookup',
+    'temporary failure in name resolution',
+    'connection refused',
+    'connection reset',
+    'connection closed',
+    'network',
+    'offline',
+    'timeout',
+    'timed out',
+    'xmlhttprequest error',
+    'fetch failed',
+    'broken pipe',
+    'host lookup',
+    'no address associated with hostname',
+  ];
+  for (final marker in markers) {
+    if (text.contains(marker)) return true;
+  }
+  return false;
 }

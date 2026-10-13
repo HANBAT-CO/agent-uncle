@@ -61,6 +61,7 @@ void main() {
             '내 프로필',
           ]);
         } else {
+          expect(find.text('사입 업체 삼촌'), findsOneWidget);
           expect(bar.items.map((i) => i.label), [
             '홈',
             '업무',

@@ -34,12 +34,16 @@ class PickableAttachment implements AttachmentRepository {
 }
 
 Future<void> settle(WidgetTester tester) async {
+  // 첫 프레임에서 페이지 전환의 시계를 시작한다.
+  await tester.pump();
   for (var i = 0; i < 6; i++) {
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
     await tester.pump(const Duration(milliseconds: 100));
   }
+  // 라우트 제거 완료 콜백이 예약한 하단 탭의 복귀 프레임까지 반영한다.
+  await tester.pump();
 }
 
 Future<void> tapButton(WidgetTester tester, String label) async {

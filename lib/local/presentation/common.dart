@@ -278,13 +278,14 @@ class ActionButton extends StatefulWidget {
     this.enabled = true,
     this.onError,
     this.bottom = false,
+    this.hasPaddingBottom = true,
     this.icon,
     super.key,
   });
   final String label;
   final String? icon;
   final FutureOr<void> Function() onPressed;
-  final bool weak, danger, enabled, bottom;
+  final bool weak, danger, enabled, bottom, hasPaddingBottom;
   final ValueChanged<Object>? onError;
   @override
   State<ActionButton> createState() => _ActionButtonState();
@@ -338,6 +339,7 @@ class _ActionButtonState extends State<ActionButton> {
       return TdsBottomCTA(
         background: false,
         hasSafeAreaPadding: false,
+        hasPaddingBottom: widget.hasPaddingBottom,
         topAccessory: error == null ? null : Info(error!, error: true),
         color: color,
         variant: variant,
@@ -399,6 +401,10 @@ class Field extends StatelessWidget {
     this.numeric = false,
     this.multiline = false,
     this.error,
+    this.focusNode,
+    this.format,
+    this.keyboardType,
+    this.placeholder,
     super.key,
   });
   final String label;
@@ -406,6 +412,10 @@ class Field extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final bool numeric, multiline;
   final String? error;
+  final FocusNode? focusNode;
+  final TdsTextFieldFormat? format;
+  final TextInputType? keyboardType;
+  final String? placeholder;
   @override
   Widget build(BuildContext context) => TdsTextField(
     variant: TdsTextFieldVariant.box,
@@ -414,12 +424,17 @@ class Field extends StatelessWidget {
     label: label,
     labelOption: TdsTextFieldLabelOption.sustain,
     controller: controller,
+    focusNode: focusNode,
+    format: format,
+    placeholder: placeholder,
     onChanged: onChanged,
-    keyboardType: numeric
-        ? TextInputType.number
-        : multiline
-        ? TextInputType.multiline
-        : TextInputType.text,
+    keyboardType:
+        keyboardType ??
+        (numeric
+            ? TextInputType.number
+            : multiline
+            ? TextInputType.multiline
+            : TextInputType.text),
     multiline: multiline,
     hasError: error != null,
     help: error == null ? null : Text(error!),

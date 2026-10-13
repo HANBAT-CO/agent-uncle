@@ -132,6 +132,48 @@ class AppThemeData extends PaperlogyTheme {
   );
 }
 
+/// 가입 입력면만 흰색으로 구분하고 TDS의 포커스·오류 상태는 유지한다.
+class ProfileInputThemeData extends AppThemeData {
+  const ProfileInputThemeData({
+    super.colorScheme,
+    super.primary,
+    super.platform,
+  });
+
+  @override
+  Color color(String name) =>
+      name == 'greyOpacity50' && !isDark ? TdsPalette.white : super.color(name);
+
+  @override
+  ProfileInputThemeData copyWith({
+    TdsColorPreference? colorScheme,
+    Color? primary,
+    TdsPlatform? platform,
+  }) => ProfileInputThemeData(
+    colorScheme: colorScheme ?? this.colorScheme,
+    primary: primary ?? this.primary,
+    platform: platform ?? this.platform,
+  );
+}
+
+class ProfileInputTheme extends StatelessWidget {
+  const ProfileInputTheme({required this.child, super.key});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = TdsTheme.of(context);
+    return TdsTheme(
+      data: ProfileInputThemeData(
+        colorScheme: theme.colorScheme,
+        primary: theme.primary,
+        platform: theme.platform,
+      ),
+      child: child,
+    );
+  }
+}
+
 /// The supplied symbol is kept in its original black and original aspect ratio.
 class AppLogo extends StatelessWidget {
   const AppLogo({this.width = 112, super.key});

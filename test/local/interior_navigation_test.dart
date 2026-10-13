@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:agent_uncle/core/media/native_media_picker.dart';
 import 'package:agent_uncle/app.dart';
 import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
@@ -13,6 +15,7 @@ import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'app_flow_test.dart' show settle, drainClose, PickableAttachment;
 import 'brand_surfaces_test.dart' show branded;
 import 'workspace_test.dart' show Fixture;
+import 'chat_media_navigation_test.dart' show FakeNativeMediaPicker;
 
 void main() {
   testWidgets(
@@ -41,7 +44,16 @@ void main() {
       unawaited(
         openPage(
           tester.element(find.byType(HomeTabPage).first),
-          ChatPage(f.uncle),
+          ChatPage(
+            f.uncle,
+            mediaPicker: FakeNativeMediaPicker(
+              NativeMediaSelection(
+                name: 'photo.png',
+                bytes: Uint8List.fromList([0x89, 0x50, 0x4e, 0x47]),
+                mime: 'image/png',
+              ),
+            ),
+          ),
         ),
       );
       await settle(tester);
@@ -79,6 +91,8 @@ void main() {
       await tester.tap(find.text('셔츠'));
       await settle(tester);
       await tester.tap(find.bySemanticsLabel('사진 첨부'));
+      await settle(tester);
+      await tester.tap(find.text('갤러리에서 선택'));
       await settle(tester);
       expect(find.bySemanticsLabel('사진 추가, 1장 첨부됨'), findsOneWidget);
       final input = find.descendant(
@@ -240,40 +254,48 @@ void main() {
     );
   }
 
-  for (final inset in [0.0, 24.0, 34.0]) {
-    testWidgets('bottom navigation respects the system area at inset $inset', (
-      tester,
-    ) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(390, 844);
-      tester.view.viewPadding = FakeViewPadding(bottom: inset);
-      tester.view.padding = FakeViewPadding(bottom: inset);
-      addTearDown(tester.view.reset);
-      final f = Fixture();
-      await tester.runAsync(() async {
-        await f.start();
-        await f.session.finishOnboarding();
-      });
-      await tester.pumpWidget(
-        AgentUncleApp(
-          services: AppServices(
-            session: f.session,
-            workspace: f.workspace,
-            attachments: f.attachments,
+  for (final (platform, inset, gap) in [
+    (TargetPlatform.iOS, 0.0, 0.0),
+    (TargetPlatform.iOS, 34.0, 10.0),
+    (TargetPlatform.android, 0.0, 0.0),
+    (TargetPlatform.android, 24.0, 24.0),
+    (TargetPlatform.android, 34.0, 34.0),
+    (TargetPlatform.android, 48.0, 48.0),
+  ]) {
+    testWidgets(
+      'bottom navigation keeps $gap spacing on $platform with inset $inset',
+      (tester) async {
+        tester.view.devicePixelRatio = 1;
+        tester.view.physicalSize = const Size(390, 844);
+        tester.view.viewPadding = FakeViewPadding(bottom: inset);
+        tester.view.padding = FakeViewPadding(bottom: inset);
+        addTearDown(tester.view.reset);
+        final f = Fixture();
+        await tester.runAsync(() async {
+          await f.start();
+          await f.session.finishOnboarding();
+        });
+        await tester.pumpWidget(
+          AgentUncleApp(
+            services: AppServices(
+              session: f.session,
+              workspace: f.workspace,
+              attachments: f.attachments,
+            ),
           ),
-        ),
-      );
-      await settle(tester);
-      final bar = tester.getRect(find.byType(TdsLiquidTabBar));
-      final bottomGap = 844 - bar.bottom;
-      expect(bottomGap, greaterThanOrEqualTo(inset > 24 ? inset - 12 : inset));
-      expect(bottomGap, lessThanOrEqualTo(inset));
-      await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
-      await settle(tester);
-      expect(find.byType(ChatList), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      await drainClose(tester, f.close());
-    });
+        );
+        await settle(tester);
+        final bar = tester.getRect(find.byType(TdsLiquidTabBar));
+        final bottomGap = 844 - bar.bottom;
+        expect(bottomGap, closeTo(gap, .01));
+        await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
+        await settle(tester);
+        expect(find.byType(ChatList), findsOneWidget);
+        expect(tester.takeException(), isNull);
+        await tester.pumpWidget(const SizedBox());
+        await drainClose(tester, f.close());
+      },
+      variant: TargetPlatformVariant({platform}),
+    );
   }
 }

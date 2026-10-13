@@ -7,6 +7,7 @@ import 'package:agent_uncle/local/data/local_workspace.dart';
 import 'package:agent_uncle/local/domain/models.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/entry.dart';
+import 'package:agent_uncle/local/presentation/home.dart';
 import 'package:agent_uncle/local/presentation/profile_avatar.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -287,7 +288,7 @@ void main() {
     await tapButton(tester, '가입 완료');
     expect(f.session.current!.complete, isTrue);
     expect(f.session.current!.name, '김한밭');
-    expect(find.text('김한밭 삼촌'), findsOneWidget);
+    expect(find.byType(HomeShell), findsOneWidget);
     expect(f.session.current!.s('documentId'), isEmpty);
     expect(f.session.current!.s('businessNumber'), isEmpty);
     expect(tester.takeException(), isNull);

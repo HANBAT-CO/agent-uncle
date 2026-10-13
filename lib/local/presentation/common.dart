@@ -522,10 +522,18 @@ Future<bool> confirm(
     ),
   );
   overlay.insert(entry);
+  ModalRoute<void>? dialogRoute;
   final result = await controller.openConfirm(
-    title: Text(title),
+    title: Builder(
+      builder: (context) {
+        dialogRoute = ModalRoute.of<void>(context);
+        return Text(title);
+      },
+    ),
     description: Text(description),
   );
+  // 다음 화면이 닫히는 중인 확인창을 교체하지 않도록 퇴장까지 기다린다.
+  await dialogRoute?.completed;
   entry.remove();
   entry.dispose();
   controller.dispose();

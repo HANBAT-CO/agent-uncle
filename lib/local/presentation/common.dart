@@ -591,19 +591,27 @@ class AttachmentField extends StatelessWidget {
     required this.onChanged,
     this.document = false,
     this.multiple = false,
+    this.preview,
+    this.error,
     super.key,
   });
   final String label;
   final List<String> ids;
   final ValueChanged<List<String>> onChanged;
   final bool document, multiple;
+  final Widget? preview;
+  final String? error;
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
       Section(label),
+      if (document) const Info('JPG, JPEG, PNG, PDF 파일 · 최대 10MB'),
+      ?preview,
+      if (error != null)
+        Semantics(liveRegion: true, child: Info(error!, error: true)),
       for (final id in ids) ...[
-        AttachmentPreview(id, compact: true),
+        if (preview == null) AttachmentPreview(id, compact: true),
         Inset(
           child: TdsTextButton(
             size: TdsTextButtonSize.small,

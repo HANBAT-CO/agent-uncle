@@ -80,16 +80,25 @@ class RolePage extends StatefulWidget {
 class _RolePageState extends State<RolePage> {
   AppRole? selected;
   bool working = false;
+  String? error;
 
   Future<void> _once(Future<void> Function() action) async {
     if (working) return;
-    setState(() => working = true);
+    setState(() {
+      working = true;
+      error = null;
+    });
     try {
       await action();
+    } catch (e) {
+      if (mounted) setState(() => error = e.toString());
     } finally {
       if (mounted) setState(() => working = false);
     }
   }
+
+  Future<void> leaveSignup() =>
+      _once(() => AppScope.read(context).session.signOut());
 
   Widget _roleCard(BuildContext context, AppRole role) {
     final theme = TdsTheme.of(context);
@@ -133,37 +142,45 @@ class _RolePageState extends State<RolePage> {
   }
 
   @override
-  Widget build(BuildContext context) => PageFrame(
-    title: '역할 선택',
-    back: widget.closeOnSelect,
-    bottom: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ActionButton(
-          '선택한 역할로 계속',
-          bottom: true,
-          enabled: selected != null && !working,
-          onPressed: () => _once(() async {
-            await AppScope.read(context).session.chooseRole(selected!);
-            if (widget.closeOnSelect && context.mounted) {
-              Navigator.pop(context);
-            }
-          }),
-        ),
-        Inset(
-          child: TdsTextButton(
-            size: TdsTextButtonSize.small,
-            disabled: working,
-            onPressed: () =>
-                _once(() => AppScope.read(context).session.signOut()),
-            child: const Text('로그인으로 돌아가기'),
+  Widget build(BuildContext context) => PopScope(
+    // 가입 폼 위에 열린 역할 선택도 뒤로 가기는 가입 중단이다.
+    // 역할을 다시 선택했을 때만 아래 폼으로 돌아간다.
+    canPop: false,
+    onPopInvokedWithResult: (didPop, result) {
+      if (!didPop) leaveSignup();
+    },
+    child: PageFrame(
+      title: '역할 선택',
+      back: true,
+      bottom: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ActionButton(
+            '선택한 역할로 계속',
+            bottom: true,
+            enabled: selected != null && !working,
+            onPressed: () => _once(() async {
+              await AppScope.read(context).session.chooseRole(selected!);
+              if (widget.closeOnSelect && context.mounted) {
+                Navigator.pop(context);
+              }
+            }),
           ),
-        ),
+          Inset(
+            child: TdsTextButton(
+              size: TdsTextButtonSize.small,
+              disabled: working,
+              onPressed: leaveSignup,
+              child: const Text('로그인으로 돌아가기'),
+            ),
+          ),
+        ],
+      ),
+      children: [
+        const PageHeading('어떤 일을 하고 계신가요?', description: '업무에 맞는 화면을 준비할게요.'),
+        for (final role in AppRole.values) _roleCard(context, role),
+        if (error != null) Info(error!, error: true),
       ],
     ),
-    children: [
-      const PageHeading('어떤 일을 하고 계신가요?', description: '업무에 맞는 화면을 준비할게요.'),
-      for (final role in AppRole.values) _roleCard(context, role),
-    ],
   );
 }

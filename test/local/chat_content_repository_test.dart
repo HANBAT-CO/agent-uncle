@@ -5,6 +5,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'workspace_test.dart' show Fixture;
 
 void main() {
+  test('1만 자를 초과한 수정은 거절하고 원본 본문과 버전을 유지한다', () async {
+    final f = Fixture();
+    await f.start();
+    addTearDown(f.close);
+    await f.workspace.sendMessage(f.uncle, 'm', '원본', []);
+    final before = f.workspace.records('messages').single;
+    await expectLater(
+      f.workspace.editMessage('m', '가' * 10001, 0, newId()),
+      throwsA(isA<AppFailure>()),
+    );
+    expect(f.workspace.records('messages').single.data, before.data);
+  });
+
   test('보낸 메시지를 비속어로 수정하면 본문·버전을 유지한다', () async {
     final f = Fixture();
     await f.start();

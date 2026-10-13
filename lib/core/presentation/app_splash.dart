@@ -7,6 +7,7 @@ class AppSplashScreen extends StatelessWidget {
 
   static const logoAsset = 'assets/logos/samchun_app_icon.png';
   static const logoSize = 192.0;
+  static const message = '사입삼춘이 준비하고 있어요';
 
   @override
   Widget build(BuildContext context) => Semantics(
@@ -19,13 +20,24 @@ class AppSplashScreen extends StatelessWidget {
         transparent: false,
       ),
       backgroundColor: TdsPalette.white,
-      content: const TdsAssetImage(
-        src: logoAsset,
-        frameShape: TdsAssetFrameShape(
-          width: logoSize,
-          height: logoSize,
-          transparent: true,
-        ),
+      content: const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TdsAssetImage(
+            src: logoAsset,
+            frameShape: TdsAssetFrameShape(
+              width: logoSize,
+              height: logoSize,
+              transparent: true,
+            ),
+          ),
+          TdsSpacing(8),
+          TdsText(
+            message,
+            typography: TdsTypography.t5,
+            fontWeight: TdsFontWeight.medium,
+          ),
+        ],
       ),
     ),
   );

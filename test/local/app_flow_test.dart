@@ -236,7 +236,14 @@ void main() {
       await settle(tester);
       await tapButton(tester, '요청 내용 확인');
       await tester.tap(find.text('확인').last);
-      await settle(tester);
+      // 확인창 퇴장 이후 저장과 상세 화면 전환이 차례로 끝날 때까지 기다린다.
+      for (
+        var i = 0;
+        i < 5 && find.byType(RequestDetailPage).evaluate().isEmpty;
+        i++
+      ) {
+        await settle(tester);
+      }
       expect(find.byType(RequestDetailPage), findsOneWidget);
       expect(f.workspace.records('drafts'), isEmpty);
       expect(f.workspace.records('requests'), hasLength(1));

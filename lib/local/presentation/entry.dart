@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/navigation/app_page_route.dart';
 import '../../core/presentation/app_splash.dart';
 import '../../features/auth/presentation/social_login_buttons.dart';
 import '../app_services.dart';
@@ -21,8 +22,9 @@ class SessionGate extends StatelessWidget {
     final session = AppScope.of(context).session;
     return Navigator(
       key: ValueKey(session.current?.id ?? 'signed-out'),
-      onGenerateRoute: (_) => PageRouteBuilder<void>(
-        pageBuilder: (context, a, b) => const AccountLanding(),
+      onGenerateRoute: (settings) => appPageRoute<void>(
+        settings: settings,
+        builder: (context) => const AccountLanding(),
       ),
     );
   }

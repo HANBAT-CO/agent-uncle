@@ -133,6 +133,28 @@ class BigButton extends TdsButton {}
       expect(hits['tds-subclass'], [2]);
     });
 
+    test('승인된 공통 라우트만 CupertinoPageRoute를 가져올 수 있다', () {
+      const navigation = 'lib/core/navigation/app_page_route.dart';
+      const approved =
+          "import 'package:flutter/cupertino.dart' show CupertinoPageRoute;";
+      expect(scanSource(navigation, approved), isEmpty);
+      expect(scanSource(app, approved)['cupertino-import'], [1]);
+      for (final directive in [
+        "import 'package:flutter/cupertino.dart';",
+        "import 'package:flutter/cupertino.dart' show CupertinoPageRoute, CupertinoButton;",
+        "export 'package:flutter/cupertino.dart' show CupertinoPageRoute;",
+        "import 'package:flutter/cupertino.dart' hide CupertinoButton;",
+      ]) {
+        expect(scanSource(navigation, directive)['cupertino-import'], [
+          1,
+        ], reason: directive);
+      }
+      expect(
+        scanSource(navigation, '$approved\nGestureDetector();')['raw-gesture'],
+        [2],
+      );
+    });
+
     test('theme layer may define colors, fonts and theme subclasses only', () {
       const theme = 'lib/core/theme/app_theme.dart';
       final hits = scanSource(theme, '''

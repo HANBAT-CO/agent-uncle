@@ -23,6 +23,14 @@
 
 새 화면이나 앱 위젯 클래스를 만드는 것은 괜찮다. 단 내용은 위 세 가지의 조합이어야 한다.
 
+### 승인된 iOS 내비게이션 예외
+
+사용자의 스와이프 뒤로가기 구현 승인에 따라 `lib/core/navigation/app_page_route.dart`에서만
+`import 'package:flutter/cupertino.dart' show CupertinoPageRoute;`를 허용한다.
+iOS의 표준 전환·가장자리 드래그·취소 처리는 이 라우트에 맡긴다. 앱 화면은 기존 TDS 컴포넌트를
+사용하며 직접 제스처나 모션을 만들지 않는다. 다른 파일의 Cupertino import, 다른 심벌 추가,
+재수출은 허용하지 않는다. 검사기는 이 지시문만 예외로 인정하고 기존 기준선은 유지한다.
+
 ## 금지 규칙
 
 `lib/**/*.dart`에 적용한다. 주석과 문자열 안의 단어는 검사하지 않는다.

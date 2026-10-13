@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'layout.dart';
@@ -21,9 +22,7 @@ class TabSaveScope extends InheritedWidget {
 }
 
 Future<T?> openPage<T>(BuildContext context, Widget page) =>
-    Navigator.of(context).push<T>(
-      PageRouteBuilder<T>(pageBuilder: (context, animation, secondary) => page),
-    );
+    Navigator.of(context).push<T>(appPageRoute<T>(builder: (context) => page));
 
 class PageFrame extends StatelessWidget {
   const PageFrame({

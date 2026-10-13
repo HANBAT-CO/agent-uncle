@@ -8,6 +8,9 @@ import '../domain/models.dart';
 import 'common.dart';
 import 'home.dart';
 import 'profile_avatar.dart';
+import 'welcome.dart';
+
+export 'welcome.dart';
 
 class SessionGate extends StatelessWidget {
   const SessionGate({super.key});
@@ -106,79 +109,6 @@ class SocialLoginPage extends StatelessWidget {
   }
 }
 
-class OnboardingPage extends StatefulWidget {
-  const OnboardingPage({super.key});
-  @override
-  State<OnboardingPage> createState() => _OnboardingPageState();
-}
-
-class _OnboardingPageState extends State<OnboardingPage> {
-  int index = 0;
-  static const titles = [
-    '상품과 수량을 정확하게 전달해요',
-    '확보부터 수령까지 함께 확인해요',
-    '요청과 대화를 이어가요',
-  ];
-  static const descriptions = [
-    '상품·옵션·수량을 요청에 담고 거래처와 같은 내용을 확인해요.',
-    '확보·미송·전달 수량을 구분하고 받은 상품을 직접 확인해요.',
-    '1:1 대화에서 관련 요청을 바로 열고 처리 기록을 함께 남겨요.',
-  ];
-  @override
-  Widget build(BuildContext context) => PageFrame(
-    title: '사입삼춘',
-    back: false,
-    subtitle: '${index + 1} / 3',
-    bottom: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ActionButton(
-          index == 2 ? '시작하기' : '다음',
-          bottom: true,
-          onPressed: () async {
-            if (index < 2) {
-              setState(() => index++);
-            } else {
-              await AppScope.read(context).session.finishOnboarding();
-            }
-          },
-        ),
-        Inset(
-          child: TdsTextButton(
-            size: TdsTextButtonSize.small,
-            onPressed: () => AppScope.read(context).session.finishOnboarding(),
-            child: const Text('건너뛰기'),
-          ),
-        ),
-      ],
-    ),
-    children: [
-      const Padding(
-        padding: EdgeInsets.fromLTRB(24, 24, 24, 8),
-        child: Align(alignment: Alignment.centerLeft, child: AppLogo()),
-      ),
-      PageHeading(titles[index], description: descriptions[index]),
-      const TdsSpacing(24),
-      FigmaSurface(
-        children: [
-          Item(
-            const ['사입 요청', '확보 · 전달 · 수령', '요청에 연결된 채팅'][index],
-            trailing: FigmaIcon(
-              const ['bag', 'check', 'chat'][index],
-              selected: true,
-            ),
-          ),
-          const QuantityRow('상품과 옵션', '요청마다 정확하게'),
-          QuantityRow(
-            const ['요청 수량', '진행 상황', '처리 기록'][index],
-            const ['필요한 만큼', '회차별로 확인', '함께 확인'][index],
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
 class LocalLoginPage extends StatefulWidget {
   const LocalLoginPage({super.key});
   @override
@@ -243,69 +173,6 @@ class _LocalLoginPageState extends State<LocalLoginPage> {
       ],
     );
   }
-}
-
-class RolePage extends StatefulWidget {
-  const RolePage({this.closeOnSelect = false, super.key});
-  final bool closeOnSelect;
-  @override
-  State<RolePage> createState() => _RolePageState();
-}
-
-class _RolePageState extends State<RolePage> {
-  AppRole? selected;
-  @override
-  Widget build(BuildContext context) => PageFrame(
-    title: '역할 선택',
-    back: widget.closeOnSelect,
-    bottom: ActionButton(
-      '선택한 역할로 계속',
-      bottom: true,
-      enabled: selected != null,
-      onPressed: () async {
-        await AppScope.read(context).session.chooseRole(selected!);
-        if (widget.closeOnSelect && context.mounted) Navigator.pop(context);
-      },
-    ),
-    children: [
-      const PageHeading('어떤 일을 하고 계신가요?', description: '업무에 맞는 화면을 준비할게요.'),
-      for (final role in AppRole.values)
-        FigmaSurface(
-          children: [
-            Inset(
-              child: TdsCheckbox(
-                inputType: TdsCheckboxInputType.radio,
-                checked: selected == role,
-                onChanged: (_) => setState(() => selected = role),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FigmaIcon(
-                      role == AppRole.retailer ? 'store' : 'bag',
-                      selected: selected == role,
-                      size: 40,
-                    ),
-                    const TdsSpacing(12),
-                    TdsText(role.label, fontWeight: TdsFontWeight.semibold),
-                    TdsText(
-                      role == AppRole.retailer
-                          ? '사입을 요청하고 받은 상품을 확인해요.'
-                          : '요청을 받아 상품을 확보하고 전달해요.',
-                      typography: TdsTypography.t6,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ActionButton(
-        '로그인으로 돌아가기',
-        weak: true,
-        onPressed: () => AppScope.read(context).session.signOut(),
-      ),
-    ],
-  );
 }
 
 class ProfileForm extends StatefulWidget {

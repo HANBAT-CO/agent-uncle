@@ -23,6 +23,47 @@ List<String> stringsOf(Data data, String key) =>
 Data mapOf(Data data, String key) =>
     Map<String, Object?>.from(data[key] as Map? ?? {});
 
+const maxRequestWholesalers = 10;
+
+bool isWholesalerOnlyRequest(Data data) =>
+    textOf(data, 'requestType') == 'wholesaler';
+
+/// 기존 단일 도매처 요청도 같은 목록으로 읽는다. 빈 초안 항목은 유지한다.
+List<Data> requestWholesalers(Data data) {
+  final entries = data['wholesalers'];
+  if (entries is List) {
+    return [
+      for (final entry in entries)
+        if (entry is Map)
+          {
+            'wholesaler': entry['wholesaler'] is String
+                ? (entry['wholesaler'] as String).trim()
+                : '',
+            'location': entry['location'] is String
+                ? (entry['location'] as String).trim()
+                : '',
+          },
+    ];
+  }
+  return [
+    {
+      'wholesaler': textOf(data, 'wholesaler').trim(),
+      'location': textOf(data, 'location').trim(),
+    },
+  ];
+}
+
+String requestTitle(Data data) {
+  final product = textOf(data, 'product').trim();
+  if (!isWholesalerOnlyRequest(data) && product.isNotEmpty) return product;
+  final names = requestWholesalers(data)
+      .map((entry) => textOf(entry, 'wholesaler'))
+      .where((name) => name.isNotEmpty)
+      .toList();
+  if (names.isEmpty) return '새 사입 요청';
+  return names.length == 1 ? names.first : '${names.first} 외 ${names.length - 1}곳';
+}
+
 class AppFailure implements Exception {
   const AppFailure(this.message);
   final String message;
@@ -92,6 +133,11 @@ class Account extends Record {
 
 class RequestRecord extends Record {
   const RequestRecord(super.id, super.data);
+  DateTime? get receivedAt =>
+      DateTime.tryParse(s('receivedAt')) ??
+      (s('status') == 'completed'
+          ? DateTime.tryParse(s('updatedAt'))
+          : null);
   int get quantity => n('quantity');
   int get acquired => n('acquired');
   int get delivered => n('delivered');
@@ -114,7 +160,15 @@ class RequestRecord extends Record {
   String get statusLabel {
     if (s('status') == 'rejected') return '거절';
     if (s('status') == 'cancelled') return '취소 종료';
-    if (s('status') == 'completed') return '완료';
+    if (s('status') == 'completed') {
+      final receivedTime = receivedAt;
+      return receivedTime != null &&
+              !DateTime.now().isBefore(
+                receivedTime.add(const Duration(days: 7)),
+              )
+          ? '완료'
+          : '수령';
+    }
     if (n('openIssues') > 0) return '문제 확인 중';
     if (s('proposalId').isNotEmpty) return '변경·취소 협의 중';
     if (s('status') == 'pending') return '확인 대기';

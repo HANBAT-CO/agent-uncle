@@ -699,11 +699,21 @@ class RequestCard extends StatelessWidget {
     return FigmaSurface(
       children: [
         TdsListRow(
-          left: const FigmaIcon('shirt'),
+          left: FigmaIcon(
+            isWholesalerOnlyRequest(request.data) ? 'store' : 'shirt',
+          ),
           contents: TdsListRowTexts(
             type: TdsListRowTextType.row2TypeA,
-            top: Text('${request.s('product')} · ${request.s('option')}'),
-            bottom: Text('${peer?.name ?? '거래처'} · 요청 ${request.quantity}장'),
+            top: Text(
+              isWholesalerOnlyRequest(request.data)
+                  ? requestTitle(request.data)
+                  : '${requestTitle(request.data)} · ${request.s('option')}',
+            ),
+            bottom: Text(
+              isWholesalerOnlyRequest(request.data)
+                  ? '${peer?.name ?? '거래처'} · 도매처 ${requestWholesalers(request.data).length}곳'
+                  : '${peer?.name ?? '거래처'} · 요청 ${request.quantity}장',
+            ),
           ),
           onPressed: onTap,
           withArrow: true,
@@ -718,10 +728,11 @@ class RequestCard extends StatelessWidget {
                 request.statusLabel,
                 attention: request.needsReply || request.n('openIssues') > 0,
               ),
-              TdsText(
-                '확보 ${request.acquired} · ${request.b('resultShared') ? '미송 ${request.backorder}' : '미확인 ${request.remaining}'} · 전달 ${request.delivered}',
-                typography: TdsTypography.t7,
-              ),
+              if (!isWholesalerOnlyRequest(request.data))
+                TdsText(
+                  '확보 ${request.acquired} · ${request.b('resultShared') ? '미송 ${request.backorder}' : '미확인 ${request.remaining}'} · 전달 ${request.delivered}',
+                  typography: TdsTypography.t7,
+                ),
             ],
           ),
         ),

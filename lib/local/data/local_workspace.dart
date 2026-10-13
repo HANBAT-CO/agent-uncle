@@ -253,6 +253,9 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     String target = '',
   }) {
     _finish(after);
+    if (numberOf(after, 'received') > numberOf(before, 'received')) {
+      after['receivedAt'] = DateTime.now().toIso8601String();
+    }
     after['version'] = numberOf(before, 'version') + 1;
     after['updatedAt'] = DateTime.now().toIso8601String();
     s.put('requests', id, after);
@@ -460,6 +463,8 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
 
   static const requestFields = [
     'uncleId',
+    'requestType',
+    'wholesalers',
     'wholesaler',
     'location',
     'product',
@@ -470,19 +475,69 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     'note',
     'photos',
   ];
-  Data _fields(Data input) => {
-    for (final key in requestFields)
-      if (input.containsKey(key)) key: input[key],
-  };
+  Data _fields(Data input) {
+    final fields = <String, Object?>{
+      for (final key in requestFields)
+        if (input.containsKey(key)) key: input[key],
+    };
+    if (input.containsKey('wholesalers')) {
+      final raw = input['wholesalers'];
+      if (raw is! List ||
+          raw.length > maxRequestWholesalers ||
+          raw.any((entry) => entry is! Map)) {
+        throw const AppFailure('도매처는 최대 10곳까지 입력할 수 있어요.');
+      }
+      final wholesalers = requestWholesalers(input);
+      fields['wholesalers'] = wholesalers;
+      fields['wholesaler'] = wholesalers.isEmpty
+          ? ''
+          : textOf(wholesalers.first, 'wholesaler');
+      fields['location'] = wholesalers.isEmpty
+          ? ''
+          : textOf(wholesalers.first, 'location');
+    }
+    if (isWholesalerOnlyRequest(input)) {
+      // 상품 수량을 입력받지 않는 주문은 기존 처리 흐름에서 요청 한 건으로 센다.
+      fields.addAll({'product': '', 'option': '', 'photos': <String>[], 'quantity': 1});
+    }
+    return fields;
+  }
+
+  Data _savedDestination(MutableWorkspace s, Data fields, String user) {
+    if (!isWholesalerOnlyRequest(fields)) return fields;
+    final account = s.require('accounts', user);
+    return {
+      ...fields,
+      'address': textOf(account, 'address'),
+      'addressDetail': textOf(account, 'addressDetail'),
+      'note': textOf(account, 'deliveryNote'),
+    };
+  }
+
   void _validateRequest(MutableWorkspace s, Data r, String user) {
+    if (isWholesalerOnlyRequest(r) || r.containsKey('wholesalers')) {
+      final wholesalers = requestWholesalers(r);
+      if (wholesalers.isEmpty || wholesalers.length > maxRequestWholesalers) {
+        throw const AppFailure('도매처를 1곳 이상, 최대 10곳까지 입력해 주세요.');
+      }
+      for (var index = 0; index < wholesalers.length; index++) {
+        final wholesaler = wholesalers[index];
+        if (textOf(wholesaler, 'wholesaler').isEmpty ||
+            textOf(wholesaler, 'location').isEmpty) {
+          throw AppFailure('도매처 ${index + 1}의 이름과 위치를 입력해 주세요.');
+        }
+      }
+    }
     for (final entry in {
       'uncleId': '사입삼촌',
       'wholesaler': '도매처',
       'location': '도매처 위치',
-      'product': '상품명',
-      'option': '옵션',
-      'address': '배송지',
-      'addressDetail': '상세주소',
+      if (!isWholesalerOnlyRequest(r)) ...{
+        'product': '상품명',
+        'option': '옵션',
+        'address': '배송지',
+        'addressDetail': '상세주소',
+      },
     }.entries) {
       if (textOf(r, entry.key).trim().isEmpty) {
         throw AppFailure('${entry.value} 항목을 입력해 주세요.');
@@ -515,7 +570,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       }
       s.put('drafts', id, {
         ...?previous,
-        ..._fields(fields),
+        ..._savedDestination(s, _fields(fields), user),
         'ownerId': user,
         'createdAt': previous?['createdAt'] ?? DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
@@ -562,7 +617,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
         _role(s.require('requests', id), user, 'retailer');
         return id;
       }
-      final draft = s.require('drafts', id);
+      final draft = _savedDestination(s, s.require('drafts', id), user);
       if (textOf(draft, 'ownerId') != user) {
         throw const AppFailure('본인의 초안만 전송할 수 있어요.');
       }
@@ -602,7 +657,11 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       if (textOf(r, 'status') != 'pending') {
         throw const AppFailure('수락한 요청은 변경 협의로 수정해 주세요.');
       }
-      final next = {...r, ..._fields(fields), 'uncleId': r['uncleId']};
+      final next = _savedDestination(s, {
+        ...r,
+        ..._fields(fields),
+        'uncleId': r['uncleId'],
+      }, user);
       _validateRequest(s, next, user);
       _putRequest(s, id, r, next, user, '수락 전 요청 내용을 수정했어요');
       return id;
@@ -733,6 +792,10 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
           'receiptRecorded': false,
           'product': r['product'],
           'option': r['option'],
+          if (r.containsKey('requestType')) 'requestType': r['requestType'],
+          if (r.containsKey('wholesalers')) 'wholesalers': r['wholesalers'],
+          'wholesaler': r['wholesaler'],
+          'location': r['location'],
           'address': r['address'],
           'addressDetail': r['addressDetail'],
           'retailerId': r['retailerId'],

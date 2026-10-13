@@ -1,4 +1,5 @@
 import 'package:sembast/sembast.dart';
+import '../local/domain/chat_content_policy.dart';
 import '../local/domain/models.dart';
 import 'remote_store.dart';
 
@@ -267,6 +268,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   }) async {
     final owner = store.userId;
     if (owner == null) throw const AppFailure('로그인이 필요해요.');
+    ChatContentPolicy.validate(body, attachments);
     final existing = store.snapshot.get('messages', messageId);
     if (existing != null &&
         (existing.b('deleted') || existing.b('system'))) {
@@ -322,9 +324,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     String operationId,
   ) async {
     final message = store.snapshot.get('messages', messageId);
-    if (body.trim().isEmpty && (message?.list('attachments') ?? []).isEmpty) {
-      throw const AppFailure('메시지나 사진을 추가해 주세요.');
-    }
+    ChatContentPolicy.validate(body.trim(), message?.list('attachments') ?? []);
     await store.command('editMessage', {
       'id': messageId,
       'body': body.trim(),

@@ -1,0 +1,31 @@
+{
+  "migration": "202610130003_chat_content_filter.sql",
+  "message": "비속어나 모욕적인 표현이 포함되어 있어요. 내용을 수정한 뒤 다시 보내 주세요.",
+  "korean": [
+    "시발", "시벌", "시팔", "싯팔", "씨발", "씨벌", "씨팔", "씨빨",
+    "개새끼", "개세끼", "개색끼", "개색기", "개년", "개놈", "개소리",
+    "병신", "븅신", "빙신", "지랄", "염병", "좆", "좃", "존나",
+    "씹새끼", "씹년", "씹놈", "씹창", "쌍년", "쌍놈",
+    "미친놈", "미친년", "미친새끼", "닥쳐",
+    "애미뒤진", "애비뒤진", "느금마", "니애미", "니애비",
+    "시bal", "씨bal", "ㅅibal"
+  ],
+  "korean_tokens": ["ㅅㅂ", "ㅆㅂ", "ㅂㅅ", "ㅈㄹ", "ㅈㄴ", "썅", "등신"],
+  "allowed_korean_prefixes": [
+    "시발점", "시발역", "시발지", "시발차", "닥쳐오",
+    "발송", "발주", "발급", "발권", "발생", "발표", "발견", "발행", "발전", "발신",
+    "감염병", "전염병"
+  ],
+  "english": [
+    "fuck", "fucks", "fucked", "fucker", "fuckers", "fucking", "fuckin", "fuckoff", "fuckyou",
+    "motherfucker", "motherfuckers", "motherfucking", "fuk", "fck", "wtf", "stfu",
+    "shit", "shits", "shitty", "shitting", "shithead", "bullshit", "horseshit",
+    "bitch", "bitches", "bitchy", "bitching", "sonofabitch",
+    "asshole", "assholes", "arsehole", "bastard", "bastards",
+    "cunt", "cunts", "dick", "dickhead", "prick", "wanker", "twat",
+    "nigger", "nigga", "faggot", "fag",
+    "sibal", "ssibal", "shibal", "sshipal", "sipal", "byeongsin", "byungsin", "jiral"
+  ],
+  "leet": {"a": "a4@*", "b": "b8", "e": "e3*", "i": "i1!|*", "l": "l1|", "o": "o0*", "s": "s5$*", "t": "t7+*", "u": "uv*"},
+  "lookalikes": {"а": "a", "е": "e", "і": "i", "ј": "j", "о": "o", "р": "p", "с": "c", "ѕ": "s", "х": "x", "у": "y", "υ": "u", "ο": "o", "α": "a", "ι": "i", "κ": "k", "ſ": "s"}
+}

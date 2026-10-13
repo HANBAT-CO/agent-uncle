@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../domain/chat_content_policy.dart';
 import '../domain/models.dart';
 import 'local_store.dart';
 
@@ -1241,9 +1242,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     String requestId = '',
   }) async {
     final user = actor;
-    if (body.trim().isEmpty && attachments.isEmpty) {
-      throw const AppFailure('메시지나 사진을 추가해 주세요.');
-    }
+    ChatContentPolicy.validate(body, attachments);
     bool validated = false;
     try {
       await store.write(user, messageId, (s) {
@@ -1332,9 +1331,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     await store.write(user, operationId, (s) {
       final message = _editableMessage(s, messageId, user, version);
       final text = body.trim();
-      if (text.isEmpty && stringsOf(message, 'attachments').isEmpty) {
-        throw const AppFailure('메시지나 사진을 추가해 주세요.');
-      }
+      ChatContentPolicy.validate(text, stringsOf(message, 'attachments'));
       s.put('messages', messageId, {
         ...message,
         'body': text,

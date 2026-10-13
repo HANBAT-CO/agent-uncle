@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:sembast/sembast.dart';
@@ -20,6 +21,11 @@ class MutableWorkspace {
 class LocalStore extends ChangeNotifier {
   LocalStore(this.database);
   final Database database;
+  static final _publicCodePattern = RegExp(r'^#[0-9]{4}$');
+  static const _publicCodeCapacity = 10000;
+  static const _publicCodeExhaustedMessage =
+      '공개 코드를 더 이상 발급할 수 없어요. 관리자에게 문의해 주세요.';
+  final Random _publicCodeRandom = Random.secure();
   WorkspaceSnapshot snapshot = const WorkspaceSnapshot({});
   final List<StreamSubscription<Object?>> _subscriptions = [];
   bool _closed = false;
@@ -40,7 +46,55 @@ class LocalStore extends ChangeNotifier {
     return result;
   }
 
+  String _nextPublicCode(Set<String> used) {
+    if (used.length >= _publicCodeCapacity) {
+      throw const AppFailure(_publicCodeExhaustedMessage);
+    }
+    for (var attempt = 0; attempt < 32; attempt++) {
+      final code = '#${_publicCodeRandom.nextInt(_publicCodeCapacity).toString().padLeft(4, '0')}';
+      if (!used.contains(code)) return code;
+    }
+    final start = _publicCodeRandom.nextInt(_publicCodeCapacity);
+    for (var offset = 0; offset < _publicCodeCapacity; offset++) {
+      final slot = (start + offset) % _publicCodeCapacity;
+      final code = '#${slot.toString().padLeft(4, '0')}';
+      if (!used.contains(code)) return code;
+    }
+    throw const AppFailure(_publicCodeExhaustedMessage);
+  }
+
+  Future<void> _backfillPublicCodes() async {
+    await database.transaction((txn) async {
+      final records = await table('accounts').find(txn);
+      if (records.isEmpty) return;
+      records.sort((left, right) => left.key.compareTo(right.key));
+      // 나중에 읽을 계정의 기존 코드도 먼저 예약해 백필이 빼앗지 않게 한다.
+      final used = {
+        for (final record in records)
+          if (_publicCodePattern.hasMatch(textOf(record.value, 'publicCode').trim()))
+            textOf(record.value, 'publicCode').trim(),
+      };
+      final retained = <String>{};
+      for (final record in records) {
+        final data = Map<String, Object?>.from(record.value);
+        final current = textOf(data, 'publicCode').trim().toUpperCase();
+        final nextCode =
+            _publicCodePattern.hasMatch(current) && retained.add(current)
+            ? current
+            : _nextPublicCode(used);
+        used.add(nextCode);
+        if (textOf(data, 'publicCode') != nextCode) {
+          await table('accounts').record(record.key).put(txn, {
+            ...data,
+            'publicCode': nextCode,
+          });
+        }
+      }
+    });
+  }
+
   Future<void> initialize() async {
+    await _backfillPublicCodes();
     await reload();
     for (final name in collections) {
       _subscriptions.add(

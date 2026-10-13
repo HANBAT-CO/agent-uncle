@@ -110,6 +110,27 @@ class RemoteSessionRepository extends SessionRepository {
   }
 
   @override
+  Future<bool> checkPhoneAvailable(String phone) async {
+    try {
+      final result = await store.client.rpc(
+        'saip_check_phone_available',
+        params: {'phone': phone},
+      );
+      if (result is! bool) {
+        throw const AppFailure('연락처 확인 응답을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      }
+      return result;
+    } on PostgrestException catch (e) {
+      if (e.code != null && e.code != 'P0001' && e.code != 'PGRST202') {
+        throw const AppFailure('연락처 중복 여부를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.');
+      }
+      throw AppFailure(friendlyError(e));
+    } catch (e) {
+      throw AppFailure(friendlyError(e));
+    }
+  }
+
+  @override
   void dispose() {
     unawaited(_subscription?.cancel());
     store.removeListener(notifyListeners);

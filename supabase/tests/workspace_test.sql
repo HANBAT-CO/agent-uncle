@@ -23,6 +23,8 @@ select lives_ok($$select public.saip_command('registerAttachment','{"id":"doc-r"
 select lives_ok($$select public.saip_command('registerAttachment','{"id":"photo-r","name":"상품.png"}','r-photo')$$,'register product photo');
 select throws_ok($$select public.saip_command('registerAttachment','{"id":"missing","name":"missing.png"}','missing-file')$$,'P0001',null,'cannot register nonexistent upload');
 select lives_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"name":"소매","contact":"담당","phone":"01012345678","businessName":"소매","businessNumber":"1234567890","documentId":"doc-r","address":"서울","addressDetail":"1층","salesChannel":"온라인","terms":true,"privacy":true}}','r-profile')$$,'complete retailer signup');
+select ok((public.saip_snapshot()->'accounts'->'11111111-1111-4111-8111-111111111111'->>'publicCode') ~ '^#[0-9]{4}$',
+  'retailer snapshot exposes immutable public code');
 select throws_ok($$select public.saip_command('chooseRole','{"role":"uncle"}','r-role-change')$$,'P0001',null,'role immutable after signup');
 insert into test_values values('retailer-code',public.saip_snapshot()->'accounts'->'11111111-1111-4111-8111-111111111111'->>'code');
 select lives_ok($$select public.saip_command('saveDraft','{"id":"req-a","values":{"uncleId":"22222222-2222-4222-8222-222222222222","wholesaler":"도매","location":"상가 2층","product":"셔츠","option":"검정 M","quantity":10,"address":"서울","addressDetail":"1층","photos":["photo-r"]}}','draft-a')$$,'draft before connection');
@@ -31,12 +33,49 @@ select set_config('request.jwt.claim.sub','22222222-2222-4222-8222-222222222222'
 select lives_ok($$select public.saip_command('bootstrap','{}','u-init')$$,'bootstrap uncle');
 select lives_ok($$select public.saip_command('chooseRole','{"role":"uncle"}','u-role')$$,'choose uncle');
 select lives_ok($$select public.saip_command('registerAttachment','{"id":"doc-u","name":"사업자.pdf"}','u-doc')$$,'uncle document');
-select lives_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"name":"삼촌","contact":"담당","phone":"01012345678","businessName":"삼촌","businessNumber":"1234567890","documentId":"doc-u","pickupArea":"동대문","deliveryArea":"서울","deadline":"23:00","terms":true,"privacy":true}}','u-profile')$$,'complete uncle signup');
+select lives_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"name":"삼촌","contact":"담당","phone":"01087654321","businessName":"삼촌","businessNumber":"1234567890","documentId":"doc-u","pickupArea":"동대문","deliveryArea":"서울","deadline":"23:00","nickname":"동대문 삼촌","fee":1200,"addressRoad":"비밀로 1","addressJibun":"비밀동 2","terms":true,"privacy":true}}','u-profile')$$,'complete uncle signup');
 select is((public.saip_snapshot()->'drafts')::text,'{}','other account draft private');
 select ok(not (public.saip_lookup_code((select v from test_values where k='retailer-code'))->'data' ? 'businessNumber'),'lookup excludes business number');
-insert into test_values select 'connection',public.saip_command('connect',jsonb_build_object('peerId','11111111-1111-4111-8111-111111111111','code',(select v from test_values where k='retailer-code')),'connection');
+select ok(not (public.saip_lookup_code((select v from test_values where k='retailer-code'))->'data' ? 'phone'),'lookup excludes phone');
+select is(public.saip_check_phone_available('+82 10 1234 5678'), false,
+  'normalized duplicate retailer phone is unavailable to another account');
+insert into test_values select 'connection',public.saip_command('connect',jsonb_build_object('peerId','11111111-1111-4111-8111-111111111111'),'connection');
 select throws_ok($$select public.saip_command('sendMessage','{"id":"early","peerId":"11111111-1111-4111-8111-111111111111","body":"hi"}','early')$$,'P0001',null,'chat blocked before acceptance');
 select set_config('request.jwt.claim.sub','11111111-1111-4111-8111-111111111111',true);
+select is(public.saip_check_phone_available('01012345678'), true,
+  'current user can re-check their own completed phone');
+select lives_ok($$select * from public.saip_search_partners('삼촌', '동대문', 1000, 1500, 20, 0)$$,
+  'directory search runs for connected and unconnected users alike');
+select is((select count(*) from public.saip_search_partners('삼촌', '동대문', 1000, 1500, 20, 0)),1::bigint,
+  'directory search finds the opposite-role completed partner');
+select is((select count(*) from public.saip_search_partners('삼촌', '비밀로', null, null, 20, 0)),0::bigint,
+  'directory search ignores hidden road-address regions');
+select is(
+  (
+    select count(*)
+    from public.saip_search_partners(
+      public.saip_snapshot()->'accounts'->'22222222-2222-4222-8222-222222222222'->>'publicCode',
+      '',
+      null,
+      null,
+      20,
+      0
+    )
+  ),
+  1::bigint,
+  'exact public code search works'
+);
+select is((select data->>'publicCode' from public.saip_search_partners('삼촌', '동대문', 1000, 1500, 20, 0) limit 1),
+  public.saip_snapshot()->'accounts'->'22222222-2222-4222-8222-222222222222'->>'publicCode',
+  'directory search returns the same immutable public code as snapshot');
+select ok(not ((select data from public.saip_search_partners('삼촌', '', null, null, 20, 0) limit 1) ? 'phone'),
+  'directory search hides contact phone');
+select ok(not ((select data from public.saip_search_partners('삼촌', '', null, null, 20, 0) limit 1) ? 'address'),
+  'directory search hides address');
+select throws_ok($$select count(*) from public.saip_search_partners('', '', null, null, null, 0)$$,
+  'P0001','검색 조건을 다시 확인해 주세요.','directory search rejects null limit values');
+select throws_ok($$select count(*) from public.saip_search_partners('', '', null, null, 20, null)$$,
+  'P0001','검색 조건을 다시 확인해 주세요.','directory search rejects null offset values');
 select lives_ok(format('select public.saip_command(%L,%L,%L)','respondConnection',jsonb_build_object('id',(select v from test_values where k='connection'),'status','accepted','version',0)::text,'accept-connection'),'accept connection');
 select is(public.saip_command('sendDraft','{"id":"req-a"}','send-a'),'req-a','send request');
 select is(public.saip_command('sendDraft','{"id":"req-a"}','send-a'),'req-a','retry idempotent');

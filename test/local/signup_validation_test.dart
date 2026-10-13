@@ -23,7 +23,7 @@ const retailerValues = <String, Object?>{
 };
 const uncleValues = <String, Object?>{
   'contact': '삼촌',
-  'phone': '01012345678',
+  'phone': '01087654321',
   'pickupArea': '동대문',
   'deliveryArea': '서울',
   'deadline': '23:00',
@@ -247,6 +247,119 @@ void main() {
       }, complete: true);
       expect(session.current!.complete, true);
     });
+    test('public code is assigned once and kept after profile save', () async {
+      await session.createAccount('매장 계정');
+      final issued = session.current!.publicCode;
+      expect(issued, matches(RegExp(r'^#[0-9]{4}$')));
+      await session.chooseRole(AppRole.retailer);
+      final doc = await document();
+      await session.saveProfile({
+        ...retailerValues,
+        'documentId': doc,
+      }, complete: true);
+      expect(session.current!.publicCode, issued);
+    });
+    test(
+      'checkPhoneAvailable ignores my current number but blocks normalized duplicates',
+      () async {
+        await session.createAccount('매장 계정');
+        await session.chooseRole(AppRole.retailer);
+        final doc = await document();
+        await session.saveProfile({
+          ...retailerValues,
+          'documentId': doc,
+        }, complete: true);
+        expect(await session.checkPhoneAvailable('+82 10 1234 5678'), isTrue);
+
+        await session.createAccount('삼촌 계정');
+        await session.chooseRole(AppRole.uncle);
+        expect(await session.checkPhoneAvailable('010-1234-5678'), isFalse);
+        expect(await session.checkPhoneAvailable('010-9999-8888'), isTrue);
+      },
+    );
+    test('duplicate normalized phone is rejected on completion', () async {
+      await session.createAccount('매장 계정');
+      await session.chooseRole(AppRole.retailer);
+      final doc = await document();
+      await session.saveProfile({
+        ...retailerValues,
+        'documentId': doc,
+      }, complete: true);
+
+      await session.createAccount('삼촌 계정');
+      await session.chooseRole(AppRole.uncle);
+      await expectLater(
+        session.saveProfile({
+          ...uncleValues,
+          'phone': '+82 10 1234 5678',
+        }, complete: true),
+        throwsA(predicate((e) => '$e' == '이미 가입을 완료한 다른 계정에서 사용 중인 연락처예요.')),
+      );
+    });
+    test(
+      'invalid fee is rejected immediately and valid fee is stored',
+      () async {
+        await session.createAccount('삼촌 계정');
+        await session.chooseRole(AppRole.uncle);
+        await expectLater(
+          session.saveProfile({'fee': 'abc'}),
+          throwsA(
+            predicate(
+              (e) => '$e' == '건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.',
+            ),
+          ),
+        );
+        await expectLater(
+          session.saveProfile({'fee': maxPartnerFee + 1}),
+          throwsA(
+            predicate(
+              (e) => '$e' == '건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.',
+            ),
+          ),
+        );
+        await session.saveProfile({...uncleValues, 'fee': maxPartnerFee});
+        expect(session.current!.fee, maxPartnerFee);
+      },
+    );
+    test('phone availability check rejects malformed numbers', () async {
+      await session.createAccount('삼촌 계정');
+      await expectLater(
+        session.checkPhoneAvailable('010-12'),
+        throwsA(predicate((e) => '$e' == '연락처를 010-1234-5678 형식으로 입력해 주세요.')),
+      );
+    });
+    test(
+      'initialize backfills missing or duplicate public codes once',
+      () async {
+        final database = await databaseFactoryMemory.openDatabase(newId());
+        await stringMapStoreFactory.store('accounts').record('a').put(
+          database,
+          {'label': 'A', 'publicCode': '#1234'},
+        );
+        await stringMapStoreFactory.store('accounts').record('b').put(
+          database,
+          {'label': 'B', 'publicCode': '#1234'},
+        );
+        await stringMapStoreFactory.store('accounts').record('c').put(
+          database,
+          {'label': 'C'},
+        );
+
+        final repairStore = LocalStore(database);
+        await repairStore.initialize();
+        addTearDown(repairStore.close);
+
+        final codes = repairStore.snapshot.accounts
+            .map((account) => account.publicCode)
+            .toList();
+        expect(codes, everyElement(matches(RegExp(r'^#[0-9]{4}$'))));
+        expect(codes.toSet(), hasLength(3));
+        expect(
+          repairStore.snapshot.get('accounts', 'a')!.s('publicCode'),
+          '#1234',
+        );
+      },
+    );
     test('malformed phone is rejected', () async {
       await session.createAccount('삼촌 계정');
       await session.chooseRole(AppRole.uncle);

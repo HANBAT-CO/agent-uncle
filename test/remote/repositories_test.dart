@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:agent_uncle/local/domain/models.dart';
+import 'package:agent_uncle/remote/remote_session.dart';
 import 'package:agent_uncle/remote/remote_store.dart';
 import 'package:agent_uncle/remote/remote_workspace.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -25,9 +26,37 @@ const peer = '22222222-2222-4222-8222-222222222222';
 class Harness {
   late SupabaseClient client;
   late RemoteStore store;
+  late RemoteSessionRepository session;
   late RemoteWorkspaceRepository workspace;
   bool failRead = false, failWrite = false;
+  bool phoneAvailable = true;
+  http.Response? phoneResponse;
   Completer<http.Response>? pendingRead;
+  Map<String, dynamic> lookupCodeRow = {
+    'id': peer,
+    'data': {
+      'name': '동대문 삼촌',
+      'nickname': '삼촌',
+      'publicCode': '#4321',
+      'role': 'uncle',
+      'complete': true,
+    },
+  };
+  List<Map<String, dynamic>> partnerRows = [
+    {
+      'id': peer,
+      'data': {
+        'name': '동대문 삼촌',
+        'nickname': '삼촌',
+        'publicCode': '#4321',
+        'role': 'uncle',
+        'complete': true,
+        'pickupArea': '동대문',
+        'deliveryArea': '서울',
+        'fee': 1200,
+      },
+    },
+  ];
   final commands = <Map<String, dynamic>>[];
   Map<String, dynamic> tables = {
     'accounts': {
@@ -78,6 +107,15 @@ class Harness {
           if (failRead) return reply('{"code":"P0001","message":"연결 실패"}', 400);
           return reply(jsonEncode(tables), 200);
         }
+        if (request.url.path.endsWith('saip_check_phone_available')) {
+          return phoneResponse ?? reply(jsonEncode(phoneAvailable), 200);
+        }
+        if (request.url.path.endsWith('saip_search_partners')) {
+          return reply(jsonEncode(partnerRows), 200);
+        }
+        if (request.url.path.endsWith('saip_lookup_code')) {
+          return reply(jsonEncode(lookupCodeRow), 200);
+        }
         return reply('{}', 200);
       }),
     );
@@ -91,6 +129,7 @@ class Harness {
       liveUpdates: false,
     );
     await store.initialize();
+    session = RemoteSessionRepository(store);
     workspace = RemoteWorkspaceRepository(store);
     await store.changeUser();
     expect(store.error, isNull);
@@ -98,7 +137,7 @@ class Harness {
 
   Future<void> close() async {
     workspace.dispose();
-    store.dispose();
+    session.dispose();
     await store.device.close();
     await client.dispose();
   }
@@ -173,4 +212,47 @@ void main() {
     expect(h.store.snapshot.tables, isEmpty);
     expect(h.workspace.records('requests'), isEmpty);
   });
+  test(
+    'checkPhoneAvailable forwards to RPC and returns the boolean only',
+    () async {
+      final h = Harness();
+      await h.open();
+      addTearDown(h.close);
+      h.phoneAvailable = false;
+      expect(await h.session.checkPhoneAvailable('+82 10 1234 5678'), isFalse);
+      h.phoneAvailable = true;
+      expect(await h.session.checkPhoneAvailable('010-9999-8888'), isTrue);
+    },
+  );
+  test(
+    'searchPartners forwards filters and parses public partner rows',
+    () async {
+      final h = Harness();
+      await h.open();
+      addTearDown(h.close);
+      final rows = await h.workspace.searchPartners(
+        query: '#4321',
+        region: '동대문',
+        minFee: 1000,
+        maxFee: 1500,
+        limit: 10,
+        offset: 2,
+      );
+      expect(rows, hasLength(1));
+      expect(rows.single.id, peer);
+      expect(rows.single.publicCode, '#4321');
+      expect(rows.single.fee, 1200);
+    },
+  );
+  test(
+    'connect sends only peerId so directory search results can connect directly',
+    () async {
+      final h = Harness();
+      await h.open();
+      addTearDown(h.close);
+      await h.workspace.connect(peer, 'connect-op');
+      expect(h.commands.last['args'], {'peerId': peer});
+      expect(h.commands.last['command'], 'connect');
+    },
+  );
 }

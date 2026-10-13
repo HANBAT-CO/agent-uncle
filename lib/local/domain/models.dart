@@ -4,11 +4,19 @@ import 'package:flutter/foundation.dart';
 
 typedef Data = Map<String, Object?>;
 
+const maxPartnerFee = 1000000000;
+
 String newId() =>
     '${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}${Random.secure().nextInt(0x7fffffff).toRadixString(36)}';
 String textOf(Data data, String key, [String fallback = '']) =>
     data[key] as String? ?? fallback;
 int numberOf(Data data, String key) => (data[key] as num?)?.toInt() ?? 0;
+int? nullableNumberOf(Data data, String key) {
+  final value = data[key];
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value.trim());
+  return null;
+}
 bool flagOf(Data data, String key) => data[key] == true;
 List<String> stringsOf(Data data, String key) =>
     (data[key] as List?)?.cast<String>() ?? const [];
@@ -68,6 +76,10 @@ class Account extends Record {
     _ => null,
   };
   String get name => s('name').isEmpty ? s('label', '새 계정') : s('name');
+  String get nickname => s('nickname');
+  String get publicCode => s('publicCode');
+  int? get fee => nullableNumberOf(data, 'fee');
+  String get displayName => nickname.isEmpty ? name : nickname;
 
   /// 무작위로 발급된 계정 ID를 사용해 재로그인·이름 변경에도 같은 얼굴을 유지한다.
   String get defaultAvatarUrl => Uri.https(
@@ -173,6 +185,7 @@ abstract class SessionRepository extends ChangeNotifier {
   Future<String> createAccount(String label);
   Future<void> chooseRole(AppRole role);
   Future<void> saveProfile(Data fields, {bool complete = false});
+  Future<bool> checkPhoneAvailable(String phone);
   Future<void> setDestination(Data? destination);
 }
 
@@ -183,6 +196,14 @@ abstract class WorkspaceRepository extends ChangeNotifier {
   Account? profile(String id);
   RequestRecord? request(String id);
   Future<Account> lookupCode(String code);
+  Future<List<Account>> searchPartners({
+    String query = '',
+    String region = '',
+    int? minFee,
+    int? maxFee,
+    int limit = 20,
+    int offset = 0,
+  });
   Future<void> renewCode();
   Future<String> connect(String peerId, String operationId);
   Future<void> respondConnection(

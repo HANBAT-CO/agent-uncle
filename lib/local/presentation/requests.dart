@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -23,7 +24,7 @@ class _RequestEditorState extends State<RequestEditor> {
   FormSaver? saver;
   TabSaveGuard? tabGuard;
   int version = 0;
-  bool ready = false, leaving = false;
+  bool ready = false, leaving = false, savingToLeave = false;
   bool get editing => widget.requestId != null;
   @override
   void didChangeDependencies() {
@@ -81,16 +82,22 @@ class _RequestEditorState extends State<RequestEditor> {
   }
 
   Future<void> leave() async {
-    if (!editing) {
-      try {
-        await flush();
-      } catch (_) {
-        return;
+    if (leaving || savingToLeave) return;
+    savingToLeave = true;
+    try {
+      if (!editing) {
+        try {
+          await flush();
+        } catch (_) {
+          return;
+        }
       }
-    }
-    if (mounted) {
-      setState(() => leaving = true);
-      Navigator.pop(context);
+      if (mounted) {
+        setState(() => leaving = true);
+        Navigator.pop(context);
+      }
+    } finally {
+      savingToLeave = false;
     }
   }
 
@@ -136,9 +143,7 @@ class _RequestEditorState extends State<RequestEditor> {
     if (!mounted) return;
     setState(() => leaving = true);
     Navigator.of(context).pushReplacement(
-      PageRouteBuilder<void>(
-        pageBuilder: (context, a, b) => RequestDetailPage(id),
-      ),
+      appPageRoute<void>(builder: (context) => RequestDetailPage(id)),
     );
   }
 
@@ -174,7 +179,12 @@ class _RequestEditorState extends State<RequestEditor> {
         .where((a) => a.id == peer)
         .firstOrNull;
     return PopScope(
-      canPop: leaving,
+      // iOS는 canPop이 false이면 제스처 콜백도 호출하지 않는다.
+      // 자동저장이 끝난 초안은 바로 돌아가고, 미저장/실패 상태는 보존한다.
+      canPop:
+          leaving ||
+          editing ||
+          (!saver!.saving && saver!.pending == null && saver!.error == null),
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) leave();
       },

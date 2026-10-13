@@ -24,14 +24,28 @@ class AppFailure implements Exception {
 
 enum AppRole { retailer, uncle }
 
-/// Shared visual order; home is centered for both roles.
+/// 탭의 논리 ID. 표시 순서는 역할별 [AppRoleLabel.tabOrder]가 정한다.
 enum AppTab { business, chat, home, connections, profile }
 
 extension AppRoleLabel on AppRole {
   String get label => this == AppRole.retailer ? '소매업자' : '사입삼촌';
-  List<String> get tabs => this == AppRole.retailer
-      ? const ['사입', '채팅', '홈', '사입삼촌', '내 정보']
-      : const ['업무', '채팅', '홈', '거래처', '내 정보'];
+  List<AppTab> get tabOrder => this == AppRole.retailer
+      ? const [
+          AppTab.home,
+          AppTab.business,
+          AppTab.chat,
+          AppTab.connections,
+          AppTab.profile,
+        ]
+      : AppTab.values;
+  String tabLabel(AppTab tab) => switch (tab) {
+    AppTab.home => '홈',
+    AppTab.business => this == AppRole.retailer ? '사입하기' : '업무',
+    AppTab.chat => '채팅',
+    AppTab.connections => this == AppRole.retailer ? '사입삼촌' : '거래처',
+    AppTab.profile => this == AppRole.retailer ? '내 프로필' : '내 정보',
+  };
+  List<String> get tabs => tabOrder.map(tabLabel).toList(growable: false);
 }
 
 @immutable

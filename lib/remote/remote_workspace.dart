@@ -267,6 +267,11 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   }) async {
     final owner = store.userId;
     if (owner == null) throw const AppFailure('로그인이 필요해요.');
+    final existing = store.snapshot.get('messages', messageId);
+    if (existing != null &&
+        (existing.b('deleted') || existing.b('system'))) {
+      throw const AppFailure('이 메시지는 다시 보낼 수 없어요.');
+    }
     final data = <String, Object?>{
       'senderId': owner,
       'recipientId': peerId,
@@ -291,6 +296,12 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
       await store.outbox.record(messageId).delete(store.device);
     } catch (e) {
       if (owner == store.userId) {
+        // 재시도 응답을 기다리는 동안 도착한 서버 기록을 실패 초안으로 덮지 않는다.
+        final current = store.snapshot.get('messages', messageId);
+        if (current?.s('status') == 'sent' || current?.b('deleted') == true) {
+          await store.outbox.record(messageId).delete(store.device);
+          rethrow;
+        }
         final tables = {...store.snapshot.tables};
         tables['messages'] = {
           ...?tables['messages'],
@@ -301,6 +312,36 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
       }
       rethrow;
     }
+  }
+
+  @override
+  Future<void> editMessage(
+    String messageId,
+    String body,
+    int version,
+    String operationId,
+  ) async {
+    final message = store.snapshot.get('messages', messageId);
+    if (body.trim().isEmpty && (message?.list('attachments') ?? []).isEmpty) {
+      throw const AppFailure('메시지나 사진을 추가해 주세요.');
+    }
+    await store.command('editMessage', {
+      'id': messageId,
+      'body': body.trim(),
+      'version': version,
+    }, operationId);
+  }
+
+  @override
+  Future<void> deleteMessage(
+    String messageId,
+    int version,
+    String operationId,
+  ) async {
+    await store.command('deleteMessage', {
+      'id': messageId,
+      'version': version,
+    }, operationId);
   }
 
   @override

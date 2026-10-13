@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:typed_data';
+import 'package:agent_uncle/core/media/native_media_picker.dart';
 import 'package:agent_uncle/app.dart';
 import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
@@ -13,6 +15,7 @@ import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'app_flow_test.dart' show settle, drainClose, PickableAttachment;
 import 'brand_surfaces_test.dart' show branded;
 import 'workspace_test.dart' show Fixture;
+import 'chat_media_navigation_test.dart' show FakeNativeMediaPicker;
 
 void main() {
   testWidgets(
@@ -41,7 +44,16 @@ void main() {
       unawaited(
         openPage(
           tester.element(find.byType(HomeTabPage).first),
-          ChatPage(f.uncle),
+          ChatPage(
+            f.uncle,
+            mediaPicker: FakeNativeMediaPicker(
+              NativeMediaSelection(
+                name: 'photo.png',
+                bytes: Uint8List.fromList([0x89, 0x50, 0x4e, 0x47]),
+                mime: 'image/png',
+              ),
+            ),
+          ),
         ),
       );
       await settle(tester);
@@ -79,6 +91,8 @@ void main() {
       await tester.tap(find.text('셔츠'));
       await settle(tester);
       await tester.tap(find.bySemanticsLabel('사진 첨부'));
+      await settle(tester);
+      await tester.tap(find.text('갤러리에서 선택'));
       await settle(tester);
       expect(find.bySemanticsLabel('사진 추가, 1장 첨부됨'), findsOneWidget);
       final input = find.descendant(

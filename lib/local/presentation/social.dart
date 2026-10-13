@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/media/native_media_picker.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -8,6 +9,7 @@ import 'requests.dart';
 import 'delivery.dart';
 import 'profile_avatar.dart';
 import 'connection_search.dart';
+import 'chat_message_actions.dart';
 
 export 'connection_search.dart' show AddConnectionPage;
 
@@ -575,6 +577,8 @@ class _ChatListState extends State<ChatList> {
                       bottom: Text(
                         rows.isEmpty
                             ? '대화를 시작해 보세요'
+                            : rows.first.b('deleted')
+                            ? deletedMessageLabel
                             : rows.first.s('body').isEmpty
                             ? '사진'
                             : rows.first.s('body'),
@@ -610,8 +614,14 @@ class _ChatListState extends State<ChatList> {
 }
 
 class ChatPage extends StatefulWidget {
-  const ChatPage(this.peerId, {this.requestId = '', super.key});
+  const ChatPage(
+    this.peerId, {
+    this.requestId = '',
+    this.mediaPicker,
+    super.key,
+  });
   final String peerId, requestId;
+  final NativeMediaPicker? mediaPicker;
   @override
   State<ChatPage> createState() => _ChatPageState();
 }
@@ -619,11 +629,15 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final body = TextEditingController();
   final conversationScroll = ScrollController();
+  final mediaSheet = TdsBottomSheetController();
   List<String> photos = [];
   String messageId = newId();
   late String requestId = widget.requestId;
-  bool sending = false;
+  bool sending = false, pickingMedia = false;
   String? sendError;
+
+  NativeMediaPicker get mediaPicker =>
+      widget.mediaPicker ?? defaultNativeMediaPicker;
 
   Future<void> send() async {
     if (sending) {
@@ -682,8 +696,10 @@ class _ChatPageState extends State<ChatPage> {
                   ))
             Builder(
               builder: (context) => Item(
-                r.s('product'),
-                subtitle: r.s('option'),
+                requestTitle(r.data),
+                subtitle: isWholesalerOnlyRequest(r.data)
+                    ? '도매처 ${requestWholesalers(r.data).length}곳'
+                    : r.s('option'),
                 onTap: () => Navigator.pop(context, r.id),
               ),
             ),
@@ -694,10 +710,70 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   final marked = <String>{};
+
+  Future<NativeMediaSource?> choosePhotoSource() async {
+    final result = Completer<NativeMediaSource?>();
+    void complete([NativeMediaSource? source]) {
+      if (!result.isCompleted) result.complete(source);
+    }
+
+    mediaSheet.open(
+      TdsBottomSheetOptions(
+        header: '사진 추가',
+        headerDescription: const TdsBottomSheetHeaderDescription(
+          '촬영하거나 갤러리에서 사진을 선택해 주세요.',
+        ),
+        onClose: complete,
+        onExited: complete,
+        child: TdsBottomSheetSelect(
+          animation: false,
+          onChange: (value) {
+            complete(
+              value == 'camera'
+                  ? NativeMediaSource.camera
+                  : NativeMediaSource.gallery,
+            );
+            mediaSheet.close();
+          },
+          options: const [
+            TdsBottomSheetSelectOption(name: '사진 촬영', value: 'camera'),
+            TdsBottomSheetSelectOption(name: '갤러리에서 선택', value: 'gallery'),
+          ],
+        ),
+      ),
+    );
+    return result.future;
+  }
+
+  Future<void> attachPhoto() async {
+    if (sending || pickingMedia) return;
+    final source = await choosePhotoSource();
+    if (source == null || !mounted) return;
+    setState(() {
+      pickingMedia = true;
+      sendError = null;
+    });
+    try {
+      final selection = await mediaPicker.pickImage(source: source);
+      if (selection == null || !mounted) return;
+      final id = await AppScope.read(
+        context,
+      ).attachments.save(selection.name, selection.bytes, selection.mime);
+      if (mounted) {
+        setState(() => photos.add(id));
+      }
+    } catch (error) {
+      if (mounted) setState(() => sendError = error.toString());
+    } finally {
+      if (mounted) setState(() => pickingMedia = false);
+    }
+  }
+
   @override
   void dispose() {
     body.dispose();
     conversationScroll.dispose();
+    mediaSheet.dispose();
     super.dispose();
   }
 
@@ -736,271 +812,288 @@ class _ChatPageState extends State<ChatPage> {
         }
       });
     }
-    return PageFrame(
-      title: peer?.name ?? '채팅',
-      navigationLeading: peer == null
-          ? null
-          : ExcludeSemantics(child: ProfileAvatar(peer, size: 36)),
-      navigationSubtitle: peer == null
-          ? '1:1 대화'
-          : '${peer.role?.label ?? '거래처'} · 1:1 대화',
-      scrollKey: 'chat-${widget.peerId}',
-      reverse: true,
-      scrollController: conversationScroll,
-      trailing: me.role == AppRole.retailer
-          ? TdsIconButton(
-              semanticLabel: '새 사입 요청',
-              onPressed: () =>
-                  openPage(context, RequestEditor(peerId: widget.peerId)),
-              child: const FigmaIcon('plus'),
-            )
-          : null,
-      header: requestId.isNotEmpty && MediaQuery.sizeOf(context).height > 600
-          ? FigmaSurface(
-              children: [
-                TdsListRow(
-                  left: const FigmaIcon('bag'),
-                  contents: TdsListRowTexts(
-                    type: TdsListRowTextType.row2TypeD,
-                    top: const Text('연결된 요청 보기'),
-                    bottom: Text(
-                      app.workspace.request(requestId)?.s('product') ?? '사입 요청',
+    return TdsBottomSheetProvider(
+      controller: mediaSheet,
+      child: PageFrame(
+        title: peer?.name ?? '채팅',
+        navigationLeading: peer == null
+            ? null
+            : ExcludeSemantics(child: ProfileAvatar(peer, size: 36)),
+        navigationSubtitle: peer == null
+            ? '1:1 대화'
+            : '${peer.role?.label ?? '거래처'} · 1:1 대화',
+        scrollKey: 'chat-${widget.peerId}',
+        reverse: true,
+        scrollController: conversationScroll,
+        trailing: me.role == AppRole.retailer
+            ? TdsIconButton(
+                semanticLabel: '새 사입 요청',
+                onPressed: () =>
+                    openPage(context, RequestEditor(peerId: widget.peerId)),
+                child: const FigmaIcon('plus'),
+              )
+            : null,
+        header: requestId.isNotEmpty && MediaQuery.sizeOf(context).height > 600
+            ? FigmaSurface(
+                children: [
+                  TdsListRow(
+                    left: const FigmaIcon('bag'),
+                    contents: TdsListRowTexts(
+                      type: TdsListRowTextType.row2TypeD,
+                      top: const Text('연결된 요청 보기'),
+                      bottom: Text(
+                        requestTitle(
+                          app.workspace.request(requestId)?.data ?? const {},
+                        ),
+                      ),
+                      bottomProps: const TdsListRowTextStyle(
+                        maxLines: 1,
+                        typography: TdsTypography.t6,
+                      ),
                     ),
-                    bottomProps: const TdsListRowTextStyle(
-                      maxLines: 1,
-                      typography: TdsTypography.t6,
+                    withArrow: true,
+                    onPressed: () =>
+                        openPage(context, RequestDetailPage(requestId)),
+                  ),
+                ],
+              )
+            : null,
+        bottom: FigmaSurface(
+          margin: 12,
+          children: [
+            if (sendError != null) Info(sendError!, error: true),
+            TdsTextField(
+              controller: body,
+              placeholder: '메시지를 입력하세요',
+              semanticLabel: '메시지',
+              variant: TdsTextFieldVariant.box,
+              paddingTop: 0,
+              paddingBottom: 8,
+              onSubmitted: (_) => send(),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  TdsIconButton(
+                    semanticLabel: photos.isEmpty
+                        ? '사진 첨부'
+                        : '사진 추가, ${photos.length}장 첨부됨',
+                    disabled: sending || pickingMedia,
+                    onPressed: sending || pickingMedia ? null : attachPhoto,
+                    child: FigmaIcon('camera', selected: photos.isNotEmpty),
+                  ),
+                  if (photos.isNotEmpty) StatusBadge('${photos.length}'),
+                  const SizedBox(width: 8),
+                  TdsIconButton(
+                    semanticLabel: requestId.isEmpty ? '요청 연결' : '연결된 요청 변경',
+                    disabled: sending,
+                    variant: requestId.isEmpty
+                        ? TdsIconButtonVariant.clear
+                        : TdsIconButtonVariant.fill,
+                    backgroundColor: TdsTheme.of(context).color('blue50'),
+                    onPressed: sending ? null : chooseRequest,
+                    child: FigmaIcon('link', selected: requestId.isNotEmpty),
+                  ),
+                  const Spacer(),
+                  const SizedBox(width: 8),
+                  TdsButton(
+                    size: TdsButtonSize.large,
+                    semanticLabel: '메시지 전송',
+                    loading: sending,
+                    disabled: sending,
+                    onPressed: send,
+                    child: FigmaIcon(
+                      'send',
+                      color: TdsButtonColors.resolve(
+                        TdsTheme.of(context),
+                        TdsButtonColor.primary,
+                        TdsButtonVariant.fill,
+                      ).foreground,
                     ),
                   ),
-                  withArrow: true,
-                  onPressed: () =>
-                      openPage(context, RequestDetailPage(requestId)),
-                ),
-              ],
-            )
-          : null,
-      bottom: FigmaSurface(
-        margin: 12,
+                ],
+              ),
+            ),
+          ],
+        ),
         children: [
-          if (sendError != null) Info(sendError!, error: true),
-          TdsTextField(
-            controller: body,
-            placeholder: '메시지를 입력하세요',
-            semanticLabel: '메시지',
-            variant: TdsTextFieldVariant.box,
-            paddingTop: 0,
-            paddingBottom: 8,
-            onSubmitted: (_) => send(),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                TdsIconButton(
-                  semanticLabel: photos.isEmpty
-                      ? '사진 첨부'
-                      : '사진 추가, ${photos.length}장 첨부됨',
-                  disabled: sending,
-                  onPressed: sending
-                      ? null
-                      : () async {
-                          try {
-                            final id = await app.attachments.pick(
-                              document: false,
-                            );
-                            if (id != null && mounted) {
-                              setState(() => photos.add(id));
-                            }
-                          } catch (e) {
-                            if (mounted) {
-                              setState(() => sendError = e.toString());
-                            }
-                          }
-                        },
-                  child: FigmaIcon('camera', selected: photos.isNotEmpty),
-                ),
-                if (photos.isNotEmpty) StatusBadge('${photos.length}'),
-                const SizedBox(width: 8),
-                TdsIconButton(
-                  semanticLabel: requestId.isEmpty ? '요청 연결' : '연결된 요청 변경',
-                  disabled: sending,
-                  variant: requestId.isEmpty
-                      ? TdsIconButtonVariant.clear
-                      : TdsIconButtonVariant.fill,
-                  backgroundColor: TdsTheme.of(context).color('blue50'),
-                  onPressed: sending ? null : chooseRequest,
-                  child: FigmaIcon('link', selected: requestId.isNotEmpty),
-                ),
-                const Spacer(),
-                const SizedBox(width: 8),
-                TdsButton(
-                  size: TdsButtonSize.large,
-                  semanticLabel: '메시지 전송',
-                  loading: sending,
-                  disabled: sending,
-                  onPressed: send,
-                  child: FigmaIcon(
-                    'send',
-                    color: TdsButtonColors.resolve(
-                      TdsTheme.of(context),
-                      TdsButtonColor.primary,
-                      TdsButtonVariant.fill,
-                    ).foreground,
+          if (rows.isEmpty)
+            const EmptyState(
+              '아직 메시지가 없어요',
+              '요청에 관한 이야기를 나눠 보세요.',
+              icon: 'chat',
+            ),
+          for (final (index, m) in rows.indexed) ...[
+            if (index == 0 ||
+                displayTime(
+                      rows[index - 1].s('createdAt'),
+                    ).split(' ').take(2).join(' ') !=
+                    displayTime(m.s('createdAt')).split(' ').take(2).join(' '))
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Center(
+                  child: TdsText(
+                    displayTime(m.s('createdAt')).split(' ').take(2).join(' '),
+                    typography: TdsTypography.t7,
+                    color: TdsTheme.of(context).color('grey600'),
                   ),
+                ),
+              ),
+            if (m.b('system'))
+              FigmaSurface(
+                margin: 32,
+                children: [
+                  TdsListRow(
+                    verticalPadding: TdsListRowVerticalPadding.small,
+                    contents: TdsListRowTexts(
+                      type: TdsListRowTextType.row2TypeD,
+                      top: Text(
+                        '업무 기록 · ${displayTime(m.s('createdAt')).split(' ').last}',
+                      ),
+                      bottom: Text(m.s('body')),
+                      topProps: const TdsListRowTextStyle(
+                        typography: TdsTypography.t7,
+                      ),
+                      bottomProps: const TdsListRowTextStyle(
+                        typography: TdsTypography.t6,
+                        fontWeight: TdsFontWeight.medium,
+                      ),
+                    ),
+                    withArrow: m.s('requestId').isNotEmpty,
+                    onPressed: m.s('requestId').isEmpty
+                        ? null
+                        : () => openPage(
+                            context,
+                            RequestDetailPage(m.s('requestId')),
+                          ),
+                  ),
+                ],
+              )
+            else
+              Inset(
+                child: Align(
+                  alignment: m.s('senderId') == me.id
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: m.s('senderId') == me.id
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      ChatMessageActions(
+                        key: ValueKey(m.id),
+                        message: m,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: m.s('senderId') == me.id
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            TdsBubble(
+                              withTail: false,
+                              background: m.s('senderId') == me.id
+                                  ? TdsBubbleBackground.blue
+                                  : TdsBubbleBackground.grey,
+                              child: TdsText(
+                                m.b('deleted')
+                                    ? deletedMessageLabel
+                                    : m.s('body').isEmpty
+                                    ? '사진'
+                                    : m.s('body'),
+                                typography: TdsTypography.t5,
+                                color: TdsTheme.of(context).color(
+                                  m.s('senderId') == me.id
+                                      ? 'white'
+                                      : 'grey900',
+                                ),
+                              ),
+                            ),
+                            if (!m.b('deleted'))
+                              for (final id in m.list('attachments'))
+                                AttachmentPreview(id, compact: true),
+                          ],
+                        ),
+                      ),
+                      if (!m.b('deleted') &&
+                          m.s('requestId').isNotEmpty &&
+                          (index == 0 ||
+                              rows[index - 1].s('requestId') !=
+                                  m.s('requestId')))
+                        TdsTextButton(
+                          size: TdsTextButtonSize.small,
+                          onPressed: () => openPage(
+                            context,
+                            RequestDetailPage(m.s('requestId')),
+                          ),
+                          child: const Text('관련 요청 열기'),
+                        ),
+                      const TdsSpacing(4),
+                      TdsText(
+                        '${displayTime(m.s('createdAt')).split(' ').last}${m.s('status') == 'failed'
+                            ? ' · 전송 실패'
+                            : m.s('senderId') == me.id
+                            ? ' · ${m.b('read') ? '읽음' : '안 읽음'}'
+                            : ''}${!m.b('deleted') && m.s('editedAt').isNotEmpty ? ' · 수정됨' : ''}',
+                        typography: TdsTypography.t7,
+                        color: TdsTheme.of(context).color('grey600'),
+                      ),
+                      if (!m.b('deleted') &&
+                          m.s('status') == 'failed' &&
+                          m.s('senderId') == me.id)
+                        ActionButton(
+                          '메시지 다시 보내기',
+                          weak: true,
+                          onPressed: () async {
+                            await app.workspace.sendMessage(
+                              widget.peerId,
+                              m.id,
+                              m.s('body'),
+                              m.list('attachments'),
+                              requestId: m.s('requestId'),
+                            );
+                            if (mounted && messageId == m.id) {
+                              setState(() {
+                                body.clear();
+                                photos = [];
+                                messageId = newId();
+                              });
+                            }
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+          if (requestId.isNotEmpty &&
+              me.role == AppRole.retailer &&
+              app.workspace.request(requestId)?.needsReply == true) ...[
+            const FigmaSurface(
+              tinted: true,
+              children: [
+                Item(
+                  '업무 답변을 확정해 주세요',
+                  subtitle: '채팅 내용과 별도로 미송 처리 방법을 확정하면 기록에 남아요.',
                 ),
               ],
             ),
-          ),
+            ActionButton(
+              '미송 답변하기',
+              onPressed: () => openPage(context, BackorderReplyPage(requestId)),
+            ),
+          ],
+          for (final id in photos) AttachmentPreview(id, compact: true),
+          if (photos.isNotEmpty)
+            Inset(
+              child: TdsTextButton(
+                size: TdsTextButtonSize.small,
+                onPressed: sending ? null : () => setState(() => photos = []),
+                child: const Text('첨부 삭제'),
+              ),
+            ),
         ],
       ),
-      children: [
-        if (rows.isEmpty)
-          const EmptyState('아직 메시지가 없어요', '요청에 관한 이야기를 나눠 보세요.', icon: 'chat'),
-        for (final (index, m) in rows.indexed) ...[
-          if (index == 0 ||
-              displayTime(
-                    rows[index - 1].s('createdAt'),
-                  ).split(' ').take(2).join(' ') !=
-                  displayTime(m.s('createdAt')).split(' ').take(2).join(' '))
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Center(
-                child: TdsText(
-                  displayTime(m.s('createdAt')).split(' ').take(2).join(' '),
-                  typography: TdsTypography.t7,
-                  color: TdsTheme.of(context).color('grey600'),
-                ),
-              ),
-            ),
-          if (m.b('system'))
-            FigmaSurface(
-              margin: 32,
-              children: [
-                TdsListRow(
-                  verticalPadding: TdsListRowVerticalPadding.small,
-                  contents: TdsListRowTexts(
-                    type: TdsListRowTextType.row2TypeD,
-                    top: Text(
-                      '업무 기록 · ${displayTime(m.s('createdAt')).split(' ').last}',
-                    ),
-                    bottom: Text(m.s('body')),
-                    topProps: const TdsListRowTextStyle(
-                      typography: TdsTypography.t7,
-                    ),
-                    bottomProps: const TdsListRowTextStyle(
-                      typography: TdsTypography.t6,
-                      fontWeight: TdsFontWeight.medium,
-                    ),
-                  ),
-                  withArrow: m.s('requestId').isNotEmpty,
-                  onPressed: m.s('requestId').isEmpty
-                      ? null
-                      : () => openPage(
-                          context,
-                          RequestDetailPage(m.s('requestId')),
-                        ),
-                ),
-              ],
-            )
-          else
-            Inset(
-              child: Align(
-                alignment: m.s('senderId') == me.id
-                    ? Alignment.centerRight
-                    : Alignment.centerLeft,
-                child: Column(
-                  crossAxisAlignment: m.s('senderId') == me.id
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    TdsBubble(
-                      withTail: false,
-                      background: m.s('senderId') == me.id
-                          ? TdsBubbleBackground.blue
-                          : TdsBubbleBackground.grey,
-                      child: TdsText(
-                        m.s('body').isEmpty ? '사진' : m.s('body'),
-                        typography: TdsTypography.t6,
-                        color: TdsTheme.of(
-                          context,
-                        ).color(m.s('senderId') == me.id ? 'white' : 'grey900'),
-                      ),
-                    ),
-                    for (final id in m.list('attachments'))
-                      AttachmentPreview(id, compact: true),
-                    if (m.s('requestId').isNotEmpty &&
-                        (index == 0 ||
-                            rows[index - 1].s('requestId') != m.s('requestId')))
-                      TdsTextButton(
-                        size: TdsTextButtonSize.small,
-                        onPressed: () => openPage(
-                          context,
-                          RequestDetailPage(m.s('requestId')),
-                        ),
-                        child: const Text('관련 요청 열기'),
-                      ),
-                    const TdsSpacing(4),
-                    TdsText(
-                      '${displayTime(m.s('createdAt')).split(' ').last}${m.s('status') == 'failed'
-                          ? ' · 전송 실패'
-                          : m.s('senderId') == me.id
-                          ? ' · ${m.b('read') ? '읽음' : '안 읽음'}'
-                          : ''}',
-                      typography: TdsTypography.t7,
-                      color: TdsTheme.of(context).color('grey600'),
-                    ),
-                    if (m.s('status') == 'failed' && m.s('senderId') == me.id)
-                      ActionButton(
-                        '메시지 다시 보내기',
-                        weak: true,
-                        onPressed: () async {
-                          await app.workspace.sendMessage(
-                            widget.peerId,
-                            m.id,
-                            m.s('body'),
-                            m.list('attachments'),
-                            requestId: m.s('requestId'),
-                          );
-                          if (mounted && messageId == m.id) {
-                            setState(() {
-                              body.clear();
-                              photos = [];
-                              messageId = newId();
-                            });
-                          }
-                        },
-                      ),
-                  ],
-                ),
-              ),
-            ),
-        ],
-        if (requestId.isNotEmpty &&
-            me.role == AppRole.retailer &&
-            app.workspace.request(requestId)?.needsReply == true) ...[
-          const FigmaSurface(
-            tinted: true,
-            children: [
-              Item(
-                '업무 답변을 확정해 주세요',
-                subtitle: '채팅 내용과 별도로 미송 처리 방법을 확정하면 기록에 남아요.',
-              ),
-            ],
-          ),
-          ActionButton(
-            '미송 답변하기',
-            onPressed: () => openPage(context, BackorderReplyPage(requestId)),
-          ),
-        ],
-        for (final id in photos) AttachmentPreview(id, compact: true),
-        if (photos.isNotEmpty)
-          Inset(
-            child: TdsTextButton(
-              size: TdsTextButtonSize.small,
-              onPressed: sending ? null : () => setState(() => photos = []),
-              child: const Text('첨부 삭제'),
-            ),
-          ),
-      ],
     );
   }
 }

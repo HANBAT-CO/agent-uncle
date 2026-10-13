@@ -327,6 +327,13 @@ abstract class WorkspaceRepository extends ChangeNotifier {
     String requestId = '',
   });
   Future<void> markChatRead(String peerId);
+  Future<void> editMessage(
+    String messageId,
+    String body,
+    int version,
+    String operationId,
+  );
+  Future<void> deleteMessage(String messageId, int version, String operationId);
   Future<void> readNotice(String id);
   Future<void> refreshReminders();
 }

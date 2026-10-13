@@ -267,6 +267,7 @@ class HomeTabPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), a = app.session.current!;
+    final isHome = index == AppTab.home.index;
     final homeName = a.role == AppRole.uncle && !a.name.trim().endsWith('삼촌')
         ? '${a.name.trim()} 삼촌'
         : a.name;
@@ -289,26 +290,22 @@ class HomeTabPage extends StatelessWidget {
       _ => const MyPage(),
     };
     return PageFrame(
-      title: index == AppTab.home.index ? homeName : a.role!.tabLabel(AppTab.values[index]),
+      title: isHome ? homeName : a.role!.tabLabel(AppTab.values[index]),
       back: false,
       showHeaderDivider: false,
-      navigationLeading: index == AppTab.home.index
-          ? const AppLogo(width: 40)
+      navigationLeading: isHome ? const AppLogo(width: 40) : null,
+      navigationSubtitle: isHome ? a.role!.label : null,
+      trailing: isHome
+          ? TdsGlassIconButton(
+              semanticLabel: '알림',
+              symbol: 'bell',
+              icon: const FigmaIcon('bell'),
+              unreadCount: notices,
+              onPressed: () => openPage(context, const NoticesPage()),
+            )
           : null,
-      navigationSubtitle: index == AppTab.home.index ? a.role!.label : null,
-      trailing: TdsGlassIconButton(
-        semanticLabel: '알림',
-        symbol: 'bell',
-        icon: const FigmaIcon('bell'),
-        unreadCount: notices,
-        onPressed: () => openPage(context, const NoticesPage()),
-      ),
       scrollKey: '${a.id}-tab-$index',
-      children: [
-        if (index == AppTab.home.index) const TdsSpacing(8),
-        page,
-        const TdsSpacing(88),
-      ],
+      children: [if (isHome) const TdsSpacing(8), page, const TdsSpacing(88)],
     );
   }
 }
@@ -709,6 +706,9 @@ class _BusinessListState extends State<BusinessList> {
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
         retailer = app.session.current!.role == AppRole.retailer;
+    final filters = retailer
+        ? const ['진행 중', '답변 필요', '완료', '전체']
+        : const ['진행 중', '재확인', '완료', '전체'];
     final search = query.trim().toLowerCase();
     final all = app.workspace
         .records('requests')
@@ -759,13 +759,34 @@ class _BusinessListState extends State<BusinessList> {
           placeholder: '상품 또는 거래처 검색',
           onChanged: (v) => setState(() => query = v),
         ),
-        Choices(
-          options: retailer
-              ? const ['진행 중', '답변 필요', '완료', '전체']
-              : const ['진행 중', '재확인', '완료', '전체'],
-          value: filter,
-          onChanged: (v) => setState(() => filter = v),
-        ),
+        if (TdsTheme.of(context).platform.fontScale > 130)
+          Choices(
+            options: filters,
+            value: filter,
+            onChanged: (v) => setState(() => filter = v),
+          )
+        else
+          Inset(
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: [
+                for (final option in filters)
+                  Semantics(
+                    selected: option == filter,
+                    child: TdsButton(
+                      size: TdsButtonSize.medium,
+                      color: TdsButtonColor.dark,
+                      variant: option == filter
+                          ? TdsButtonVariant.fill
+                          : TdsButtonVariant.weak,
+                      onPressed: () => setState(() => filter = option),
+                      child: Text(option),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         if (retailer)
           FigmaSurface(
             children: [

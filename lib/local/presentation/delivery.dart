@@ -86,7 +86,9 @@ class _DeliveryListState extends State<DeliveryList> {
             FigmaSurface(
               children: [
                 Item(
-                  '${r.s('product')} · 보류 ${r.n('held')}개',
+                  isWholesalerOnlyRequest(r.data)
+                      ? '${requestTitle(r.data)} · 보류'
+                      : '${requestTitle(r.data)} · 보류 ${r.n('held')}개',
                   leading: const FigmaIcon('clock'),
                   subtitle: '변경·취소·문제 처리 후 전달할 수 있어요.',
                   onTap: () => openPage(context, RequestDetailPage(r.id)),
@@ -180,7 +182,9 @@ class _DeliveryBatchPageState extends State<DeliveryBatchPage> {
               return FigmaSurface(
                 children: [
                   Item(
-                    '${r.s('product')} · ${r.s('option')}',
+                    isWholesalerOnlyRequest(r.data)
+                        ? requestTitle(r.data)
+                        : '${requestTitle(r.data)} · ${r.s('option')}',
                     subtitle:
                         '${r.s('address')} ${r.s('addressDetail')}\n전달 가능 ${r.available}개',
                   ),
@@ -191,7 +195,7 @@ class _DeliveryBatchPageState extends State<DeliveryBatchPage> {
                       number: count,
                       minNumber: 0,
                       maxNumber: r.available,
-                      semanticLabel: '이번 전달 수량 · ${r.s('product')}',
+                      semanticLabel: '이번 전달 수량 · ${requestTitle(r.data)}',
                       onNumberChange: (n) =>
                           setState(() => e.value.text = '$n'),
                     ),

@@ -1,13 +1,50 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
+import '../../core/address/address_models.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'address_search.dart';
 import 'social.dart';
 import 'delivery.dart';
+import 'request_partner_picker.dart';
+
+class _WholesalerFields {
+  _WholesalerFields({String wholesaler = '', String location = ''})
+    : wholesaler = TextEditingController(text: wholesaler),
+      location = TextEditingController(text: location);
+
+  final TextEditingController wholesaler;
+  final TextEditingController location;
+
+  Data toData() => {
+    'wholesaler': wholesaler.text.trim(),
+    'location': location.text.trim(),
+  };
+
+  void dispose() {
+    wholesaler.dispose();
+    location.dispose();
+  }
+}
+
+bool _hasWholesalerValue(Data row) =>
+    textOf(row, 'wholesaler').trim().isNotEmpty ||
+    textOf(row, 'location').trim().isNotEmpty;
+
+String _wholesalerLabel(Data row, {String fallback = '도매처 요청'}) {
+  final wholesaler = textOf(row, 'wholesaler').trim();
+  final location = textOf(row, 'location').trim();
+  if (wholesaler.isNotEmpty && location.isNotEmpty) {
+    return '$wholesaler · $location';
+  }
+  if (wholesaler.isNotEmpty) return wholesaler;
+  if (location.isNotEmpty) return location;
+  return fallback;
+}
 
 class RequestEditor extends StatefulWidget {
   const RequestEditor({this.draftId, this.requestId, this.peerId, super.key});
@@ -18,7 +55,9 @@ class RequestEditor extends StatefulWidget {
 
 class _RequestEditorState extends State<RequestEditor> {
   final fields = <String, TextEditingController>{};
+  final wholesalerFields = <_WholesalerFields>[];
   late String id;
+  late Data initialData;
   String peer = '', operation = newId();
   List<String> photos = [];
   FormSaver? saver;
@@ -31,7 +70,7 @@ class _RequestEditorState extends State<RequestEditor> {
     super.didChangeDependencies();
     if (ready) return;
     ready = true;
-    final app = AppScope.read(context), a = app.session.current!;
+    final app = AppScope.read(context);
     id = widget.requestId ?? widget.draftId ?? newId();
     final data = editing
         ? app.workspace.request(id)?.data
@@ -40,22 +79,37 @@ class _RequestEditorState extends State<RequestEditor> {
               .where((r) => r.id == id)
               .firstOrNull
               ?.data;
-    peer = textOf(data ?? {}, 'uncleId', widget.peerId ?? '');
-    photos = stringsOf(data ?? {}, 'photos');
-    version = numberOf(data ?? {}, 'version');
+    initialData = data == null ? <String, Object?>{} : {...data};
+    peer = textOf(initialData, 'uncleId', widget.peerId ?? '');
+    if (peer.isEmpty && app.workspace.partners.length == 1) {
+      peer = app.workspace.partners.first.id;
+    }
+    photos = stringsOf(initialData, 'photos');
+    version = numberOf(initialData, 'version');
     for (final e in {
-      'wholesaler': '',
-      'location': '',
       'product': '',
       'option': '',
       'quantity': '1',
-      'address': a.s('address'),
-      'addressDetail': a.s('addressDetail'),
-      'note': a.s('deliveryNote'),
     }.entries) {
       fields[e.key] = TextEditingController(
-        text: data?.containsKey(e.key) == true ? '${data![e.key]}' : e.value,
+        text:
+            initialData.containsKey(e.key) ? '${initialData[e.key]}' : e.value,
       );
+    }
+    final wholesalers = requestWholesalers(initialData)
+        .take(maxRequestWholesalers)
+        .toList();
+    if (wholesalers.isEmpty) {
+      wholesalerFields.add(_WholesalerFields());
+    } else {
+      for (final row in wholesalers) {
+        wholesalerFields.add(
+          _WholesalerFields(
+            wholesaler: textOf(row, 'wholesaler'),
+            location: textOf(row, 'location'),
+          ),
+        );
+      }
     }
     saver = FormSaver((values) => app.workspace.saveDraft(id, values));
     saver!.addListener(refresh);
@@ -69,16 +123,61 @@ class _RequestEditorState extends State<RequestEditor> {
     if (mounted) setState(() {});
   }
 
-  Data values() => {
-    for (final e in fields.entries)
-      if (e.key != 'quantity') e.key: e.value.text.trim(),
-    'quantity': int.tryParse(fields['quantity']!.text) ?? 0,
-    'uncleId': peer,
-    'photos': photos,
-  };
+  List<Data> wholesalerValues({required bool preserveEmpty}) {
+    final rows = wholesalerFields
+        .map((row) => row.toData())
+        .take(maxRequestWholesalers)
+        .toList();
+    if (preserveEmpty) {
+      return rows.isEmpty ? [<String, Object?>{}] : rows;
+    }
+    final filtered = rows.where(_hasWholesalerValue).toList();
+    return filtered.isEmpty ? [<String, Object?>{}] : filtered;
+  }
+
+  Data values({bool preserveEmptyWholesalers = true}) {
+    final current = AppScope.read(context).session.current!;
+    final wholesalers = wholesalerValues(preserveEmpty: preserveEmptyWholesalers);
+    final first = wholesalers.firstOrNull ?? <String, Object?>{};
+    final payload = <String, Object?>{
+      'wholesalers': wholesalers,
+      'wholesaler': textOf(first, 'wholesaler').trim(),
+      'location': textOf(first, 'location').trim(),
+      'product': fields['product']!.text.trim(),
+      'option': fields['option']!.text.trim(),
+      'quantity': int.tryParse(fields['quantity']!.text) ?? 1,
+      'uncleId': peer,
+      'photos': photos,
+      'address': current.s('address'),
+      'addressDetail': current.s('addressDetail'),
+      'note': current.s('deliveryNote'),
+    };
+    if (editing && !isWholesalerOnlyRequest(initialData)) {
+      if (initialData.containsKey('requestType')) {
+        payload['requestType'] = initialData['requestType'];
+      }
+    } else {
+      payload['requestType'] = 'wholesaler';
+    }
+    return payload;
+  }
+
   void changed() {
     if (!editing) saver!.change(values());
     setState(() {});
+  }
+
+  void addWholesaler() {
+    if (wholesalerFields.length >= maxRequestWholesalers) return;
+    wholesalerFields.add(_WholesalerFields());
+    changed();
+  }
+
+  void removeWholesaler(int index) {
+    if (wholesalerFields.length <= 1) return;
+    final removed = wholesalerFields.removeAt(index);
+    changed();
+    WidgetsBinding.instance.addPostFrameCallback((_) => removed.dispose());
   }
 
   Future<void> leave() async {
@@ -113,17 +212,46 @@ class _RequestEditorState extends State<RequestEditor> {
     for (final c in fields.values) {
       c.dispose();
     }
+    for (final row in wholesalerFields) {
+      row.dispose();
+    }
     super.dispose();
   }
 
   String draftStatusText() =>
       saver!.error ??
-      (saver!.saving ? '작성 중인 내용을 자동 저장하고 있어요.' : '작성 중 나가도 초안을 이어서 보낼 수 있어요.');
+      (saver!.saving ? '저장 중…' : '초안 저장됨');
 
-  String requestSummary(Account? selected) =>
-      '담당: ${selected?.name ?? '미선택'}\n도매처: ${fields['wholesaler']!.text} · ${fields['location']!.text}\n상품: ${fields['product']!.text} / ${fields['option']!.text}\n수량: ${fields['quantity']!.text}개\n배송지: ${fields['address']!.text} ${fields['addressDetail']!.text}';
+  String requestSummary(Account? selected) {
+    final lines = <String>['담당: ${selected?.name ?? '미선택'}'];
+    final wholesalers = wholesalerValues(
+      preserveEmpty: false,
+    ).where(_hasWholesalerValue).toList();
+    for (var i = 0; i < wholesalers.length; i++) {
+      lines.add('도매처 ${i + 1}: ${_wholesalerLabel(wholesalers[i], fallback: '미입력')}');
+    }
+    return lines.join('\n');
+  }
+
+  String? get wholesalerError {
+    final rows = wholesalerValues(
+      preserveEmpty: false,
+    ).where(_hasWholesalerValue).toList();
+    if (rows.isEmpty) return '도매처를 한 곳 이상 입력해 주세요.';
+    if (rows.any((row) => textOf(row, 'wholesaler').trim().isEmpty)) {
+      return '도매처 이름을 입력해 주세요.';
+    }
+    if (rows.any((row) => textOf(row, 'location').trim().isEmpty)) {
+      return '도매처 위치를 입력해 주세요.';
+    }
+    return null;
+  }
 
   Future<void> submit(AppServices app, Account? selected) async {
+    if (selected == null || peer.isEmpty) {
+      throw const AppFailure('담당 사입삼촌을 선택해 주세요.');
+    }
+    if (wholesalerError != null) throw AppFailure(wholesalerError!);
     if (!editing) {
       saver!.change(values());
       await saver!.flush();
@@ -135,9 +263,12 @@ class _RequestEditorState extends State<RequestEditor> {
       requestSummary(selected),
     );
     if (!confirmed || !mounted) return;
+    final payload = values(preserveEmptyWholesalers: false);
     if (editing) {
-      await app.workspace.updateRequest(id, values(), version, operation);
+      await app.workspace.updateRequest(id, payload, version, operation);
     } else {
+      saver!.change(payload);
+      await saver!.flush();
       await app.workspace.sendDraft(id, operation);
     }
     if (!mounted) return;
@@ -147,24 +278,10 @@ class _RequestEditorState extends State<RequestEditor> {
     );
   }
 
-  Future<void> choosePeer(AppServices app) async {
+  Future<void> choosePeer() async {
     final result = await openPage<String>(
       context,
-      PageFrame(
-        title: '사입삼촌 선택',
-        children: [
-          if (app.workspace.partners.isEmpty)
-            const EmptyState('연결된 사입삼촌이 없어요', '초안 작성 후 사입삼촌 탭에서 연결해 주세요.'),
-          for (final a in app.workspace.partners)
-            Builder(
-              builder: (context) => Item(
-                a.name,
-                subtitle: '${a.s('pickupArea')} · ${a.s('deadline')}',
-                onTap: () => Navigator.pop(context, a.id),
-              ),
-            ),
-        ],
-      ),
+      RequestPartnerPicker(selectedId: peer),
     );
     if (result != null && mounted) {
       peer = result;
@@ -197,95 +314,77 @@ class _RequestEditorState extends State<RequestEditor> {
           onPressed: () => submit(app, selected),
         ),
         children: [
-          PageHeading(
-            editing ? '상품과 배송지를\n다시 확인해 주세요' : '어떤 상품을\n사입할까요?',
-            description: '상품·옵션 하나씩 요청할 수 있어요.',
-          ),
+          const Section('담당 사입삼촌'),
+          if (selected == null)
+            FigmaSurface(
+              children: [
+                Item(
+                  '사입삼촌을 선택해 주세요',
+                  leading: const FigmaIcon('person'),
+                  onTap: editing ? null : choosePeer,
+                ),
+              ],
+            )
+          else
+            RequestPartnerCard(
+              account: selected,
+              selected: true,
+              onPressed: editing ? null : choosePeer,
+            ),
+          if (selected != null && !editing)
+            Inset(
+              child: TdsTextButton(
+                size: TdsTextButtonSize.small,
+                onPressed: choosePeer,
+                child: const Text('담당 삼촌 변경'),
+              ),
+            ),
           ProfileInputTheme(
             child: FigmaSurface(
               children: [
-                Item(
-                  '담당 사입삼촌',
-                  leading: const FigmaIcon('person', selected: true),
-                  subtitle: selected == null
-                      ? '선택해 주세요 · 연결 전에도 작성할 수 있어요'
-                      : '${selected.name} · ${selected.s('pickupArea')}',
-                  onTap: editing ? null : () => choosePeer(app),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: TdsBorder(),
-                ),
-                const Section('상품 정보'),
-                Field(
-                  '상품명',
-                  controller: fields['product']!,
-                  placeholder: '예: 스트라이프 셔츠',
-                  onChanged: (_) => changed(),
-                ),
-                Field(
-                  '색상·사이즈 등 옵션',
-                  controller: fields['option']!,
-                  placeholder: '예: 아이보리 · M',
-                  onChanged: (_) => changed(),
-                ),
-                Field(
-                  '요청 수량',
-                  controller: fields['quantity']!,
-                  numeric: true,
-                  onChanged: (_) => changed(),
-                ),
-                AttachmentField(
-                  label: '상품 사진',
-                  multiple: true,
-                  ids: photos,
-                  onChanged: (v) {
-                    photos = v;
-                    changed();
-                  },
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: TdsBorder(),
-                ),
                 const Section('도매처'),
-                Field(
-                  '도매처 이름',
-                  controller: fields['wholesaler']!,
-                  onChanged: (_) => changed(),
-                ),
-                Field(
-                  '시장·상가·건물·층',
-                  controller: fields['location']!,
-                  placeholder: '예: 디오트 2층 A-18',
-                  onChanged: (_) => changed(),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                  child: TdsBorder(),
-                ),
-                const Section('받을 곳'),
-                Field(
-                  '주소',
-                  controller: fields['address']!,
-                  onChanged: (_) => changed(),
-                ),
-                Field(
-                  '상세주소',
-                  controller: fields['addressDetail']!,
-                  onChanged: (_) => changed(),
-                ),
-                Field(
-                  '요청사항',
-                  controller: fields['note']!,
-                  multiline: true,
-                  placeholder: '삼촌에게 전할 내용이 있으면 적어주세요',
-                  onChanged: (_) => changed(),
-                ),
+                for (var i = 0; i < wholesalerFields.length; i++) ...[
+                  if (i > 0)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      child: TdsBorder(),
+                    ),
+                  Item('도매처 ${i + 1}'),
+                  Field(
+                    '도매처 이름',
+                    key: ValueKey(wholesalerFields[i].wholesaler),
+                    controller: wholesalerFields[i].wholesaler,
+                    onChanged: (_) => changed(),
+                  ),
+                  Field(
+                    '위치',
+                    key: ValueKey(wholesalerFields[i].location),
+                    controller: wholesalerFields[i].location,
+                    placeholder: '예: 디오트 2층 A-18',
+                    onChanged: (_) => changed(),
+                  ),
+                  if (wholesalerFields.length > 1)
+                    Inset(
+                      child: TdsTextButton(
+                        size: TdsTextButtonSize.small,
+                        onPressed: () => removeWholesaler(i),
+                        child: const Text('이 도매처 삭제'),
+                      ),
+                    ),
+                ],
                 const TdsSpacing(8),
               ],
             ),
           ),
+          if (wholesalerFields.length < maxRequestWholesalers)
+            ActionButton(
+              '도매처 추가 (${wholesalerFields.length}/$maxRequestWholesalers)',
+              icon: 'plus',
+              weak: true,
+              onPressed: addWholesaler,
+            )
+          else
+            const Info('도매처는 최대 10곳까지 입력할 수 있어요.'),
           if (!editing) Info(draftStatusText(), error: saver!.error != null),
           if (saver!.error != null)
             ActionButton(
@@ -324,9 +423,11 @@ class RequestHub extends StatelessWidget {
           const EmptyState('작성 중인 요청이 없어요', '연결 전에도 초안을 작성할 수 있어요.'),
         for (final d in drafts) ...[
           Item(
-            d.s('product').isEmpty ? '제목 없는 초안' : d.s('product'),
-            leading: const FigmaIcon('shirt'),
-            subtitle: '${d.s('wholesaler')} · ${displayTime(d.s('updatedAt'))}',
+            requestTitle(d.data),
+            leading: FigmaIcon(
+              isWholesalerOnlyRequest(d.data) ? 'store' : 'shirt',
+            ),
+            subtitle: displayTime(d.s('updatedAt')),
             onTap: () => openPage(context, RequestEditor(draftId: d.id)),
           ),
           ActionButton(
@@ -378,6 +479,9 @@ class RequestDetailPage extends StatelessWidget {
         children: [EmptyState('요청을 열 수 없어요', '현재 계정이 참여한 요청인지 확인해 주세요.')],
       );
     }
+    final wholesalerOnly = isWholesalerOnlyRequest(r.data);
+    final wholesalers = requestWholesalers(r.data).where(_hasWholesalerValue).toList();
+    final title = requestTitle(r.data);
     final retailer = app.session.current!.id == r.s('retailerId'),
         peer = r.s(retailer ? 'uncleId' : 'retailerId');
     final deliveries = app.workspace
@@ -400,7 +504,9 @@ class RequestDetailPage extends StatelessWidget {
               if (await confirm(
                 context,
                 '요청을 수락할까요?',
-                '상품·수량·도매처·배송지를 확인했어요.',
+                wholesalerOnly
+                    ? '도매처와 담당 정보를 확인했어요.'
+                    : '상품·수량·도매처·배송지를 확인했어요.',
               )) {
                 await app.workspace.act(id, 'accept', {}, r.version, newId());
               }
@@ -430,7 +536,7 @@ class RequestDetailPage extends StatelessWidget {
         : null;
     return PageFrame(
       title: '사입 요청 상세',
-      navigationSubtitle: '${r.s('product')} · ${r.statusLabel}',
+      navigationSubtitle: '$title · ${r.statusLabel}',
       bottom: primary,
       children: [
         FigmaSurface(
@@ -454,8 +560,12 @@ class RequestDetailPage extends StatelessWidget {
               ),
             ),
             PageHeading(
-              r.s('product'),
-              description: '${r.s('option')} · 요청 ${r.quantity}장',
+              title,
+              description: wholesalerOnly
+                  ? (wholesalerOnly && wholesalers.length > 1
+                        ? '도매처 ${wholesalers.length}곳'
+                        : null)
+                  : '${r.s('option')} · 요청 ${r.quantity}장',
             ),
             const TdsBorder(),
             Item(
@@ -477,9 +587,10 @@ class RequestDetailPage extends StatelessWidget {
               ? '요청 처리를 마쳤어요'
               : '사입 진행 상황을 확인해요',
         ),
-        FigmaSurface(
-          children: [
-            LayoutBuilder(
+        if (!wholesalerOnly)
+          FigmaSurface(
+            children: [
+              LayoutBuilder(
               builder: (context, constraints) => Wrap(
                 children: [
                   for (final metric in {
@@ -525,13 +636,24 @@ class RequestDetailPage extends StatelessWidget {
               ),
             ],
           ),
-        const Section('사입·배송 정보'),
+        Section(wholesalerOnly ? '도매처 정보' : '사입·배송 정보'),
         FigmaSurface(
           children: [
-            Item(
-              '사입할 곳',
-              subtitle: '${r.s('wholesaler')} · ${r.s('location')}',
-            ),
+            if (wholesalerOnly)
+              for (var i = 0; i < wholesalers.length; i++)
+                Item(
+                  textOf(wholesalers[i], 'wholesaler').trim().isEmpty
+                      ? '도매처 ${i + 1}'
+                      : textOf(wholesalers[i], 'wholesaler').trim(),
+                  subtitle: textOf(wholesalers[i], 'location').trim().isEmpty
+                      ? null
+                      : textOf(wholesalers[i], 'location').trim(),
+                )
+            else
+              Item(
+                '사입할 곳',
+                subtitle: '${r.s('wholesaler')} · ${r.s('location')}',
+              ),
             Item(
               '이번 요청 수령지',
               subtitle: '${r.s('address')} ${r.s('addressDetail')}',
@@ -539,7 +661,7 @@ class RequestDetailPage extends StatelessWidget {
             if (r.s('note').isNotEmpty) Item('요청사항', subtitle: r.s('note')),
           ],
         ),
-        if (r.list('photos').isNotEmpty)
+        if (!wholesalerOnly && r.list('photos').isNotEmpty)
           FigmaSurface(
             children: [
               for (final photo in r.list('photos'))
@@ -762,6 +884,7 @@ class _RequestActionPageState extends State<RequestActionPage> {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), r = app.workspace.request(widget.id)!;
+    final wholesalerOnly = isWholesalerOnlyRequest(r.data);
     if (widget.action == 'result') return acquisition(context, r);
     if (widget.action == 'receive') return receipt(context, r);
     final title = switch (widget.action) {
@@ -773,7 +896,9 @@ class _RequestActionPageState extends State<RequestActionPage> {
     };
     return PageFrame(
       title: title,
-      subtitle: '${r.s('product')} · 요청 ${r.quantity}개',
+      subtitle: wholesalerOnly
+          ? requestTitle(r.data)
+          : '${requestTitle(r.data)} · 요청 ${r.quantity}개',
       bottom: ActionButton(
         switch (widget.action) {
           'result' => '결과 공유',
@@ -875,7 +1000,9 @@ class _RequestActionPageState extends State<RequestActionPage> {
                           Builder(
                             builder: (context) => Item(
                               '${displayTime(d.s('createdAt'))} · ${d.n('quantity')}개',
-                              subtitle: '${d.s('product')} · ${d.s('option')}',
+                              subtitle: isWholesalerOnlyRequest(r.data)
+                                  ? requestTitle(r.data)
+                                  : '${d.s('product')} · ${d.s('option')}',
                               onTap: () => Navigator.pop(context, d.id),
                             ),
                           ),
@@ -920,10 +1047,11 @@ class _RequestActionPageState extends State<RequestActionPage> {
   Widget acquisition(BuildContext context, RequestRecord current) {
     final app = AppScope.of(context),
         remaining = initial.remaining - additional;
+    final unit = isWholesalerOnlyRequest(initial.data) ? '건' : '장';
     return PageFrame(
       title: '확보 결과 입력',
       bottom: ActionButton(
-        '추가 확보 $additional장 공유',
+        '추가 확보 $additional$unit 공유',
         bottom: true,
         onPressed: () async {
           await app.workspace.act(
@@ -950,9 +1078,10 @@ class _RequestActionPageState extends State<RequestActionPage> {
         FigmaSurface(
           children: [
             Item(
-              initial.s('product'),
-              subtitle:
-                  '${initial.s('option')} · 요청 ${initial.quantity}장\n이전 누적 확보 ${initial.acquired}장 · 이전 전달 ${initial.delivered}장',
+              requestTitle(initial.data),
+              subtitle: isWholesalerOnlyRequest(initial.data)
+                  ? '이전 누적 확보 ${initial.acquired}건 · 이전 전달 ${initial.delivered}건'
+                  : '${initial.s('option')} · 요청 ${initial.quantity}장\n이전 누적 확보 ${initial.acquired}장 · 이전 전달 ${initial.delivered}장',
             ),
           ],
         ),
@@ -972,14 +1101,14 @@ class _RequestActionPageState extends State<RequestActionPage> {
             ),
           ],
         ),
-        Info('추가 가능한 수량 0–${initial.remaining}장'),
+        Info('추가 가능한 수량 0–${initial.remaining}$unit'),
         const Section('저장 후 진행 상황'),
         FigmaSurface(
           children: [
-            QuantityRow('기존 확보', '${initial.acquired}장'),
-            QuantityRow('저장 후 누적 확보', '${initial.acquired + additional}장'),
-            QuantityRow('확보 후 전달 대기', '${initial.available + additional}장'),
-            QuantityRow('남은 미송', '$remaining장'),
+            QuantityRow('기존 확보', '${initial.acquired}$unit'),
+            QuantityRow('저장 후 누적 확보', '${initial.acquired + additional}$unit'),
+            QuantityRow('확보 후 전달 대기', '${initial.available + additional}$unit'),
+            QuantityRow('남은 미송', '$remaining$unit'),
           ],
         ),
         if (remaining > 0) ...[
@@ -1015,6 +1144,8 @@ class _RequestActionPageState extends State<RequestActionPage> {
 
   Widget receipt(BuildContext context, RequestRecord r) {
     final app = AppScope.of(context);
+    final wholesalerOnly = isWholesalerOnlyRequest(r.data);
+    final unit = wholesalerOnly ? '건' : '장';
     final batches =
         app.workspace
             .records('deliveries')
@@ -1031,9 +1162,9 @@ class _RequestActionPageState extends State<RequestActionPage> {
         r.received + actual == r.quantity - r.cancelled &&
         r.delivered == r.quantity - r.cancelled;
     return PageFrame(
-      title: '상품 수령 확인',
+      title: wholesalerOnly ? '수령 확인' : '상품 수령 확인',
       bottom: ActionButton(
-        '$actual장 수령 확인${completes ? ' · 요청 완료' : ''}',
+        wholesalerOnly ? '수령 확인' : '$actual장 수령 확인',
         bottom: true,
         onPressed: () async {
           await app.workspace.receive(
@@ -1047,13 +1178,15 @@ class _RequestActionPageState extends State<RequestActionPage> {
         },
       ),
       children: [
-        PageHeading('이번에 받은 ${current.n('quantity')}장이 맞나요?'),
+        if (!wholesalerOnly)
+          PageHeading('이번에 받은 ${current.n('quantity')}장이 맞나요?'),
         FigmaSurface(
           children: [
             Item(
-              '${app.workspace.profile(r.s('uncleId'))?.name ?? '사입삼촌'} · ${current.s('product')}',
-              subtitle:
-                  '${current.s('option')} · 전체 받을 수량 ${r.quantity - r.cancelled}장',
+              '${app.workspace.profile(r.s('uncleId'))?.name ?? '사입삼촌'} · ${requestTitle(r.data)}',
+              subtitle: wholesalerOnly
+                  ? '이번 전달 내용을 확인해 주세요.'
+                  : '${current.s('option')} · 전체 받을 수량 ${r.quantity - r.cancelled}장',
             ),
           ],
         ),
@@ -1063,24 +1196,24 @@ class _RequestActionPageState extends State<RequestActionPage> {
             for (var i = 0; i < batches.length; i++)
               QuantityRow(
                 '${i + 1}차 · ${displayTime(batches[i].s('createdAt'))}',
-                '${batches[i].n('quantity')}장 · ${batches[i].id == current.id
+                '${batches[i].n('quantity')}$unit · ${batches[i].id == current.id
                     ? '이번 확인'
                     : batches[i].b('receiptRecorded')
                     ? '수령 확인됨'
                     : '확인 대기'}',
               ),
             const TdsBorder(),
-            QuantityRow('누적 전달', '${r.delivered}장'),
-            QuantityRow('남은 미송', '${r.backorder}장'),
+            QuantityRow('누적 전달', '${r.delivered}$unit'),
+            QuantityRow('남은 미송', '${r.backorder}$unit'),
           ],
         ),
         FigmaSurface(
           tinted: true,
           children: [
             Item(
-              '상품·옵션·수량을 비교해 주세요',
+              wholesalerOnly ? '전달 내용을 확인해 주세요' : '상품·옵션·수량을 비교해 주세요',
               subtitle: completes
-                  ? '이번 ${current.n('quantity')}장이 맞으면 요청을 마쳐요.'
+                  ? '수령 확인 후 7일이 지나면 완료 내역으로 이동해요.'
                   : '이번 전달분만 확인해요. 남은 미송과 다른 전달분은 계속 확인할 수 있어요.',
             ),
           ],
@@ -1088,19 +1221,19 @@ class _RequestActionPageState extends State<RequestActionPage> {
         FigmaSurface(
           children: [
             Item(
-              '상품이나 수량이 달라요',
+              wholesalerOnly ? '전달 내용에 문제가 있어요' : '상품이나 수량이 달라요',
               onTap: () => setState(() => mismatch = !mismatch),
             ),
             if (mismatch) ...[
               Field(
-                '실제 받은 수량',
+                wholesalerOnly ? '실제 받은 요청 수' : '실제 받은 수량',
                 controller: quantity,
                 numeric: true,
                 onChanged: (_) => setState(() {}),
               ),
               Field('수량 차이 설명 (일치하면 선택)', controller: reason, multiline: true),
               Item(
-                '상품·옵션 문제 알리기',
+                wholesalerOnly ? '전달 문제 알리기' : '상품·옵션 문제 알리기',
                 onTap: () =>
                     openPage(context, RequestActionPage(widget.id, 'issue')),
               ),
@@ -1202,6 +1335,21 @@ class _ProposalPageState extends State<ProposalPage> {
     super.dispose();
   }
 
+  Future<void> chooseAddress() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    final result = await openPage<AddressSearchResult>(
+      context,
+      const AddressSearchPage(),
+    );
+    if (!mounted || result == null) return;
+    setState(() {
+      if (fields['address']!.text.trim() != result.displayAddress) {
+        fields['addressDetail']!.clear();
+      }
+      fields['address']!.text = result.displayAddress;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), r = app.workspace.request(widget.id)!;
@@ -1257,7 +1405,20 @@ class _ProposalPageState extends State<ProposalPage> {
                 'addressDetail': '상세주소',
                 'note': '요청사항',
               }.entries)
-                Field(e.value, controller: fields[e.key]!),
+                if (e.key == 'address')
+                  TdsTextFieldButton(
+                    key: const ValueKey('proposal-address-selector'),
+                    variant: TdsTextFieldVariant.box,
+                    label: e.value,
+                    labelOption: TdsTextFieldLabelOption.sustain,
+                    value: fields['address']!.text,
+                    placeholder: '주소 검색',
+                    paddingTop: 10,
+                    paddingBottom: 10,
+                    onPressed: chooseAddress,
+                  )
+                else
+                  Field(e.value, controller: fields[e.key]!),
               Field(
                 '변경 후 요청 수량',
                 controller: fields['quantity']!,
@@ -1433,8 +1594,8 @@ class DeliveryCard extends StatelessWidget {
           ),
         ),
         Item(
-          d.s('product'),
-          subtitle: d.s('option'),
+          requestTitle(r.data),
+          subtitle: isWholesalerOnlyRequest(r.data) ? null : d.s('option'),
           onTap: () => openPage(context, RequestDetailPage(r.id)),
         ),
         QuantityRow('이번 전달', '${d.n('quantity')}장'),
@@ -1550,8 +1711,10 @@ class BackorderReplyPage extends StatelessWidget {
         FigmaSurface(
           children: [
             Item(
-              r.s('product'),
-              subtitle: '${r.s('option')} · ${r.s('recheck')} 재확인',
+              requestTitle(r.data),
+              subtitle: isWholesalerOnlyRequest(r.data)
+                  ? '${r.s('recheck')} 재확인'
+                  : '${r.s('option')} · ${r.s('recheck')} 재확인',
             ),
             QuantityRow('확보 완료', '${r.acquired}장'),
             QuantityRow('남은 미송', '${r.backorder}장'),

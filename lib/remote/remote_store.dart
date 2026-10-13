@@ -3,15 +3,22 @@ import 'package:flutter/widgets.dart';
 import 'package:sembast/sembast.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../local/domain/models.dart';
+import 'remote_config.dart';
 
 /// A server snapshot is authoritative. Sembast stores only device preferences
 /// and the authenticated user's failed outbox, never shared workspace state.
 class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
-  RemoteStore(this.client, this.device, {this.liveUpdates = true}) {
+  RemoteStore(
+    this.client,
+    this.device, {
+    RemoteConfigRepository? config,
+    this.liveUpdates = true,
+  }) : config = config ?? NoopRemoteConfigStore() {
     WidgetsBinding.instance.addObserver(this);
   }
   final SupabaseClient client;
   final Database device;
+  final RemoteConfigRepository config;
   final bool liveUpdates;
   WorkspaceSnapshot snapshot = const WorkspaceSnapshot({});
   final preferences = stringMapStoreFactory.store('remotePreferences');
@@ -22,6 +29,7 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
   bool _closed = false;
   int _generation = 0;
   int _refreshSequence = 0;
+  int _pollTicks = 0;
   RealtimeChannel? _channel;
   Timer? _poll;
   Timer? _debounce;
@@ -48,11 +56,15 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
     loading = id != null;
     _poll?.cancel();
     _debounce?.cancel();
+    _pollTicks = 0;
     final old = _channel;
     _channel = null;
     if (old != null) unawaited(client.removeChannel(old));
     notifyListeners();
-    if (id == null) return;
+    if (id == null) {
+      unawaited(_loadConfig());
+      return;
+    }
     try {
       await client.rpc(
         'saip_command',
@@ -62,6 +74,8 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
           'operation_id': 'bootstrap-$id',
         },
       );
+      if (generation != _generation || _closed) return;
+      await _loadConfig();
       if (generation != _generation || _closed) return;
       await refresh();
       if (generation != _generation || _closed || !liveUpdates) return;
@@ -83,11 +97,15 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
             if (status == RealtimeSubscribeStatus.subscribed) scheduleRefresh();
           });
       // Polling covers reconnects, partner profile changes and delete events.
-      _poll = Timer.periodic(
-        const Duration(seconds: 20),
-        (_) => scheduleRefresh(),
-      );
+      _poll = Timer.periodic(const Duration(seconds: 20), (_) {
+        _pollTicks++;
+        if (_pollTicks % 15 == 0) unawaited(_loadConfig());
+        scheduleRefresh();
+      });
     } catch (e) {
+      if (e is PostgrestException && e.code == 'P0001') {
+        unawaited(_loadConfig());
+      }
       if (generation == _generation && !_closed) {
         error = friendlyError(e);
         loading = false;
@@ -169,15 +187,23 @@ class RemoteStore extends ChangeNotifier with WidgetsBindingObserver {
       if (id == userId) await refresh().catchError((Object _) {});
       return result;
     } catch (e) {
-      if (e is PostgrestException && e.code == 'P0001') scheduleRefresh();
+      if (e is PostgrestException && e.code == 'P0001') {
+        scheduleRefresh();
+        unawaited(_loadConfig());
+      }
       throw AppFailure(friendlyError(e));
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) scheduleRefresh();
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_loadConfig());
+      scheduleRefresh();
+    }
   }
+
+  Future<void> _loadConfig() => config.load().catchError((Object _) {});
 
   @override
   void dispose() {

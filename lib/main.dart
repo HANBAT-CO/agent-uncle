@@ -9,6 +9,7 @@ import 'app.dart';
 import 'local/app_services.dart';
 import 'local/data/open_database.dart';
 import 'core/config/supabase_config.dart';
+import 'remote/remote_config.dart';
 import 'remote/services.dart';
 
 Future<void> main() async {
@@ -66,7 +67,14 @@ class _LocalBootstrapState extends State<LocalBootstrap> {
       );
       _supabaseReady = true;
     }
-    return openRemoteServices(Supabase.instance.client, database);
+    final client = Supabase.instance.client;
+    final config = RemoteConfigStore(client, database);
+    await config.initialize();
+    final services = openRemoteServices(client, database, config);
+    final initialConfig = config.load();
+    final opened = await services;
+    await initialConfig;
+    return opened;
   }
 
   static bool _supabaseReady = false;

@@ -15,6 +15,7 @@ import 'common.dart';
 import 'home.dart';
 import 'profile_avatar.dart';
 import 'profile_time_field.dart';
+import 'remote_gate.dart';
 import 'region_selection.dart';
 import 'welcome.dart';
 
@@ -83,7 +84,7 @@ class AccountLanding extends StatelessWidget {
     if (!session.current!.complete) {
       return ProfileForm(key: ValueKey(session.current!.id), signup: true);
     }
-    return HomeShell(key: ValueKey(session.current!.id));
+    return RemoteGate(child: HomeShell(key: ValueKey(session.current!.id)));
   }
 }
 
@@ -1440,6 +1441,8 @@ class MyPage extends StatelessWidget {
       'delivery',
       'chat',
     ].where((key) => notifications[key] != false).length;
+    final documentLabel = businessDocumentVerificationLabel(a.data);
+    final support = app.config.current.support;
     Widget divider() => const Padding(
       padding: EdgeInsets.symmetric(horizontal: 24),
       child: TdsBorder(),
@@ -1551,13 +1554,17 @@ class MyPage extends StatelessWidget {
             Item(
               '사업자 서류',
               leading: const FigmaIcon('document'),
-              subtitle: a.s('documentId').isEmpty ? '미등록' : '제출됨 · 검증 전',
+              subtitle: documentLabel,
               onTap: () => openPage(
                 context,
                 PageFrame(
                   title: '사업자 서류',
                   children: [
-                    const Info('서류 제출 상태예요. 실제 사업자 검증은 연결되지 않았어요.'),
+                    Info(
+                      documentLabel == '미등록'
+                          ? '아직 사업자 서류를 등록하지 않았어요.'
+                          : '사업자 서류 상태는 $documentLabel이에요.',
+                    ),
                     if (a.s('documentId').isNotEmpty)
                       AttachmentPreview(a.s('documentId')),
                   ],
@@ -1574,6 +1581,32 @@ class MyPage extends StatelessWidget {
                   : '4개 중 $enabledNotifications개 알림 켜짐',
               onTap: () => openPage(context, const NotificationSettingsPage()),
             ),
+            if (support.hasAny)
+              Item(
+                '고객센터',
+                leading: const FigmaIcon('phone'),
+                subtitle: support.summary,
+                onTap: () => openPage(
+                  context,
+                  PageFrame(
+                    title: '고객센터',
+                    children: [
+                      FigmaSurface(
+                        children: [
+                          if (support.kakaoChannel.isNotEmpty)
+                            QuantityRow('카카오톡 채널', support.kakaoChannel),
+                          if (support.email.isNotEmpty)
+                            QuantityRow('이메일', support.email),
+                          if (support.phone.isNotEmpty)
+                            QuantityRow('전화', support.phone),
+                          if (support.hours.isNotEmpty)
+                            QuantityRow('운영 시간', support.hours),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Item(
               '계정 연결 정보',
               leading: const FigmaIcon('person'),

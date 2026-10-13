@@ -17,6 +17,7 @@ int? nullableNumberOf(Data data, String key) {
   if (value is String) return int.tryParse(value.trim());
   return null;
 }
+
 bool flagOf(Data data, String key) => data[key] == true;
 List<String> stringsOf(Data data, String key) =>
     (data[key] as List?)?.cast<String>() ?? const [];
@@ -27,6 +28,24 @@ const maxRequestWholesalers = 10;
 
 bool isWholesalerOnlyRequest(Data data) =>
     textOf(data, 'requestType') == 'wholesaler';
+
+String _digitsOnly(String value) => value.replaceAll(RegExp(r'\D'), '');
+
+String businessDocumentVerificationLabel(Data data) {
+  final documentId = textOf(data, 'documentId');
+  if (documentId.isEmpty) return '미등록';
+  if (textOf(data, 'verificationStatus') == 'rejected') {
+    final note = textOf(data, 'verificationNote').trim();
+    return note.isEmpty ? '재제출 필요' : '재제출 필요 · $note';
+  }
+  if (textOf(data, 'verificationStatus') == 'verified' &&
+      textOf(data, 'verifiedDocumentId') == documentId &&
+      _digitsOnly(textOf(data, 'verifiedBusinessNumber')) ==
+          _digitsOnly(textOf(data, 'businessNumber'))) {
+    return '검증 완료';
+  }
+  return '제출됨 · 검증 전';
+}
 
 /// 기존 단일 도매처 요청도 같은 목록으로 읽는다. 빈 초안 항목은 유지한다.
 List<Data> requestWholesalers(Data data) {
@@ -61,7 +80,9 @@ String requestTitle(Data data) {
       .where((name) => name.isNotEmpty)
       .toList();
   if (names.isEmpty) return '새 사입 요청';
-  return names.length == 1 ? names.first : '${names.first} 외 ${names.length - 1}곳';
+  return names.length == 1
+      ? names.first
+      : '${names.first} 외 ${names.length - 1}곳';
 }
 
 class AppFailure implements Exception {
@@ -133,9 +154,7 @@ class RequestRecord extends Record {
   const RequestRecord(super.id, super.data);
   DateTime? get receivedAt =>
       DateTime.tryParse(s('receivedAt')) ??
-      (s('status') == 'completed'
-          ? DateTime.tryParse(s('updatedAt'))
-          : null);
+      (s('status') == 'completed' ? DateTime.tryParse(s('updatedAt')) : null);
   int get quantity => n('quantity');
   int get acquired => n('acquired');
   int get delivered => n('delivered');

@@ -8,6 +8,7 @@ import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
 import 'entry.dart';
+import 'remote_gate.dart';
 import 'retailer_home.dart';
 import 'retailer_purchase.dart';
 import 'social.dart';
@@ -316,6 +317,9 @@ class HomeTabPage extends StatelessWidget {
               mapOf(a.data, 'notificationSettings')[n.s('kind')] != false,
         )
         .length;
+    final operationNotices = app.config.current
+        .visibleNoticesFor(a.role)
+        .length;
     final page = switch (index) {
       0 =>
         a.role == AppRole.retailer
@@ -337,12 +341,18 @@ class HomeTabPage extends StatelessWidget {
               semanticLabel: '알림',
               symbol: 'bell',
               icon: const FigmaIcon('bell'),
-              unreadCount: notices,
+              unreadCount: notices + operationNotices,
               onPressed: () => openPage(context, const NoticesPage()),
             )
           : null,
       scrollKey: '${a.id}-tab-$index',
-      children: [if (isHome) const TdsSpacing(8), page, const TdsSpacing(88)],
+      children: [
+        if (isHome) const TdsSpacing(8),
+        if (isHome) const RecommendedUpdateBanner(),
+        if (isHome) const RemoteNoticeCard(),
+        page,
+        const TdsSpacing(88),
+      ],
     );
   }
 }

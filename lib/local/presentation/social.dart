@@ -8,6 +8,7 @@ import 'common.dart';
 import 'requests.dart';
 import 'delivery.dart';
 import 'profile_avatar.dart';
+import 'remote_gate.dart';
 import 'connection_search.dart';
 import 'chat_message_actions.dart';
 
@@ -1142,7 +1143,11 @@ class _NoticesPageState extends State<NoticesPage> {
         onChanged: (index) => setState(() => unreadOnly = index == 1),
       ),
       children: [
-        if (groups.isEmpty)
+        const OperationNoticeSection(),
+        if (groups.isEmpty &&
+            app.config.current
+                .visibleNoticesFor(app.session.current?.role)
+                .isEmpty)
           EmptyState(
             unreadOnly && notices.isNotEmpty
                 ? '모든 알림을 확인했어요'

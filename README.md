@@ -25,6 +25,7 @@ flutter run --dart-define=LOCAL_MODE=true
 UI는 `tds_mobile_flutter` 컴포넌트만 사용합니다. 규칙과 검사 방법은 [TDS UI 정책](docs/tds-ui-policy.md),
 사용 가능한 컴포넌트는 [TDS 컴포넌트 카탈로그](docs/tds-components.md)를 참고하세요.
 에이전트 작업 규칙은 [AGENTS.md](AGENTS.md)에 있습니다.
+Conductor에서 Codex 보조 작업을 실행할 때는 [인증 실행기 안내](docs/codex-runner.md)를 참고하세요.
 로고·팔레트·유리 표면의 적용 기준은 [브랜드 테마 안내](docs/brand-theme.md)를 참고하세요.
 정식 약관·탈퇴·사업자 검증 정책과 원격 푸시는 별도 작업입니다.
 

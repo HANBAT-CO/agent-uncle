@@ -7,7 +7,7 @@
 
 ```sh
 flutter pub get
-flutter run -d chrome --web-port 5188
+flutter run --target lib/main.dart -d chrome --web-port 5188
 ```
 
 기본 실행은 Supabase 서버 모드입니다. Google 또는 카카오로 로그인하면 역할 선택·가입을
@@ -16,7 +16,7 @@ flutter run -d chrome --web-port 5188
 
 ```sh
 # 실제 인증 없이 기존 로컬 계정으로 개발·시연하기
-flutter run --dart-define=LOCAL_MODE=true
+flutter run --target lib/main.dart --dart-define=LOCAL_MODE=true
 ```
 
 서버 모드로 로컬 테스트 계정이나 거래를 자동 이관하지 않습니다.

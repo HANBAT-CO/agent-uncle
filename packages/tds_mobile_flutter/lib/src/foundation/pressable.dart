@@ -17,6 +17,7 @@ class TdsPressable extends StatefulWidget {
     this.skipTraversal = false,
     this.onPressStart,
     this.onPressEnd,
+    this.activateOnLongPress = false,
     this.activateOnPressStart = false,
     this.activateOnEnterDown = false,
     this.activateOnKeyDown = false,
@@ -27,7 +28,7 @@ class TdsPressable extends StatefulWidget {
     this.focusableWhenDisabled = false,
     this.onDisabledTap,
     super.key,
-  });
+  }) : assert(!activateOnLongPress || !activateOnPressStart);
   final Widget Function(
     BuildContext context,
     bool pressed,
@@ -49,6 +50,9 @@ class TdsPressable extends StatefulWidget {
   /// Keypads commit on pointer down, while ordinary controls commit on tap.
   /// Semantics and keyboard activation remain available in either mode.
   final bool activateOnPressStart;
+
+  /// 포인터는 길게 눌렀을 때만 활성화하고 키보드·접근성 동작은 유지한다.
+  final bool activateOnLongPress;
   final bool activateOnEnterDown;
 
   /// ListRow synthesizes clicks for every Enter/Space keydown (including
@@ -137,6 +141,9 @@ class _TdsPressableState extends State<TdsPressable> {
     enabled: widget.enabled,
     label: widget.semanticLabel,
     onTap: widget.enabled ? _onActivate : null,
+    onLongPress: widget.enabled && widget.activateOnLongPress
+        ? _onActivate
+        : null,
     child: Focus(
       focusNode: _focus,
       autofocus: widget.autofocus,
@@ -222,7 +229,13 @@ class _TdsPressableState extends State<TdsPressable> {
             onTapCancel: widget.enabled && !widget.activateOnPressStart
                 ? () => _press(false)
                 : null,
-            onTap: widget.enabled && !widget.activateOnPressStart
+            onLongPress: widget.enabled && widget.activateOnLongPress
+                ? _onActivate
+                : null,
+            onTap:
+                widget.enabled &&
+                    !widget.activateOnPressStart &&
+                    !widget.activateOnLongPress
                 ? (_onActivate == null ? null : _pointerActivate)
                 // Disabled DOM controls suppress click bubbling. Claim the
                 // gesture here so a compound trigger's fallback cannot win it.

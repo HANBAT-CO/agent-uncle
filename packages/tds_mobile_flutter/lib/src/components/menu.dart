@@ -26,6 +26,7 @@ class TdsMenuTrigger extends StatefulWidget {
     required this.dropdown,
     this.open,
     this.defaultOpen = false,
+    this.openOnLongPress = false,
     this.placement = TdsOverlayPlacement.bottomStart,
     this.onOpen,
     this.onClose,
@@ -35,6 +36,9 @@ class TdsMenuTrigger extends StatefulWidget {
   final Widget child, dropdown;
   final bool? open;
   final bool defaultOpen;
+
+  /// 채팅 등의 문맥 메뉴를 길게 눌러 연다. 기본 탭 메뉴 동작은 유지한다.
+  final bool openOnLongPress;
   final TdsOverlayPlacement placement;
   final VoidCallback? onOpen, onClose;
   final String closeLabel;
@@ -152,6 +156,7 @@ class _TdsMenuTriggerState extends State<TdsMenuTrigger> {
         builder: (context, child) => TdsPressable(
           focusNode: focus,
           activateOnEnterDown: true,
+          activateOnLongPress: widget.openOnLongPress,
           skipTraversal: activation.hasMembers,
           button: !activation.hasMembers,
           onPressed: () {
@@ -160,7 +165,9 @@ class _TdsMenuTriggerState extends State<TdsMenuTrigger> {
           },
           builder: (_, _, _, _) => child!,
         ),
-        child: TdsActivationScope(controller: activation, child: widget.child),
+        child: widget.openOnLongPress
+            ? widget.child
+            : TdsActivationScope(controller: activation, child: widget.child),
       ),
     ),
   );

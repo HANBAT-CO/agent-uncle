@@ -63,7 +63,7 @@ class _RetailerSocialFixture {
     await session.saveProfile({
       'name': label,
       'contact': role == AppRole.uncle ? label : '담당자',
-      'phone': '01012345678',
+      'phone': role == AppRole.uncle ? '01087654321' : '01012345678',
       'businessName': label,
       'businessNumber': '1234567890',
       'documentId': file,

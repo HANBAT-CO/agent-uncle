@@ -13,6 +13,30 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       session.current?.id ?? (throw const AppFailure('로그인이 필요해요.'));
   @override
   WorkspaceSnapshot get snapshot => store.snapshot;
+  static const _directoryFields = [
+    'name',
+    'nickname',
+    'publicCode',
+    'role',
+    'complete',
+    'photoId',
+    'pickupArea',
+    'deliveryArea',
+    'deadline',
+    'holiday',
+    'intro',
+    'working',
+    'fee',
+  ];
+
+  Data _directoryProfile(Account account) => {
+    for (final key in _directoryFields)
+      if (account.data.containsKey(key)) key: account.data[key],
+  };
+
+  Account _directoryAccount(Account account) =>
+      Account(account.id, _directoryProfile(account));
+
   bool _belongs(Data r) => [
     textOf(r, 'retailerId'),
     textOf(r, 'uncleId'),
@@ -260,7 +284,84 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
             : '이미 연결 수락을 기다리고 있어요.',
       );
     }
-    return peer;
+    return _directoryAccount(peer);
+  }
+
+  @override
+  Future<List<Account>> searchPartners({
+    String query = '',
+    String region = '',
+    int? minFee,
+    int? maxFee,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final me = session.current ?? (throw const AppFailure('로그인이 필요해요.'));
+    if (!me.complete) {
+      throw const AppFailure('프로필을 먼저 완료해 주세요.');
+    }
+    final myRole = me.role ?? (throw const AppFailure('역할을 선택해 주세요.'));
+    if (limit < 1 || limit > 50 || offset < 0) {
+      throw const AppFailure('검색 조건을 다시 확인해 주세요.');
+    }
+    if ((minFee != null && (minFee < 0 || minFee > maxPartnerFee)) ||
+        (maxFee != null && (maxFee < 0 || maxFee > maxPartnerFee))) {
+      throw const AppFailure('검색 조건을 다시 확인해 주세요.');
+    }
+    if (minFee != null && maxFee != null && minFee > maxFee) {
+      throw const AppFailure('검색 조건을 다시 확인해 주세요.');
+    }
+    final trimmedQuery = query.trim();
+    final trimmedRegion = region.trim().toLowerCase();
+    final exactPublicCode = RegExp(r'^#[0-9]{4}$').hasMatch(trimmedQuery)
+        ? trimmedQuery.toUpperCase()
+        : '';
+    final lowerQuery = trimmedQuery.toLowerCase();
+    final matches =
+        snapshot.accounts.where((account) {
+          if (!account.complete ||
+              account.id == me.id ||
+              account.role == null) {
+            return false;
+          }
+          if (account.role == myRole) return false;
+          if (exactPublicCode.isNotEmpty &&
+              account.publicCode != exactPublicCode) {
+            return false;
+          }
+          if (exactPublicCode.isEmpty && lowerQuery.isNotEmpty) {
+            final searchable = [account.nickname, account.name]
+                .where((value) => value.trim().isNotEmpty)
+                .map((value) => value.toLowerCase())
+                .toList();
+            if (!searchable.any((value) => value.contains(lowerQuery))) {
+              return false;
+            }
+          }
+          if (trimmedRegion.isNotEmpty) {
+            final regionText = [
+              account.s('pickupArea'),
+              account.s('deliveryArea'),
+            ].join(' ').toLowerCase();
+            if (!regionText.contains(trimmedRegion)) return false;
+          }
+          if (minFee != null || maxFee != null) {
+            final fee = account.fee;
+            if (fee == null) return false;
+            if (minFee != null && fee < minFee) return false;
+            if (maxFee != null && fee > maxFee) return false;
+          }
+          return true;
+        }).toList()..sort((left, right) {
+          final byName = left.displayName.toLowerCase().compareTo(
+            right.displayName.toLowerCase(),
+          );
+          if (byName != 0) return byName;
+          return left.id.compareTo(right.id);
+        });
+    if (offset >= matches.length) return const [];
+    final end = min(matches.length, offset + limit);
+    return matches.sublist(offset, end).map(_directoryAccount).toList();
   }
 
   @override
@@ -290,11 +391,6 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
           !flagOf(peer, 'complete') ||
           !flagOf(me, 'complete')) {
         throw const AppFailure('가입을 완료한 다른 역할의 계정과 연결해 주세요.');
-      }
-      if (DateTime.parse(
-        textOf(peer, 'codeExpires'),
-      ).isBefore(DateTime.now())) {
-        throw const AppFailure('초대 코드가 만료됐어요.');
       }
       if (s
           .all('connections')

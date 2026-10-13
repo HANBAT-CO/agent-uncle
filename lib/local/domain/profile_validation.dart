@@ -9,14 +9,19 @@ final _phoneDigits = RegExp(
 );
 final _timePattern = RegExp(r'^([01]\d|2[0-3]):[0-5]\d$');
 
+String normalizeKoreanPhone(String value) {
+  final digits = value.trim().replaceAll(RegExp(r'[^0-9]'), '');
+  if (digits.isEmpty) return '';
+  if (digits.startsWith('82')) return '0${digits.substring(2)}';
+  return digits;
+}
+
 /// 010-1234-5678처럼 구분 기호가 있어도, 숫자만 있어도 유효한
 /// 한국 휴대전화·유선번호만 허용한다. +82 국가번호는 0으로 바꿔 검사한다.
 bool isValidKoreanPhone(String value) {
   final text = value.trim();
   if (!_phoneShape.hasMatch(text)) return false;
-  var digits = text.replaceAll(RegExp(r'[ -]'), '');
-  if (digits.startsWith('+82')) digits = '0${digits.substring(3)}';
-  return _phoneDigits.hasMatch(digits);
+  return _phoneDigits.hasMatch(normalizeKoreanPhone(text));
 }
 
 /// 사업자등록번호는 10자리 숫자 또는 111-11-11111 형식만 허용한다.
@@ -27,6 +32,28 @@ bool isValidBusinessNumber(String value) {
 }
 
 bool isValidTimeText(String value) => _timePattern.hasMatch(value.trim());
+
+String? validateNickname(String value) {
+  final text = value.trim();
+  if (text.isEmpty) return null;
+  if (text.runes.length > 30) return '닉네임은 30자 이하로 입력해 주세요.';
+  return null;
+}
+
+String? validateFee(Object? value) {
+  if (value == null) return null;
+  if (value is String && value.trim().isEmpty) return null;
+  final parsed = switch (value) {
+    int number => number,
+    num number when number == number.roundToDouble() => number.toInt(),
+    String text => int.tryParse(text.trim()),
+    _ => null,
+  };
+  if (parsed == null || parsed < 0 || parsed > maxPartnerFee) {
+    return '건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.';
+  }
+  return null;
+}
 
 /// 역할별 프로필 필드 오류를 화면(폼) 순서 그대로 돌려준다.
 /// 키는 입력 필드 키(documentId·terms·privacy 포함), 값은 그대로 노출할 한국어 안내다.
@@ -63,6 +90,10 @@ Map<String, String> profileFieldErrors(
   } else if (!isValidKoreanPhone(phone)) {
     errors['phone'] = '연락처를 010-1234-5678 형식으로 입력해 주세요.';
   }
+  final nicknameError = validateNickname(text('nickname'));
+  if (nicknameError != null) errors['nickname'] = nicknameError;
+  final feeError = validateFee(values['fee']);
+  if (feeError != null) errors['fee'] = feeError;
   final businessNumber = text('businessNumber');
   if (retailer) {
     final channel = text('salesChannel');
@@ -83,8 +114,12 @@ Map<String, String> profileFieldErrors(
     requireText('address', '주소');
     requireText('addressDetail', '상세주소');
   } else {
-    requireText('pickupArea', '도매 픽업 구역');
-    requireText('deliveryArea', '소매 배송 지역');
+    if (text('pickupArea').isEmpty) {
+      errors['pickupArea'] = '도매 픽업 지역을 선택해 주세요.';
+    }
+    if (text('deliveryArea').isEmpty) {
+      errors['deliveryArea'] = '소매 배송 지역을 선택해 주세요.';
+    }
     checkTime('deadline', '요청 마감시간', required: true);
     checkTime('activityStart', '활동 시작');
     checkTime('activityEnd', '활동 종료');

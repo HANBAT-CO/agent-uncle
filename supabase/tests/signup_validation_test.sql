@@ -16,7 +16,7 @@ insert into storage.objects(bucket_id,name,metadata) values
 create temp table signup_values(role text primary key, fields jsonb);
 insert into signup_values values
  ('retailer','{"name":"매장","contact":"담당자","phone":"010-1234-5678","businessName":"사업자","businessNumber":"123-45-67890","documentId":"signup-doc-r","address":"서울","addressDetail":"1층","salesChannel":"온라인","terms":true,"privacy":true}'),
- ('uncle','{"contact":"담당자","phone":"01012345678","pickupArea":"동대문","deliveryArea":"서울","deadline":"23:00","terms":true,"privacy":true}');
+ ('uncle','{"contact":"담당자","phone":"01087654321","pickupArea":"동대문","deliveryArea":"서울","deadline":"23:00","terms":true,"privacy":true}');
 grant select on signup_values to authenticated;
 
 set local role authenticated;
@@ -56,6 +56,10 @@ select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"v
   'P0001','사업자등록번호 10자리를 확인해 주세요.','retailer malformed business number is rejected');
 select lives_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"documentId":"signup-doc-r"}}','signup-r-complete')$$,
   'formatted retailer phone and business number are accepted on signup completion');
+select ok((public.saip_snapshot()->'accounts'->'44444444-4444-4444-8444-444444444444'->>'publicCode') ~ '^#[0-9]{4}$',
+  'retailer receives a four-digit public code on signup completion');
+select is(public.saip_check_phone_available('01012345678'), true,
+  'current user can re-check the same normalized phone');
 select lives_ok($$select public.saip_command('saveProfile','{"values":{"salesChannel":"","address":"새 주소"}}','signup-r-legacy-channel')$$,
   'completed retailer may keep a legacy empty sales channel while editing');
 select is(public.saip_snapshot()->'accounts'->'44444444-4444-4444-8444-444444444444'->>'address','새 주소',
@@ -71,6 +75,8 @@ select lives_ok(format('select public.saip_command(%L,%L::jsonb,%L)',
   'uncle autosave works without name, business info or a document') from signup_values where role='uncle';
 select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"phone":"010-12"}}','signup-u-bad-phone')$$,
   'P0001','연락처를 010-1234-5678 형식으로 입력해 주세요.','uncle malformed phone is rejected');
+select is(public.saip_check_phone_available('+82 10 1234 5678'), false,
+  'another completed account blocks normalized duplicate phones');
 select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"deadline":"25:00"}}','signup-u-bad-deadline')$$,
   'P0001','요청 마감시간 항목은 22:00처럼 입력해 주세요.','uncle malformed deadline is rejected');
 select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"activityStart":"9시"}}','signup-u-bad-start')$$,
@@ -81,19 +87,33 @@ select throws_ok(format('select public.saip_command(%L,%L::jsonb,%L)',
   'saveProfile',jsonb_build_object('complete',true,'values',p.fields||jsonb_build_object(m.key,'   '))::text,'signup-u-missing-'||m.key),
   'P0001',m.message,'uncle missing '||m.key||' is identified')
 from signup_values p cross join (values
- ('contact','담당자명 항목을 입력해 주세요.'),
+ ('contact','이름(실명) 항목을 입력해 주세요.'),
  ('pickupArea','도매 픽업 구역 항목을 입력해 주세요.'),
  ('deliveryArea','소매 배송 지역 항목을 입력해 주세요.'),
  ('deadline','요청 마감시간 항목을 입력해 주세요.')
 ) m(key,message) where p.role='uncle';
+select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"phone":"+82 10 1234 5678"}}','signup-u-dup-phone')$$,
+  'P0001','이미 가입을 완료한 다른 계정에서 사용 중인 연락처예요.','uncle cannot complete with another account''s normalized phone');
+select throws_ok($$select public.saip_command('saveProfile','{"values":{"fee":"abc"}}','signup-u-bad-fee-draft')$$,
+  'P0001','건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.','invalid fee is rejected even before completion');
 select lives_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"contact":"최종 담당자"}}','signup-u-complete')$$,
   'uncle completes after role switch even with incomplete old business data and no document');
+select lives_ok($$select public.saip_command('saveProfile','{"values":{"nickname":"동대문 삼촌","fee":0,"postcode":"04524","addressSource":"road","addressRoad":"서울 중구 을지로","addressJibun":"서울 중구 1-1"}}','signup-u-directory-meta')$$,
+  'optional partner directory metadata is stored');
 select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'name','최종 담당자',
   'uncle display name follows the final contact instead of the first autosaved character');
 select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'businessNumber','12-34',
   'old business draft is preserved without blocking the uncle form');
 select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'documentStatus','missing',
   'uncle signup keeps document status missing when no optional document is provided');
+select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'nickname','동대문 삼촌',
+  'nickname is stored on the account profile');
+select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'fee','0',
+  'zero-fee profiles are stored as integers');
+select throws_ok($$select public.saip_check_phone_available('010-12')$$,
+  'P0001','연락처를 010-1234-5678 형식으로 입력해 주세요.','phone availability check rejects malformed numbers');
+select throws_ok($$select public.saip_command('saveProfile','{"values":{"fee":1000000001}}','signup-u-fee-too-large')$$,
+  'P0001','건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.','fees above the public limit are rejected');
 
 select * from finish();
 rollback;

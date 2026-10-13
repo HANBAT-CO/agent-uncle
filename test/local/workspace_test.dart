@@ -41,7 +41,7 @@ class Fixture {
     await session.saveProfile({
       'name': label,
       'contact': role == AppRole.uncle ? label : '담당자',
-      'phone': '01012345678',
+      'phone': '010${session.accounts.length.toString().padLeft(8, '0')}',
       'businessName': label,
       'businessNumber': '1234567890',
       'documentId': file,
@@ -50,6 +50,10 @@ class Fixture {
       'pickupArea': '동대문 1층',
       'deliveryArea': '서울',
       'deadline': '22:00',
+      'nickname': role == AppRole.uncle ? '동대문 삼촌' : '소매 닉네임',
+      'fee': role == AppRole.uncle ? 1200 : null,
+      'addressRoad': role == AppRole.uncle ? '비밀로 1' : null,
+      'addressJibun': role == AppRole.uncle ? '비밀동 2' : null,
       'salesChannel': '온라인',
       'terms': true,
       'privacy': true,
@@ -133,6 +137,77 @@ void main() {
   });
   tearDown(() async {
     await f.close();
+  });
+  test(
+    'directory search returns sanitized opposite-role profiles with filters',
+    () async {
+      final all = await f.workspace.searchPartners();
+      expect(all, hasLength(1));
+      expect(all.single.id, f.uncle);
+      expect(all.single.publicCode, matches(RegExp(r'^#[0-9]{4}$')));
+      expect(all.single.nickname, '동대문 삼촌');
+      expect(all.single.fee, 1200);
+      expect(all.single.s('phone'), '');
+      expect(all.single.s('address'), '');
+      expect(all.single.s('documentId'), '');
+
+      final byName = await f.workspace.searchPartners(query: '삼촌');
+      expect(byName.map((account) => account.id), [f.uncle]);
+
+      final byCode = await f.workspace.searchPartners(
+        query: f.workspace.profile(f.uncle)!.publicCode,
+      );
+      expect(byCode.map((account) => account.id), [f.uncle]);
+
+      final byRegion = await f.workspace.searchPartners(region: '동대문');
+      expect(byRegion.map((account) => account.id), [f.uncle]);
+
+      final hiddenAddressRegion = await f.workspace.searchPartners(
+        region: '비밀로',
+      );
+      expect(hiddenAddressRegion, isEmpty);
+
+      final freeOnly = await f.workspace.searchPartners(maxFee: 0);
+      expect(freeOnly, isEmpty);
+      final paid = await f.workspace.searchPartners(minFee: 1000, maxFee: 1500);
+      expect(paid.map((account) => account.id), [f.uncle]);
+    },
+  );
+  test(
+    'directory search requires a completed profile like the server RPC',
+    () async {
+      final draft = Fixture();
+      draft.store = LocalStore(
+        await databaseFactoryMemory.openDatabase(newId()),
+      );
+      await draft.store.initialize();
+      draft.session = LocalSessionRepository(draft.store);
+      draft.workspace = LocalWorkspaceRepository(draft.store, draft.session);
+      draft.attachments = LocalAttachmentRepository(
+        draft.store,
+        draft.session,
+        draft.workspace,
+      );
+      addTearDown(draft.close);
+
+      await draft.session.createAccount('초안 계정');
+      await draft.session.chooseRole(AppRole.retailer);
+      await expectLater(
+        draft.workspace.searchPartners(),
+        throwsA(predicate((e) => '$e' == '프로필을 먼저 완료해 주세요.')),
+      );
+    },
+  );
+  test('invite lookup also returns only the public profile', () async {
+    final peerId = await f.account('새 소매 매장', AppRole.retailer);
+    final inviteCode = f.session.current!.s('code');
+    await f.session.signIn(f.uncle);
+    final peer = await f.workspace.lookupCode(inviteCode);
+    expect(peer.id, peerId);
+    expect(peer.publicCode, matches(RegExp(r'^#[0-9]{4}$')));
+    expect(peer.s('phone'), '');
+    expect(peer.s('address'), '');
+    expect(peer.s('documentId'), '');
   });
   test(
     'A: full pickup, delivery and retailer receipt completes on both accounts',

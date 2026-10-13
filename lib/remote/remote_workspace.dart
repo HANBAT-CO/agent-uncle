@@ -7,7 +7,6 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     store.addListener(notifyListeners);
   }
   final RemoteStore store;
-  final _codes = <String, String>{};
   @override
   WorkspaceSnapshot get snapshot => store.snapshot;
   @override
@@ -49,8 +48,40 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
         row['id'] as String,
         Map<String, Object?>.from(row['data'] as Map),
       );
-      _codes[account.id] = code;
       return account;
+    } catch (e) {
+      throw AppFailure(friendlyError(e));
+    }
+  }
+
+  @override
+  Future<List<Account>> searchPartners({
+    String query = '',
+    String region = '',
+    int? minFee,
+    int? maxFee,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    try {
+      final rows = await store.client.rpc(
+        'saip_search_partners',
+        params: {
+          'query': query,
+          'region': region,
+          'min_fee': minFee,
+          'max_fee': maxFee,
+          'limit_count': limit,
+          'offset_count': offset,
+        },
+      ) as List;
+      return rows.map((row) {
+        final entry = Map<String, Object?>.from(row as Map);
+        return Account(
+          entry['id'] as String,
+          Map<String, Object?>.from(entry['data'] as Map? ?? const {}),
+        );
+      }).toList(growable: false);
     } catch (e) {
       throw AppFailure(friendlyError(e));
     }
@@ -64,7 +95,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   @override
   Future<String> connect(String peerId, String operationId) => store.command(
     'connect',
-    {'peerId': peerId, 'code': _codes[peerId] ?? ''},
+    {'peerId': peerId},
     operationId,
   );
   @override

@@ -1045,9 +1045,15 @@ class MyPage extends StatelessWidget {
     final app = AppScope.of(context), a = app.session.current!;
     final theme = TdsTheme.of(context);
     final retailer = a.role == AppRole.retailer;
-    final address = a.s('address').trim().isEmpty
-        ? a.s('addressDetail')
-        : a.s('address');
+    final address = [
+      a.s('address').trim(),
+      a.s('addressDetail').trim(),
+    ].where((value) => value.isNotEmpty).join('\n');
+    final markets = [
+      for (final market
+          in a.list('markets').map((value) => value.toString().trim()))
+        if (market.isNotEmpty) market,
+    ];
     final notifications = mapOf(a.data, 'notificationSettings');
     final enabledNotifications = [
       'connection',
@@ -1055,6 +1061,25 @@ class MyPage extends StatelessWidget {
       'delivery',
       'chat',
     ].where((key) => notifications[key] != false).length;
+    Widget divider() => const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 24),
+      child: TdsBorder(),
+    );
+    Widget infoRow(String label, String value) => TdsListRow(
+      contents: TdsListRowTexts(
+        type: TdsListRowTextType.row2TypeA,
+        top: Text(label),
+        bottom: Text(value),
+        topProps: TdsListRowTextStyle(
+          typography: TdsTypography.t7,
+          color: theme.color('grey600'),
+        ),
+        bottomProps: const TdsListRowTextStyle(
+          typography: TdsTypography.t6,
+          fontWeight: TdsFontWeight.semibold,
+        ),
+      ),
+    );
     void editProfile() => openPage(context, const ProfileForm());
 
     return Column(
@@ -1100,6 +1125,36 @@ class MyPage extends StatelessWidget {
                 ],
               ),
             ),
+            divider(),
+            if (retailer) ...[
+              infoRow('기본 배송지', address.isEmpty ? '배송지를 등록해 주세요' : address),
+              divider(),
+              infoRow('사입 시장', markets.isEmpty ? '등록 전' : markets.join(' · ')),
+            ] else ...[
+              infoRow(
+                '도매 픽업 구역',
+                a.s('pickupArea').trim().isEmpty
+                    ? '픽업 구역을 등록해 주세요'
+                    : a.s('pickupArea').trim(),
+              ),
+              divider(),
+              infoRow(
+                '소매 배송 지역',
+                a.s('deliveryArea').trim().isEmpty
+                    ? '배송 지역을 등록해 주세요'
+                    : a.s('deliveryArea').trim(),
+              ),
+              divider(),
+              infoRow('업무 상태', a.b('working') ? '업무 중' : '휴무 중'),
+              divider(),
+              infoRow(
+                '요청 마감시간',
+                a.s('deadline').trim().isEmpty
+                    ? '마감시간 등록 전'
+                    : a.s('deadline').trim(),
+              ),
+            ],
+            divider(),
             Inset(
               child: TdsButton(
                 display: TdsButtonDisplay.block,
@@ -1107,95 +1162,6 @@ class MyPage extends StatelessWidget {
                 variant: TdsButtonVariant.weak,
                 onPressed: editProfile,
                 child: const Text('프로필 수정'),
-              ),
-            ),
-          ],
-        ),
-        const Section('내 업무 정보'),
-        FigmaSurface(
-          children: [
-            TdsListRow(
-              onPressed: editProfile,
-              withArrow: true,
-              contents: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TdsText(
-                    retailer ? '기본 배송지' : '활동 지역',
-                    typography: TdsTypography.t7,
-                    color: theme.color('grey600'),
-                  ),
-                  const TdsSpacing(8),
-                  TdsText(
-                    retailer
-                        ? (address.isEmpty ? '배송지를 등록해 주세요' : address)
-                        : (a.s('pickupArea').isEmpty
-                              ? '픽업 구역을 등록해 주세요'
-                              : a.s('pickupArea')),
-                    typography: TdsTypography.t5,
-                    fontWeight: TdsFontWeight.semibold,
-                  ),
-                  if (retailer &&
-                      a.s('address').trim().isNotEmpty &&
-                      a.s('addressDetail').trim().isNotEmpty) ...[
-                    const TdsSpacing(4),
-                    TdsText(
-                      a.s('addressDetail'),
-                      typography: TdsTypography.t6,
-                      color: theme.color('grey600'),
-                    ),
-                  ] else if (!retailer && a.s('deliveryArea').isNotEmpty) ...[
-                    const TdsSpacing(4),
-                    TdsText(
-                      '${a.s('deliveryArea')} 배송',
-                      typography: TdsTypography.t6,
-                      color: theme.color('grey600'),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: TdsBorder(),
-            ),
-            Inset(
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  if (retailer) ...[
-                    TdsText(
-                      '사입 시장',
-                      typography: TdsTypography.t7,
-                      color: theme.color('grey600'),
-                    ),
-                    TdsText(
-                      a.list('markets').isEmpty
-                          ? '등록 전'
-                          : a.list('markets').join(' · '),
-                      typography: TdsTypography.t6,
-                      fontWeight: TdsFontWeight.medium,
-                    ),
-                  ] else ...[
-                    TdsBadge(
-                      size: TdsBadgeSize.small,
-                      variant: TdsBadgeVariant.weak,
-                      color: a.b('working')
-                          ? TdsBadgeColor.blue
-                          : TdsBadgeColor.elephant,
-                      child: Text(a.b('working') ? '업무 중' : '휴무 중'),
-                    ),
-                    TdsText(
-                      a.s('deadline').isEmpty
-                          ? '마감시간 등록 전'
-                          : '요청 마감 ${a.s('deadline')}',
-                      typography: TdsTypography.t6,
-                      color: theme.color('grey700'),
-                    ),
-                  ],
-                ],
               ),
             ),
           ],

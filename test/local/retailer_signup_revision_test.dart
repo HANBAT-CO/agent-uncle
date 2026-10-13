@@ -15,6 +15,7 @@ import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import 'app_flow_test.dart'
     show PickableAttachment, drainClose, enter, settle, tapButton;
 import 'brand_surfaces_test.dart' show branded;
+import '../support/address_search.dart';
 
 class _Signup {
   late LocalStore store;
@@ -95,7 +96,7 @@ Future<void> goToRetailerMarketStep(WidgetTester tester) async {
   await enter(tester, '사업자등록번호', '1234567890');
   await tapButton(tester, '사업자등록증 (필수) 첨부');
   await tapButton(tester, '다음');
-  await enter(tester, '주소', '서울 중구');
+  await selectAddress(tester);
   await enter(tester, '상세주소', '101호');
   await tapButton(tester, '다음');
   expect(find.text('어디에서 사입하시나요?'), findsOneWidget);
@@ -148,15 +149,15 @@ void main() {
     expect(find.widgetWithText(TdsCheckbox, '동대문'), findsNothing);
     expect(find.widgetWithText(TdsChipItem, '동대문'), findsOneWidget);
     expect(find.widgetWithText(TdsChipItem, '남대문'), findsOneWidget);
-    expect(find.widgetWithText(TdsChipItem, '그외'), findsOneWidget);
+    expect(find.widgetWithText(TdsChipItem, '그 외'), findsOneWidget);
 
     await chip(tester, '동대문');
-    await chip(tester, '그외');
+    await chip(tester, '그 외');
     expect(input('사입 시장 직접 입력'), findsOneWidget);
     await enter(tester, '사입 시장 직접 입력', '평화시장');
 
     expect(f.session.current!.list('markets'), ['동대문', '평화시장']);
-    expect(f.session.current!.list('markets'), isNot(contains('그외')));
+    expect(f.session.current!.list('markets'), isNot(contains('그 외')));
     expect(
       tester.getRect(input('사입 시장 직접 입력')).bottom,
       lessThan(tester.getRect(find.text('다음')).top),
@@ -205,7 +206,7 @@ void main() {
     await f.open(tester, AppRole.retailer);
     await goToRetailerMarketStep(tester);
 
-    await chip(tester, '그외');
+    await chip(tester, '그 외');
     expect(f.session.current!.list('markets'), isEmpty);
     await enter(tester, '사입 시장 직접 입력', '평화시장');
     expect(f.session.current!.list('markets'), ['평화시장']);

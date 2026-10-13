@@ -17,6 +17,7 @@ import 'app_flow_test.dart'
     show PickableAttachment, drainClose, enter, settle, tapButton;
 import 'brand_surfaces_test.dart' show branded;
 import '../support/profile_time_picker.dart';
+import '../support/service_region_picker.dart';
 
 class _Signup {
   late LocalStore store;
@@ -169,13 +170,16 @@ void main() {
     await tapButton(tester, '사업자등록증 (필수) 첨부');
     await tapButton(tester, '다음');
     await tapButton(tester, '다음');
-    expect(tester.widget<TdsTextField>(input('주소')).hasError, isTrue);
+    expect(
+      tester.widget<TdsTextFieldButton>(find.byKey(const ValueKey('address-selector'))).hasError,
+      isTrue,
+    );
     expect(tester.widget<TdsTextField>(input('상세주소')).hasError, isTrue);
     expect(tester.takeException(), isNull);
     await f.close(tester);
   });
 
-  testWidgets('사입삼촌은 실명·시간 선택으로 가입하고 이전 단계로 돌아간다', (tester) async {
+  testWidgets('사입삼촌은 지역·시장·일정을 선택하고 확인 화면에서 수정해 가입한다', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(390, 844);
     addTearDown(tester.view.reset);
@@ -193,7 +197,8 @@ void main() {
     await enter(tester, '연락처', '01098765432');
     await tapButton(tester, '다음');
     expect(find.text('가입 · 2 / 5'), findsOneWidget);
-    expect(input('도매 픽업 구역'), findsOneWidget);
+    expect(find.byKey(const ValueKey('pickupArea-selector')), findsOneWidget);
+    expect(input('도매 픽업 지역'), findsNothing);
     expect(input('사업자명'), findsNothing);
     await tester.tap(find.text('이전'));
     await settle(tester);
@@ -203,8 +208,8 @@ void main() {
       '김한밭',
     );
     await tapButton(tester, '다음');
-    await enter(tester, '도매 픽업 구역', '동대문 1층');
-    await enter(tester, '소매 배송 지역', '서울');
+    await selectRegion(tester, 'pickupArea', '서울', district: '중구');
+    await selectRegion(tester, 'deliveryArea', '대전', district: '유성구');
     await tapButton(tester, '다음');
     expect(input('요청 마감시간'), findsNothing);
     expect(
@@ -217,31 +222,64 @@ void main() {
     );
     await selectTime(tester, '요청 마감시간', '23:00');
     await tapButton(tester, '다음');
-    for (final label in ['도보', '기타']) {
-      final button = find.widgetWithText(TdsButton, label);
-      await tester.ensureVisible(button);
-      expect(
-        tester.getCenter(find.text(label)).dx,
-        closeTo(tester.getCenter(button).dx, .5),
-      );
-    }
-    await tapButton(tester, '도보');
-    expect(f.session.current!.s('transport'), '도보');
-    await tapButton(tester, '기타');
-    expect(f.session.current!.s('transport'), '기타');
-    await selectTime(tester, '활동 시작 (선택)', '22:00');
-    await selectTime(tester, '활동 종료 (선택)', '06:00');
+    expect(find.text('이동수단'), findsNothing);
+    expect(find.text('도보'), findsNothing);
+    await channel(tester, '동대문');
+    expect(
+      tester.getTopLeft(find.text('그 외')).dy,
+      greaterThan(tester.getBottomLeft(find.text('남대문')).dy),
+    );
+    await channel(tester, '그 외');
+    await enter(tester, '사입 시장 직접 입력', '평화시장');
+    await channel(tester, '평일');
+    await channel(tester, '토');
+    await channel(tester, '야간 22–06');
     await settle(tester);
+    expect(f.session.current!.data['markets'], ['동대문', '평화시장']);
+    expect(f.session.current!.data['activityDays'], ['월', '화', '수', '목', '금', '토']);
     expect(f.session.current!.s('activityStart'), '22:00');
     expect(f.session.current!.s('activityEnd'), '06:00');
     await tapButton(tester, '다음');
-    expect(find.text('입력한 정보를 확인해 주세요'), findsOneWidget);
+    expect(find.text('가입 정보를 확인해 주세요'), findsOneWidget);
+    expect(find.text('서울 중구'), findsOneWidget);
+    expect(find.text('대전 유성구'), findsOneWidget);
+    expect(find.textContaining('다음 날 06:00'), findsOneWidget);
     expect(find.text('사업자 서류'), findsNothing);
+
+    final editRegions = find.byKey(const ValueKey('review-edit-2'));
+    await tester.ensureVisible(editRegions);
+    await tester.tap(editRegions);
+    await settle(tester);
+    expect(find.text('수정 완료'), findsOneWidget);
+    await selectRegion(tester, 'deliveryArea', '경기', city: '의정부시', replace: true);
+    await tapButton(tester, '수정 완료');
+    expect(find.text('가입 정보를 확인해 주세요'), findsOneWidget);
+    expect(find.text('경기 의정부시'), findsOneWidget);
+
+    final editSchedule = find.byKey(const ValueKey('review-edit-3'));
+    await tester.ensureVisible(editSchedule);
+    await tester.tap(editSchedule);
+    await settle(tester);
+    await channel(tester, '일정에 따라 달라요');
+    expect(f.session.current!.s('activityStart'), isEmpty);
+    expect(f.session.current!.s('activityEnd'), isEmpty);
+    await selectTime(tester, '활동 시작 (선택)', '21:30');
+    await selectTime(tester, '활동 종료 (선택)', '05:30');
+    await settle(tester);
+    expect(f.session.current!.s('activityHours'), '직접 설정');
+    await tester.tap(find.text('이전'));
+    await settle(tester);
+    expect(find.text('가입 정보를 확인해 주세요'), findsOneWidget);
+    expect(find.textContaining('21:30 – 다음 날 05:30'), findsOneWidget);
+
     await tapButton(tester, '다음');
+    expect(find.text('동의하고 가입을 마무리해요'), findsOneWidget);
+    expect(find.text('입력한 정보는 자동으로 저장돼요.'), findsNothing);
+    expect(find.textContaining('개발용 동의 화면'), findsNothing);
     await tapButton(tester, '가입 완료');
     expect(f.session.current!.complete, isFalse);
     for (final label in ['[필수] 서비스 이용 동의 확인', '[필수] 개인정보 처리 동의 확인']) {
-      final choice = find.widgetWithText(TdsCheckbox, label);
+      final choice = find.text(label);
       await tester.ensureVisible(choice);
       await tester.tap(choice);
       await settle(tester);
@@ -278,18 +316,18 @@ void main() {
     expect(find.text('가입 · 1 / 5'), findsOneWidget);
     await tapButton(tester, '다음');
     expect(input('사업자등록번호'), findsNothing);
-    await enter(tester, '도매 픽업 구역', '동대문');
-    await enter(tester, '소매 배송 지역', '서울');
+    await selectRegion(tester, 'pickupArea', '서울', district: '중구');
+    await selectRegion(tester, 'deliveryArea', '서울');
     await selectTime(tester, '요청 마감시간', '23:00');
     await tapButton(tester, '다음');
     await tapButton(tester, '다음');
     await tapButton(tester, '다음');
-    for (final label in ['[필수] 서비스 이용 동의 확인', '[필수] 개인정보 처리 동의 확인']) {
-      final checkbox = find.widgetWithText(TdsCheckbox, label);
-      await tester.ensureVisible(checkbox);
-      await tester.tap(checkbox);
-      await settle(tester);
-    }
+    final allConsent = find.byKey(const ValueKey('uncle-consent-all'));
+    await tester.ensureVisible(allConsent);
+    await tester.tap(find.descendant(of: allConsent, matching: find.byType(TdsCheckbox)));
+    await settle(tester);
+    expect(f.session.current!.b('terms'), isTrue);
+    expect(f.session.current!.b('privacy'), isTrue);
     await tapButton(tester, '가입 완료');
     expect(f.session.current!.complete, isTrue);
     expect(f.session.current!.role, AppRole.uncle);
@@ -300,7 +338,7 @@ void main() {
   });
 
   for (final width in [320.0, 390.0, 430.0]) {
-    testWidgets('사입삼촌 시간·이동수단 선택이 너비 $width·큰 글자에 맞는다', (tester) async {
+    testWidgets('사입삼촌 지역·일정 선택이 너비 $width·큰 글자에 맞는다', (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = Size(width, 844);
       addTearDown(tester.view.reset);
@@ -309,23 +347,18 @@ void main() {
       await enter(tester, '이름(실명)', '김한밭');
       await enter(tester, '연락처', '01012345678');
       await tapButton(tester, '다음');
-      await enter(tester, '도매 픽업 구역', '동대문');
-      await enter(tester, '소매 배송 지역', '서울');
+      await selectRegion(tester, 'pickupArea', '서울', district: '중구');
+      await selectRegion(tester, 'deliveryArea', '서울');
       await selectTime(tester, '요청 마감시간', '00:00');
       await tapButton(tester, '다음');
-      for (final label in ['도보', '오토바이', '기타']) {
-        await tapButton(tester, label);
-        final button = find.widgetWithText(TdsButton, label);
-        expect(
-          tester.getCenter(find.text(label)).dx,
-          closeTo(tester.getCenter(button).dx, .5),
-        );
-        expect(tester.getSize(button).height, greaterThanOrEqualTo(44));
-      }
+      await channel(tester, '주말');
+      await channel(tester, '그 외');
+      await enter(tester, '사입 시장 직접 입력', '부산 진시장');
+      expect(find.text('이동수단'), findsNothing);
       await selectTime(tester, '활동 시작 (선택)', '23:59');
       await selectTime(tester, '활동 종료 (선택)', '00:00');
       await tapButton(tester, '다음');
-      expect(find.text('입력한 정보를 확인해 주세요'), findsOneWidget);
+      expect(find.text('가입 정보를 확인해 주세요'), findsOneWidget);
       expect(f.session.current!.s('deadline'), '00:00');
       expect(f.session.current!.s('activityStart'), '23:59');
       expect(f.session.current!.s('activityEnd'), '00:00');

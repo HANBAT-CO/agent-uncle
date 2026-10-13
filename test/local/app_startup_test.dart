@@ -59,7 +59,7 @@ void main() {
     await drainClose(tester, store.close());
   }
 
-  testWidgets('초기화가 즉시 끝나도 로고와 안내 문구를 3초 동안 유지한다', (tester) async {
+  testWidgets('초기화가 즉시 끝나도 로고와 안내 문구를 1초 동안 유지한다', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(390, 844);
     addTearDown(tester.view.reset);
@@ -78,11 +78,11 @@ void main() {
     expect(find.text(AppSplashScreen.message), findsOneWidget);
     expect(find.byType(TdsLoader), findsNothing);
 
-    await tester.pump(const Duration(seconds: 2)); // 2.6초: 아직 최소 유지 시간
+    await tester.pump(const Duration(milliseconds: 399)); // 0.999초: 아직 최소 유지 시간
     expect(find.byType(AppSplashScreen), findsOneWidget);
     expect(find.byType(OnboardingPage), findsNothing);
 
-    await tester.pump(const Duration(milliseconds: 500)); // 3.1초: 유지 종료
+    await tester.pump(const Duration(milliseconds: 1)); // 1초: 유지 종료
     await tester.pump();
     expect(find.byType(AppSplashScreen), findsNothing);
     expect(find.byType(OnboardingPage), findsOneWidget);
@@ -90,7 +90,7 @@ void main() {
     await close(tester);
   });
 
-  testWidgets('초기화가 3초보다 오래 걸리면 끝날 때까지 스플래시를 유지한다', (tester) async {
+  testWidgets('초기화가 1초보다 오래 걸리면 끝날 때까지 스플래시를 유지한다', (tester) async {
     final startup = Completer<AppServices>();
     await tester.pumpWidget(LocalBootstrap(initialize: () => startup.future));
     await tester.pump(const Duration(seconds: 5));
@@ -99,7 +99,7 @@ void main() {
     expect(find.text('앱을 시작하지 못했어요'), findsNothing);
 
     startup.complete(services);
-    await settle(tester); // 추가 3초 대기 없이 바로 전환된다
+    await settle(tester); // 추가 1초 대기 없이 바로 전환된다
     expect(find.byType(AppSplashScreen), findsNothing);
     expect(find.byType(OnboardingPage), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -111,7 +111,7 @@ void main() {
     tester.view.physicalSize = const Size(390, 844);
     addTearDown(tester.view.reset);
     await tester.pumpWidget(LocalBootstrap(initialize: () async => services));
-    await tester.pump(const Duration(seconds: 3));
+    await tester.pump(const Duration(seconds: 1));
     await settle(tester);
 
     const firstTitle = '상품과 수량을 정확하게 전달해요';
@@ -150,7 +150,7 @@ void main() {
     await close(tester);
   });
 
-  testWidgets('초기화 실패도 3초 뒤에 보여 주고 재시도하면 스플래시를 다시 유지한다', (tester) async {
+  testWidgets('초기화 실패도 1초 뒤에 보여 주고 재시도하면 스플래시를 다시 유지한다', (tester) async {
     final first = Completer<AppServices>();
     final retry = Completer<AppServices>();
     var attempts = 0;
@@ -164,7 +164,7 @@ void main() {
     expect(find.byType(AppSplashScreen), findsOneWidget);
     expect(find.text('앱을 시작하지 못했어요'), findsNothing);
 
-    await tester.pump(const Duration(seconds: 3));
+    await tester.pump(const Duration(milliseconds: 400));
     expect(find.text('앱을 시작하지 못했어요'), findsOneWidget);
     expect(find.byType(AppSplashScreen), findsNothing);
 
@@ -175,10 +175,10 @@ void main() {
     expect(find.text('앱을 시작하지 못했어요'), findsNothing);
 
     retry.complete(services);
-    await tester.pump(const Duration(seconds: 2)); // 재시도도 최소 3초 유지
+    await tester.pump(const Duration(milliseconds: 999)); // 재시도도 최소 1초 유지
     expect(find.byType(AppSplashScreen), findsOneWidget);
 
-    await tester.pump(const Duration(milliseconds: 1001));
+    await tester.pump(const Duration(milliseconds: 1));
     await settle(tester);
     expect(find.byType(OnboardingPage), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -188,7 +188,7 @@ void main() {
   testWidgets('최소 유지 시간이 끝나기 전에 화면을 내려도 타이머가 안전하게 정리된다', (tester) async {
     final startup = Completer<AppServices>();
     await tester.pumpWidget(LocalBootstrap(initialize: () => startup.future));
-    await tester.pump(const Duration(seconds: 1));
+    await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(AppSplashScreen), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox());

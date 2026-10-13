@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../app_services.dart';
@@ -8,6 +7,9 @@ import 'common.dart';
 import 'requests.dart';
 import 'delivery.dart';
 import 'profile_avatar.dart';
+import 'connection_search.dart';
+
+export 'connection_search.dart' show AddConnectionPage;
 
 class ConnectionsList extends StatefulWidget {
   const ConnectionsList({super.key});
@@ -119,10 +121,23 @@ class _ConnectionsListState extends State<ConnectionsList> {
           ],
         ),
         const TdsSpacing(12),
-        AppSearchField(
-          placeholder: retailer ? '사입삼촌 이름으로 검색' : '거래처 검색',
-          onChanged: (v) => setState(() => query = v),
-        ),
+        if (retailer)
+          AppSearchField(
+            placeholder: '사입삼촌 이름으로 검색',
+            onChanged: (v) => setState(() => query = v),
+          )
+        else
+          FigmaSurface(
+            children: [
+              Item(
+                '거래처 검색',
+                key: const ValueKey('uncle-partner-directory'),
+                subtitle: '새로운 소매 거래처를 찾아보세요',
+                leading: const TdsAssetIcon(name: 'icn-searchfield', size: 24),
+                onTap: () => openPage(context, const AddConnectionPage()),
+              ),
+            ],
+          ),
         TdsTab(
           semanticLabel: '연결 상태',
           items: [
@@ -153,7 +168,7 @@ class _ConnectionsListState extends State<ConnectionsList> {
                       : '연결된 거래처가 없어요',
                   filter == '연결 대기'
                       ? '보내거나 받은 요청이 생기면 여기서 확인할 수 있어요.'
-                      : '새 연결에서 초대 코드를 주고받아 보세요.',
+                      : '거래처를 검색해 연결 요청을 보내 보세요.',
                   icon: 'store',
                 ),
         for (final c in connections) ConnectionCard(c),
@@ -333,110 +348,6 @@ class ConnectionCard extends StatelessWidget {
   }
 }
 
-class AddConnectionPage extends StatefulWidget {
-  const AddConnectionPage({super.key});
-  @override
-  State<AddConnectionPage> createState() => _AddConnectionPageState();
-}
-
-class _AddConnectionPageState extends State<AddConnectionPage> {
-  final code = TextEditingController();
-  Account? found;
-  String op = newId();
-  bool copied = false;
-  @override
-  void dispose() {
-    code.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final app = AppScope.of(context), me = app.session.current!;
-    return PageFrame(
-      title: '상대방 연결',
-      bottom: found == null
-          ? ActionButton(
-              '상대방 확인',
-              bottom: true,
-              onPressed: () async {
-                final result = await app.workspace.lookupCode(code.text);
-                if (mounted) {
-                  setState(() {
-                    found = result;
-                    op = newId();
-                  });
-                }
-              },
-            )
-          : ActionButton(
-              '연결 요청 보내기',
-              bottom: true,
-              onPressed: () async {
-                await app.workspace.lookupCode(code.text);
-                await app.workspace.connect(found!.id, op);
-                if (context.mounted) Navigator.pop(context);
-              },
-            ),
-      children: [
-        const PageHeading(
-          '함께 일할 거래처를 연결해요',
-          description: '초대 코드를 주고받으면 요청과 대화를 시작할 수 있어요.',
-        ),
-        const Section('내 초대 코드'),
-        FigmaSurface(
-          children: [
-            Item(
-              me.s('code'),
-              leading: const FigmaIcon('store'),
-              subtitle: '유효기간 ${displayTime(me.s('codeExpires'))}',
-            ),
-            ActionButton(
-              copied ? '코드를 복사했어요' : '초대 코드 복사',
-              icon: copied ? 'check' : 'copy',
-              weak: true,
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: me.s('code')));
-                setState(() => copied = true);
-              },
-            ),
-            ActionButton(
-              '코드 새로 발급',
-              icon: 'refresh',
-              weak: true,
-              onPressed: () async {
-                await app.workspace.renewCode();
-                if (mounted) setState(() => copied = false);
-              },
-            ),
-          ],
-        ),
-        const Section('상대방 코드 입력'),
-        FigmaSurface(
-          children: [
-            Field(
-              '초대 코드',
-              controller: code,
-              onChanged: (_) => setState(() => found = null),
-            ),
-          ],
-        ),
-        if (found != null)
-          FigmaSurface(
-            children: [
-              Item(
-                found!.name,
-                leading: ProfileAvatar(found!),
-                subtitle:
-                    '${found!.role!.label} · ${found!.s('pickupArea')} ${found!.s('deliveryArea')}',
-              ),
-            ],
-          ),
-      ],
-    );
-  }
-}
-
 class PartnerPage extends StatelessWidget {
   const PartnerPage(this.id, {super.key});
   final String id;
@@ -540,7 +451,7 @@ class PartnerPage extends StatelessWidget {
                 ),
               ),
               Item(
-                '도매 픽업 구역',
+                '도매 픽업 지역',
                 leading: const FigmaIcon('pin'),
                 subtitle: a.s('pickupArea'),
               ),

@@ -22,12 +22,14 @@ import 'workspace_test.dart' show Fixture;
 class DelayedDraftWorkspace extends LocalWorkspaceRepository {
   DelayedDraftWorkspace(Fixture f) : super(f.store, f.session);
   Completer<void>? nextSave;
+  Object? saveError;
 
   @override
   Future<String> saveDraft(String id, Data values) async {
     final wait = nextSave;
     nextSave = null;
     await wait?.future;
+    if (saveError != null) throw saveError!;
     return super.saveDraft(id, values);
   }
 }
@@ -202,12 +204,17 @@ void main() {
       ),
     );
     await settle(tester);
-    await enter(tester, '상품명', '스와이프 후에도 남는 셔츠');
+    await enter(tester, '도매처 이름', '스와이프 후에도 남는 도매처');
     expect(routeOf(tester, RequestEditor).popGestureEnabled, isTrue);
     final draft = f.workspace.records('drafts').single;
     await finishSwipe(tester, await startBackSwipe(tester, 300));
     expect(find.byType(RequestEditor), findsNothing);
-    expect(f.workspace.records('drafts').single.s('product'), '스와이프 후에도 남는 셔츠');
+    expect(
+      requestWholesalers(
+        f.workspace.records('drafts').single.data,
+      ).single['wholesaler'],
+      '스와이프 후에도 남는 도매처',
+    );
     unawaited(
       openPage<void>(
         tester.element(find.byType(HomeTabPage)),
@@ -217,11 +224,11 @@ void main() {
     await settle(tester);
     final input = tester.widget<EditableText>(
       find.descendant(
-        of: find.byWidgetPredicate((w) => w is Field && w.label == '상품명'),
+        of: find.byWidgetPredicate((w) => w is Field && w.label == '도매처 이름'),
         matching: find.byType(EditableText),
       ),
     );
-    expect(input.controller.text, '스와이프 후에도 남는 셔츠');
+    expect(input.controller.text, '스와이프 후에도 남는 도매처');
     expect(tester.takeException(), isNull);
   }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
@@ -242,7 +249,7 @@ void main() {
     await settle(tester);
     final pendingSave = Completer<void>();
     workspace.nextSave = pendingSave;
-    await enter(tester, '상품명', '저장 대기 셔츠');
+    await enter(tester, '도매처 이름', '저장 대기 도매처');
     final route = routeOf(tester, RequestEditor);
     expect(route.popGestureEnabled, isFalse);
     await finishSwipe(tester, await startBackSwipe(tester, 300));
@@ -256,11 +263,16 @@ void main() {
     expect(find.byType(RequestEditor), findsOneWidget);
     expect(workspace.records('drafts'), isEmpty);
 
-    await enter(tester, '상품명', '저장 복구 셔츠');
+    await enter(tester, '도매처 이름', '저장 복구 도매처');
     expect(route.popGestureEnabled, isTrue);
     await finishSwipe(tester, await startBackSwipe(tester, 300));
     expect(find.byType(RequestEditor), findsNothing);
-    expect(workspace.records('drafts').single.s('product'), '저장 복구 셔츠');
+    expect(
+      requestWholesalers(
+        workspace.records('drafts').single.data,
+      ).single['wholesaler'],
+      '저장 복구 도매처',
+    );
     expect(tester.takeException(), isNull);
   }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
@@ -283,6 +295,97 @@ void main() {
     await settle(tester);
     expect(find.byType(NoticesPage), findsNothing);
     expect(find.byType(TdsLiquidTabBar), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+
+  testWidgets('Android: 활성 상세만 시스템 뒤로가기로 닫고 루트에서는 종료를 위임한다', (tester) async {
+    final f = await startApp(tester, role: AppRole.retailer);
+    unawaited(
+      openPage<void>(
+        tester.element(find.byType(HomeTabPage)),
+        ChatPage(f.uncle),
+      ),
+    );
+    await settle(tester);
+
+    expect(find.byType(ChatPage), findsOneWidget);
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await settle(tester);
+    expect(find.byType(ChatPage), findsNothing);
+    expect(find.byType(TdsLiquidTabBar), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isFalse);
+    expect(find.byType(HomeShell), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+
+  testWidgets('Android: 비활성 탭의 상세는 시스템 뒤로가기로 닫히지 않는다', (tester) async {
+    final f = await startApp(tester, role: AppRole.retailer);
+    final dynamic home = tester.state(find.byType(HomeShell));
+
+    await home.selectTab(AppTab.chat.index);
+    await settle(tester);
+    unawaited(
+      openPage<void>(tester.element(find.byType(ChatList)), ChatPage(f.uncle)),
+    );
+    await settle(tester);
+    expect(find.byType(ChatPage), findsOneWidget);
+
+    await home.selectTab(AppTab.home.index);
+    await settle(tester);
+    expect(find.byType(ChatPage, skipOffstage: false), findsOneWidget);
+
+    expect(await tester.binding.handlePopRoute(), isFalse);
+    expect(find.byType(ChatPage, skipOffstage: false), findsOneWidget);
+
+    await home.selectTab(AppTab.chat.index);
+    await settle(tester);
+    expect(find.byType(ChatPage), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.android));
+
+  testWidgets('Android: 저장 재시도 중·실패 상태를 보호하고 복구 후 뒤로가기를 허용한다', (tester) async {
+    late DelayedDraftWorkspace workspace;
+    final f = await startApp(
+      tester,
+      workspace: (fixture) => workspace = DelayedDraftWorkspace(fixture),
+    );
+    unawaited(
+      openPage<void>(
+        tester.element(find.byType(HomeTabPage)),
+        RequestEditor(peerId: f.uncle),
+      ),
+    );
+    await settle(tester);
+
+    final pendingSave = Completer<void>();
+    workspace.nextSave = pendingSave;
+    await enter(tester, '도매처 이름', 'Android 저장 실패 도매처');
+    pendingSave.completeError(const AppFailure('테스트 저장 실패'));
+    await settle(tester);
+
+    final retrySave = Completer<void>();
+    workspace.nextSave = retrySave;
+    workspace.saveError = const AppFailure('테스트 재시도 실패');
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await settle(tester);
+    expect(find.byType(RequestEditor), findsOneWidget);
+
+    retrySave.complete();
+    await settle(tester);
+    expect(find.byType(RequestEditor), findsOneWidget);
+    expect(workspace.records('drafts'), isEmpty);
+
+    workspace.saveError = null;
+    expect(await tester.binding.handlePopRoute(), isTrue);
+    await settle(tester);
+    expect(find.byType(RequestEditor), findsNothing);
+    expect(
+      requestWholesalers(
+        workspace.records('drafts').single.data,
+      ).single['wholesaler'],
+      'Android 저장 실패 도매처',
+    );
     expect(tester.takeException(), isNull);
   }, variant: TargetPlatformVariant.only(TargetPlatform.android));
 }

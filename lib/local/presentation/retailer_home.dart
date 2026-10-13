@@ -6,40 +6,38 @@ import '../domain/models.dart';
 import 'common.dart';
 import 'retailer_orders.dart';
 
-class RetailerDashboard extends StatelessWidget {
+class RetailerDashboard extends StatefulWidget {
   const RetailerDashboard({required this.onTab, super.key});
 
   final ValueChanged<int> onTab;
 
   @override
+  State<RetailerDashboard> createState() => _RetailerDashboardState();
+}
+
+class _RetailerDashboardState extends State<RetailerDashboard> {
+  @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
+    final now = DateTime.now();
     final requests = app.workspace
         .records('requests')
         .map((record) => RequestRecord(record.id, record.data))
         .toList();
-    final available = requests
-        .where(retailerIsAwaitingDelivery)
-        .fold<int>(0, (total, request) => total + request.available);
 
     Future<void> openOrders(RetailerOrderFilter filter) =>
         openPage(context, RetailerOrdersPage(initialFilter: filter));
 
     Widget statusRow(RetailerHomeStatus status) => TdsListRow(
-      left: TdsBadge(
-        size: TdsBadgeSize.xsmall,
-        color: status.chipColor,
-        variant: TdsBadgeVariant.weak,
-        child: Text(status.chipText),
+      left: TdsText(
+        status.label,
+        typography: TdsTypography.t5,
+        fontWeight: TdsFontWeight.semibold,
       ),
-      contents: TdsListRowTexts(
-        type: TdsListRowTextType.row2TypeA,
-        top: Text(
-          status == RetailerHomeStatus.awaitingDelivery
-              ? '$available장'
-              : '${retailerHomeCount(requests, status)}건',
-        ),
-        bottom: Text(status.label),
+      contents: TdsText(
+        '${retailerHomeCount(requests, status, now: now)}건',
+        typography: TdsTypography.t4,
+        fontWeight: TdsFontWeight.bold,
       ),
       right: TdsTextButton(
         size: TdsTextButtonSize.small,
@@ -55,7 +53,7 @@ class RetailerDashboard extends StatelessWidget {
         Inset(
           child: TdsButton(
             display: TdsButtonDisplay.block,
-            onPressed: () => onTab(AppTab.business.index),
+            onPressed: () => widget.onTab(AppTab.business.index),
             child: const Text('주문 넣기'),
           ),
         ),
@@ -76,14 +74,12 @@ class RetailerDashboard extends StatelessWidget {
             ),
             statusRow(RetailerHomeStatus.pendingConfirmation),
             statusRow(RetailerHomeStatus.inProgress),
-            statusRow(RetailerHomeStatus.awaitingDelivery),
-            statusRow(RetailerHomeStatus.awaitingReceipt),
-            const TdsBorder(),
-            Item(
-              '사입 내역 전체 보기',
-              onTap: () => openOrders(RetailerOrderFilter.all),
-            ),
+            statusRow(RetailerHomeStatus.received),
           ],
+        ),
+        RetailerOrdersSection(
+          showHeading: true,
+          onCompletionBoundary: () => setState(() {}),
         ),
       ],
     );

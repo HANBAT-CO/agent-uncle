@@ -55,7 +55,9 @@ Future<void> shareResult(
     {
       'acquired': acquired,
       'backorder': backorder,
-      'recheck': backorder > 0 ? '2026-10-12' : '',
+      'recheck': backorder > 0
+          ? dateOnly(DateTime.now().add(const Duration(days: 1)))
+          : '',
       'reason': backorder > 0 ? '미송 확인' : '',
       'needsReply': needsReply,
     },
@@ -114,7 +116,7 @@ Future<void> chooseWait(Fixture fixture, String requestId) async {
 }
 
 void main() {
-  test('상태 필터가 겹치는 단계까지 일관되게 분류한다', () async {
+  test('상태 필터가 수령과 수령 후 7일 경계까지 일관되게 분류한다', () async {
     final fixture = Fixture();
     await fixture.start();
     final pending = await createRetailerRequest(fixture, product: '대기 셔츠');
@@ -139,6 +141,7 @@ void main() {
     await shareResult(fixture, completed, acquired: 3, backorder: 0);
     final completedDelivery = await deliverRequest(fixture, completed, 3);
     await receiveDelivery(fixture, completedDelivery, 3);
+    final receivedAt = fixture.workspace.request(completed)!.receivedAt!;
 
     final requests = fixture.workspace
         .records('requests')
@@ -164,37 +167,54 @@ void main() {
       {sourcing, delivery, backorder},
     );
     expect(
-      filterRetailerOrders(
-        requests,
-        RetailerOrderFilter.awaitingDelivery,
-      ).map((request) => request.id).toSet(),
+      requests
+          .where(retailerIsAwaitingDelivery)
+          .map((request) => request.id)
+          .toSet(),
       {delivery, receipt},
     );
     expect(
-      filterRetailerOrders(
-        requests,
-        RetailerOrderFilter.awaitingReceipt,
-      ).map((request) => request.id),
+      requests.where(retailerIsAwaitingReceipt).map((request) => request.id),
       [receipt],
     );
+    expect(requests.where(retailerNeedsReply).map((request) => request.id), [
+      delivery,
+    ]);
     expect(
-      filterRetailerOrders(
-        requests,
-        RetailerOrderFilter.replyNeeded,
-      ).map((request) => request.id),
-      [delivery],
-    );
-    expect(
-      filterRetailerOrders(
-        requests,
-        RetailerOrderFilter.backorder,
-      ).map((request) => request.id).toSet(),
+      requests.where(retailerHasBackorder).map((request) => request.id).toSet(),
       {delivery, backorder},
     );
     expect(
       filterRetailerOrders(
         requests,
         RetailerOrderFilter.completed,
+        now: receivedAt,
+      ),
+      isEmpty,
+    );
+    expect(
+      filterRetailerOrders(
+        requests,
+        RetailerOrderFilter.received,
+        now: receivedAt
+            .add(const Duration(days: 7))
+            .subtract(const Duration(microseconds: 1)),
+      ).map((request) => request.id).toSet(),
+      {receipt, completed},
+    );
+    expect(
+      filterRetailerOrders(
+        requests,
+        RetailerOrderFilter.received,
+        now: receivedAt.add(const Duration(days: 7)),
+      ).map((request) => request.id),
+      [receipt],
+    );
+    expect(
+      filterRetailerOrders(
+        requests,
+        RetailerOrderFilter.completed,
+        now: receivedAt.add(const Duration(days: 7)),
       ).map((request) => request.id),
       [completed],
     );
@@ -248,13 +268,17 @@ void main() {
     expect(find.text('전달 원피스 · 기본'), findsOneWidget);
     expect(find.textContaining('수령 재킷'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TdsChipItem, '전달 대기'));
+    await tester.tap(
+      find.descendant(of: find.byType(TdsTab), matching: find.text('수령')),
+    );
     await settle(tester);
     expect(find.textContaining('대기 셔츠'), findsNothing);
-    expect(find.textContaining('전달 원피스'), findsOneWidget);
+    expect(find.textContaining('전달 원피스'), findsNothing);
     expect(find.textContaining('수령 재킷'), findsOneWidget);
 
-    await tester.tap(find.widgetWithText(TdsChipItem, '미송'));
+    await tester.tap(
+      find.descendant(of: find.byType(TdsTab), matching: find.text('진행 중')),
+    );
     await settle(tester);
     expect(find.textContaining('전달 원피스'), findsOneWidget);
     expect(find.textContaining('수령 재킷'), findsNothing);

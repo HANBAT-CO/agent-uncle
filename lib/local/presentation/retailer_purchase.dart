@@ -20,7 +20,6 @@ class RetailerPurchaseTab extends StatelessWidget {
       ),
       const PageHeading(
         '필요한 상품을\n삼촌에게 부탁해요',
-        description: '상품과 도매처를 적어\n연결된 사입삼촌에게 보내보세요.',
       ),
       const TdsSpacing(16),
       ActionButton(

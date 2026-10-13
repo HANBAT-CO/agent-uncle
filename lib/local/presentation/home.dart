@@ -7,12 +7,11 @@ import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
-import 'delivery.dart';
 import 'entry.dart';
-import 'requests.dart';
 import 'retailer_home.dart';
 import 'retailer_purchase.dart';
 import 'social.dart';
+import 'uncle_home.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -23,6 +22,7 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   int selected = AppTab.home.index;
   bool changingTab = false;
+  bool handlingSystemBack = false;
   bool ready = false;
   Timer? timer;
   final navigators = List.generate(5, (_) => GlobalKey<NavigatorState>());
@@ -159,110 +159,136 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     ];
     return TdsToastProvider(
       child: TdsDialogProvider(
-        child: HomeBackdrop(
-          child: SafeArea(
-            bottom: false,
-            child: Column(
-              children: [
-                if (app.session.syncError != null)
-                  Inset(
-                    child: TdsTextButton(
-                      size: TdsTextButtonSize.small,
-                      onPressed: () async {
-                        try {
-                          await app.session.retrySync();
-                        } catch (_) {}
-                      },
-                      child: Text('${app.session.syncError} 다시 연결'),
-                    ),
-                  ),
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Positioned.fill(
-                        child: IndexedStack(
-                          index: selected,
-                          children: [
-                            for (var i = 0; i < order.length; i++)
-                              TickerMode(
-                                enabled: selected == i,
-                                child: TabSaveScope(
-                                  guard: guards[i],
-                                  child: NavigatorPopHandler<Object?>(
-                                    enabled: selected == i,
-                                    onPopWithResult: (_) =>
-                                        navigators[i].currentState?.maybePop(),
-                                    child: Navigator(
-                                      key: navigators[i],
-                                      observers: [observers[i]],
-                                      onGenerateRoute: (settings) =>
-                                          appPageRoute<void>(
-                                            settings: settings,
-                                            builder: (context) => HomeTabPage(
-                                              index: i,
-                                              onTab: selectTab,
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
+        child: PopScope(
+          canPop: !detailOpen[selected],
+          onPopInvokedWithResult: (didPop, result) {
+            if (didPop || handlingSystemBack) return;
+            final navigator = navigators[selected].currentState;
+            if (navigator == null) return;
+            handlingSystemBack = true;
+            unawaited(
+              navigator.maybePop().whenComplete(() {
+                handlingSystemBack = false;
+              }),
+            );
+          },
+          child: HomeBackdrop(
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                children: [
+                  if (app.session.syncError != null)
+                    Semantics(
+                      liveRegion: true,
+                      child: FigmaSurface(
+                        tinted: true,
+                        children: [
+                          TdsListRow(
+                            contents: TdsText(
+                              app.session.syncError!,
+                              typography: TdsTypography.t5,
+                              fontWeight: TdsFontWeight.semibold,
+                            ),
+                            left: const ExcludeSemantics(
+                              child: FigmaIcon('refresh', selected: true),
+                            ),
+                            onPressed: () async {
+                              try {
+                                await app.session.retrySync();
+                              } catch (_) {}
+                            },
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: tabBottom,
-                        // Keep the native selection lens alive on detail pages.
-                        // Hidden controls cannot paint, receive focus or taps,
-                        // appear in semantics, or keep fallback tickers active.
-                        child: Visibility(
-                          visible: !detailOpen[selected],
-                          maintainState: true,
-                          child: TdsFontScaleLimit(
-                            limit: MediaQuery.sizeOf(context).width < 360
-                                ? 100
-                                : 110,
-                            child: TdsLiquidTabBar(
-                              selectedIndex: order.indexOf(
-                                AppTab.values[selected],
-                              ),
-                              onSelected: (index) =>
-                                  selectTab(order[index].index),
-                              fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
-                              items: [
-                                for (final tab in order)
-                                  TdsLiquidTab(
-                                    label: a.role!.tabLabel(tab),
-                                    symbol: const [
-                                      'bag',
-                                      'bubble.left.and.bubble.right',
-                                      'house',
-                                      'storefront',
-                                      'person.crop.circle',
-                                    ][tab.index],
-                                    icon: FigmaIcon(
-                                      const [
-                                        'bag',
-                                        'chat',
-                                        'home',
-                                        'store',
-                                        'person',
-                                      ][tab.index],
-                                      selected: selected == tab.index,
+                    ),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(
+                          // 비활성 탭의 알림이 앱의 뒤로가기 상태를 바꾸지 않게
+                          // 선택된 탭의 상태만 위 PopScope에서 전달한다.
+                          child: NotificationListener<NavigationNotification>(
+                            onNotification: (_) => true,
+                            child: IndexedStack(
+                              index: selected,
+                              children: [
+                                for (var i = 0; i < order.length; i++)
+                                  TickerMode(
+                                    enabled: selected == i,
+                                    child: TabSaveScope(
+                                      guard: guards[i],
+                                      child: Navigator(
+                                        key: navigators[i],
+                                        observers: [observers[i]],
+                                        onGenerateRoute: (settings) =>
+                                            appPageRoute<void>(
+                                              settings: settings,
+                                              builder: (context) => HomeTabPage(
+                                                index: i,
+                                                onTab: selectTab,
+                                              ),
+                                            ),
+                                      ),
                                     ),
-                                    badge: badges[tab.index],
                                   ),
                               ],
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: tabBottom,
+                          // Keep the native selection lens alive on detail pages.
+                          // Hidden controls cannot paint, receive focus or taps,
+                          // appear in semantics, or keep fallback tickers active.
+                          child: Visibility(
+                            visible: !detailOpen[selected],
+                            maintainState: true,
+                            child: TdsFontScaleLimit(
+                              limit: MediaQuery.sizeOf(context).width < 360
+                                  ? 100
+                                  : 110,
+                              child: TdsLiquidTabBar(
+                                selectedIndex: order.indexOf(
+                                  AppTab.values[selected],
+                                ),
+                                onSelected: (index) =>
+                                    selectTab(order[index].index),
+                                fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
+                                items: [
+                                  for (final tab in order)
+                                    TdsLiquidTab(
+                                      label: a.role!.tabLabel(tab),
+                                      symbol: const [
+                                        'bag',
+                                        'bubble.left.and.bubble.right',
+                                        'house',
+                                        'storefront',
+                                        'person.crop.circle',
+                                      ][tab.index],
+                                      icon: FigmaIcon(
+                                        const [
+                                          'bag',
+                                          'chat',
+                                          'home',
+                                          'store',
+                                          'person',
+                                        ][tab.index],
+                                        selected: selected == tab.index,
+                                      ),
+                                      badge: badges[tab.index],
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -321,545 +347,23 @@ class HomeTabPage extends StatelessWidget {
   }
 }
 
-class Dashboard extends StatefulWidget {
+class Dashboard extends StatelessWidget {
   const Dashboard({required this.onTab, super.key});
   final ValueChanged<int> onTab;
+
   @override
-  State<Dashboard> createState() => _DashboardState();
+  Widget build(BuildContext context) =>
+      AppScope.of(context).session.current!.role == AppRole.retailer
+      ? RetailerDashboard(onTab: onTab)
+      : UncleDashboard(onTab: onTab);
 }
 
-class _DashboardState extends State<Dashboard> {
-  final _waitingClock = TdsListRowController();
-  final _recheckClock = TdsListRowController();
-  final _waitingAnchor = GlobalKey();
-  final _recheckAnchor = GlobalKey();
-  ScrollableState? _scrollable;
-  bool _motionEnabled = false, _clockFrameScheduled = false;
-  bool _pendingWaitingMotion = false, _pendingRecheckMotion = false;
-  Object? _waitingSignature, _recheckSignature;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final scrollable = Scrollable.maybeOf(context);
-    if (_scrollable != scrollable) {
-      _scrollable?.position.removeListener(_scheduleClockMotion);
-      _scrollable = scrollable;
-      _scrollable?.position.addListener(_scheduleClockMotion);
-    }
-  }
-
-  // Defer each finite TDS effect until its clock actually enters the viewport.
-  // Lower home cards must not finish animating before the user scrolls to them.
-  void _scheduleClockMotion() {
-    if (_clockFrameScheduled) return;
-    _clockFrameScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _clockFrameScheduled = false;
-      if (!mounted || !_motionEnabled) return;
-      bool visible(GlobalKey key) {
-        final box = key.currentContext?.findRenderObject();
-        if (box is! RenderBox || !box.hasSize || !box.attached) return false;
-        final viewport = _scrollable?.context.findRenderObject();
-        final bounds = viewport is RenderBox && viewport.hasSize
-            ? viewport.localToGlobal(Offset.zero) & viewport.size
-            : Offset.zero & MediaQuery.sizeOf(context);
-        return bounds.contains(box.localToGlobal(box.size.center(Offset.zero)));
-      }
-
-      if (_pendingWaitingMotion && visible(_waitingAnchor)) {
-        _pendingWaitingMotion = false;
-        _waitingClock.shine();
-      }
-      if (_pendingRecheckMotion && visible(_recheckAnchor)) {
-        _pendingRecheckMotion = false;
-        _recheckClock.shine();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollable?.position.removeListener(_scheduleClockMotion);
-    _waitingClock.dispose();
-    _recheckClock.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final app = AppScope.of(context), account = app.session.current!;
-    if (account.role == AppRole.retailer) {
-      return RetailerDashboard(onTab: widget.onTab);
-    }
-    final theme = TdsTheme.of(context);
-    final retailer = account.role == AppRole.retailer;
-    final all = app.workspace
-        .records('requests')
-        .map((r) => RequestRecord(r.id, r.data))
-        .toList();
-    final active = all.where((r) => !r.ended).toList();
-    final attention = active
-        .where(
-          (r) =>
-              r.n('openIssues') > 0 ||
-              (retailer
-                  ? r.needsReply || r.delivered > r.received
-                  : r.s('status') == 'pending' || r.overdue),
-        )
-        .toList();
-    final available = active.fold<int>(0, (n, r) => n + r.available);
-    final waiting = active
-        .where((r) => retailer ? r.s('status') == 'pending' : r.needsReply)
-        .toList();
-    final rechecks =
-        active
-            .where((r) => r.backorder > 0 && r.s('recheck').isNotEmpty)
-            .toList()
-          ..sort((a, b) => a.s('recheck').compareTo(b.s('recheck')));
-    final motionEnabled =
-        TickerMode.valuesOf(context).enabled &&
-        !MediaQuery.disableAnimationsOf(context);
-    _motionEnabled = motionEnabled;
-    final waitingSignature = (account.id, waiting.length, motionEnabled);
-    final next = rechecks.firstOrNull;
-    final recheckSignature = (
-      account.id,
-      next?.id,
-      next?.s('recheck'),
-      next?.backorder,
-      motionEnabled,
-    );
-    if (_waitingSignature != waitingSignature) {
-      _waitingSignature = waitingSignature;
-      _pendingWaitingMotion = motionEnabled && waiting.isNotEmpty;
-    }
-    if (_recheckSignature != recheckSignature) {
-      _recheckSignature = recheckSignature;
-      _pendingRecheckMotion = motionEnabled && next != null;
-    }
-    _scheduleClockMotion();
-    Widget clock(
-      String name,
-      GlobalKey anchor,
-      TdsListRowController controller,
-      bool active,
-    ) {
-      final icon = Center(child: FigmaIcon('clock', selected: active));
-      return ExcludeSemantics(
-        key: anchor,
-        child: SizedBox.square(
-          key: ValueKey(name),
-          dimension: 32,
-          child: active && motionEnabled
-              ? TdsListRowEffects(controller: controller, child: icon)
-              : icon,
-        ),
-      );
-    }
-
-    void work() => widget.onTab(AppTab.business.index);
-    void compose() => openPage(context, const RequestEditor());
-    void delivery() => openPage(
-      context,
-      const PageFrame(title: '상품 전달', children: [DeliveryList()]),
-    );
-    Widget metric(
-      String icon,
-      String value,
-      String label,
-      String action,
-      VoidCallback callback,
-    ) => TdsListRow(
-      left: FigmaIcon(icon, selected: true),
-      contents: TdsListRowTexts(
-        type: TdsListRowTextType.row2TypeA,
-        top: Text(value),
-        bottom: Text(label),
-      ),
-      right: TdsButton(
-        size: TdsButtonSize.small,
-        variant: TdsButtonVariant.weak,
-        onPressed: callback,
-        child: Text(action),
-      ),
-    );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (!retailer)
-          Inset(
-            child: TdsText(
-              '${account.b('working') ? '업무 중' : '휴무 중'} · 요청 마감 ${account.s('deadline')}',
-              typography: TdsTypography.t7,
-              color: TdsTheme.of(context).color('grey600'),
-            ),
-          ),
-        FigmaSurface(
-          margin: 12,
-          style: FigmaSurfaceStyle.glass,
-          grouped: true,
-          children: [
-            TdsListRow(
-              left: FigmaIcon(
-                attention.isEmpty ? 'check' : 'clock',
-                selected: true,
-              ),
-              contents: TdsListRowTexts(
-                type: TdsListRowTextType.row2TypeA,
-                top: Text(
-                  attention.isEmpty
-                      ? '지금 확인할 일을 모두 마쳤어요'
-                      : '지금 확인할 일이 ${attention.length}건 있어요',
-                ),
-                bottom: Text(
-                  retailer ? '사입부터 수령까지 한눈에 확인해요' : '새 요청과 미송 재확인을 확인해요',
-                ),
-              ),
-              withArrow: true,
-              onPressed: work,
-            ),
-          ],
-        ),
-        FigmaSurface(
-          margin: 12,
-          style: FigmaSurfaceStyle.glass,
-          grouped: true,
-          children: [
-            TdsListRow(
-              contents: Semantics(
-                header: true,
-                child: TdsText(
-                  retailer ? '내 사입 현황' : '오늘 업무',
-                  typography: TdsTypography.t4,
-                  fontWeight: TdsFontWeight.bold,
-                ),
-              ),
-              withArrow: true,
-              onPressed: work,
-            ),
-            metric(
-              'bag',
-              '${active.length}건',
-              '진행 중인 사입 요청',
-              retailer ? '요청' : '확인',
-              retailer ? compose : work,
-            ),
-            metric(
-              'shirt',
-              '$available장',
-              '확보 후 전달 대기',
-              retailer ? '보기' : '전달',
-              retailer ? work : delivery,
-            ),
-            metric(
-              'clock',
-              '${active.where((r) => r.delivered > r.received).length}건',
-              retailer ? '받은 상품 확인' : '소매업자 수령 확인 대기',
-              '확인',
-              work,
-            ),
-            const TdsBorder(),
-            Item('사입 내역 전체 보기', onTap: work),
-          ],
-        ),
-        FigmaSurface(
-          margin: 12,
-          children: [
-            TdsListRow(
-              contents: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TdsText(
-                          '상대방 확인 대기',
-                          typography: TdsTypography.t5,
-                          fontWeight: TdsFontWeight.semibold,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      clock(
-                        'waiting-clock',
-                        _waitingAnchor,
-                        _waitingClock,
-                        waiting.isNotEmpty,
-                      ),
-                    ],
-                  ),
-                  const TdsSpacing(8),
-                  Semantics(
-                    liveRegion: true,
-                    child: TdsText(
-                      '${waiting.length}건',
-                      typography: TdsTypography.t2,
-                      fontWeight: TdsFontWeight.bold,
-                      color: theme.color(
-                        waiting.isEmpty ? 'grey600' : 'blue600',
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (waiting.isNotEmpty)
-              for (final r in waiting.take(2))
-                Item(
-                  r.s('product'),
-                  leading: const FigmaIcon('shirt'),
-                  subtitle: '${r.s('option')} · ${r.statusLabel}',
-                  onTap: () => openPage(context, RequestDetailPage(r.id)),
-                )
-            else
-              const Info('상대방에게 답변을 기다리는 요청이 없어요.'),
-          ],
-        ),
-        if (rechecks.isNotEmpty)
-          FigmaSurface(
-            margin: 12,
-            children: [
-              TdsListRow(
-                contents: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TdsText(
-                            '다음 미송 재확인',
-                            typography: TdsTypography.t5,
-                            fontWeight: TdsFontWeight.semibold,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        clock(
-                          'recheck-clock',
-                          _recheckAnchor,
-                          _recheckClock,
-                          true,
-                        ),
-                      ],
-                    ),
-                    const TdsSpacing(4),
-                    TdsText(
-                      rechecks.first.s('recheck'),
-                      typography: TdsTypography.t6,
-                      color: theme.color('grey600'),
-                    ),
-                  ],
-                ),
-              ),
-              Item(
-                rechecks.first.s('product'),
-                subtitle: '남은 미송 ${rechecks.first.backorder}장',
-                onTap: () =>
-                    openPage(context, RequestDetailPage(rechecks.first.id)),
-              ),
-            ],
-          ),
-        FigmaSurface(
-          margin: 12,
-          children: [
-            Item('최근 요청', onTap: work),
-            if (all.isEmpty) const Info('아직 사입 요청이 없어요'),
-            for (final r in all.take(3))
-              TdsListRow(
-                left: const FigmaIcon('shirt'),
-                contents: TdsListRowTexts(
-                  type: TdsListRowTextType.row2TypeA,
-                  top: Text(r.s('product')),
-                  bottom: Text('${r.s('option')} · ${r.statusLabel}'),
-                ),
-                withArrow: true,
-                onPressed: () => openPage(context, RequestDetailPage(r.id)),
-              ),
-            if (retailer)
-              Item(
-                '새 사입 요청하기',
-                leading: const FigmaIcon('bag'),
-                onTap: compose,
-              ),
-          ],
-        ),
-        FigmaSurface(
-          margin: 12,
-          children: [
-            Item(
-              retailer ? '함께하는 사입삼촌' : '함께하는 거래처',
-              leading: const FigmaIcon('store'),
-              subtitle: '${app.workspace.partners.length}곳 연결됨',
-              onTap: () => widget.onTab(AppTab.connections.index),
-            ),
-            if (app.workspace.partners.isEmpty)
-              Item(
-                '거래처 연결하기',
-                leading: const FigmaIcon('person'),
-                onTap: () => openPage(context, const AddConnectionPage()),
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class BusinessList extends StatefulWidget {
+class BusinessList extends StatelessWidget {
   const BusinessList({required this.onTab, super.key});
   final ValueChanged<int> onTab;
-  @override
-  State<BusinessList> createState() => _BusinessListState();
-}
 
-class _BusinessListState extends State<BusinessList> {
-  String filter = '진행 중', group = '거래처별', query = '';
   @override
-  Widget build(BuildContext context) {
-    final app = AppScope.of(context),
-        retailer = app.session.current!.role == AppRole.retailer;
-    final filters = retailer
-        ? const ['진행 중', '답변 필요', '완료', '전체']
-        : const ['진행 중', '재확인', '완료', '전체'];
-    final search = query.trim().toLowerCase();
-    final all = app.workspace
-        .records('requests')
-        .map((r) => RequestRecord(r.id, r.data))
-        .toList();
-    final rows = all.where((r) {
-      final match = switch (filter) {
-        '진행 중' => !r.ended,
-        '답변 필요' => !r.ended && (r.needsReply || r.n('openIssues') > 0),
-        '재확인' => r.overdue,
-        '완료' => r.ended,
-        _ => true,
-      };
-      final peer = app.workspace.profile(
-        r.s(retailer ? 'uncleId' : 'retailerId'),
-      );
-      return match &&
-          '${r.s('product')} ${r.s('wholesaler')} ${peer?.name ?? ''}'
-              .toLowerCase()
-              .contains(search);
-    }).toList();
-    int priority(RequestRecord r) => r.n('openIssues') > 0
-        ? 0
-        : r.needsReply
-        ? 1
-        : r.delivered > r.received
-        ? 2
-        : r.overdue
-        ? 3
-        : 4;
-    rows.sort((a, b) {
-      final p = priority(a).compareTo(priority(b));
-      return p != 0 ? p : b.s('createdAt').compareTo(a.s('createdAt'));
-    });
-    final groups = <String, List<RequestRecord>>{};
-    for (final r in rows) {
-      final label = retailer
-          ? (priority(r) < 3 ? '내 확인이 필요한 요청' : '사입 요청')
-          : group == '도매처별'
-          ? r.s('wholesaler')
-          : app.workspace.profile(r.s('retailerId'))?.name ?? '거래처';
-      groups.putIfAbsent(label, () => []).add(r);
-    }
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AppSearchField(
-          placeholder: '상품 또는 거래처 검색',
-          onChanged: (v) => setState(() => query = v),
-        ),
-        if (TdsTheme.of(context).platform.fontScale > 130)
-          Choices(
-            options: filters,
-            value: filter,
-            onChanged: (v) => setState(() => filter = v),
-          )
-        else
-          Inset(
-            child: Wrap(
-              spacing: 6,
-              runSpacing: 4,
-              children: [
-                for (final option in filters)
-                  Semantics(
-                    selected: option == filter,
-                    child: TdsButton(
-                      size: TdsButtonSize.medium,
-                      color: TdsButtonColor.dark,
-                      variant: option == filter
-                          ? TdsButtonVariant.fill
-                          : TdsButtonVariant.weak,
-                      onPressed: () => setState(() => filter = option),
-                      child: Text(option),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        if (retailer)
-          FigmaSurface(
-            children: [
-              Item(
-                '새로 작성',
-                leading: const FigmaIcon('bag', selected: true),
-                onTap: () => openPage(context, const RequestEditor()),
-              ),
-              Item(
-                '임시저장·다시 요청',
-                leading: const FigmaIcon('clock'),
-                subtitle: '임시저장 ${app.workspace.records('drafts').length}건',
-                onTap: () => openPage(
-                  context,
-                  const PageFrame(title: '요청 작성', children: [RequestHub()]),
-                ),
-              ),
-            ],
-          )
-        else ...[
-          FigmaSurface(
-            children: [
-              Item(
-                '전달할 물품',
-                leading: const FigmaIcon('bag'),
-                subtitle:
-                    '전달 가능 ${all.fold<int>(0, (n, r) => n + r.available)}장',
-                onTap: () => openPage(
-                  context,
-                  const PageFrame(title: '상품 전달', children: [DeliveryList()]),
-                ),
-              ),
-            ],
-          ),
-          Choices(
-            options: const ['거래처별', '도매처별'],
-            value: group,
-            onChanged: (v) => setState(() => group = v),
-          ),
-        ],
-        if (rows.isEmpty && search.isNotEmpty)
-          const EmptyState('검색 결과가 없어요', '상품명이나 거래처 이름을 다시 확인해 주세요.')
-        else if (rows.isEmpty)
-          EmptyState(
-            all.isEmpty ? '아직 사입 요청이 없어요' : '해당하는 요청이 없어요',
-            app.workspace.partners.isEmpty
-                ? '거래처와 연결하고 사입을 시작해 보세요.'
-                : '새 요청을 보내거나 검색 조건을 바꿔 보세요.',
-            action: app.workspace.partners.isEmpty ? '거래처 연결하기' : null,
-            onAction: () => widget.onTab(AppTab.connections.index),
-          ),
-        for (final e in groups.entries) ...[
-          Section('${e.key} ${e.value.length}건'),
-          for (final r in e.value)
-            RequestCard(
-              r,
-              onTap: () => openPage(context, RequestDetailPage(r.id)),
-            ),
-        ],
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const UncleWorkTab();
 }
 
 /// The Figma tab bar belongs to root screens. Each tab still owns its stack,

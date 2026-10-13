@@ -108,7 +108,7 @@ void main() {
         ),
       );
       await settle(tester);
-      expect(find.text('2장 수령 확인 · 요청 완료'), findsOneWidget);
+      expect(find.text('2장 수령 확인'), findsOneWidget);
       await tester.ensureVisible(find.text('상품이나 수량이 달라요'));
       await tester.tap(find.text('상품이나 수량이 달라요'));
       await settle(tester);

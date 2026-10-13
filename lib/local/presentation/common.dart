@@ -35,6 +35,7 @@ class PageFrame extends StatelessWidget {
     this.header,
     this.navigationLeading,
     this.navigationSubtitle,
+    this.reserveNavigationSubtitle = false,
     this.showHeaderDivider = true,
     this.reverse = false,
     this.scrollController,
@@ -45,6 +46,7 @@ class PageFrame extends StatelessWidget {
   final String title;
   final String? subtitle;
   final String? navigationSubtitle;
+  final bool reserveNavigationSubtitle;
   final bool showHeaderDivider;
   final List<Widget> children;
   final Widget? trailing, bottom, header;
@@ -102,15 +104,22 @@ class PageFrame extends StatelessWidget {
                                         ellipsisAfterLines: 1,
                                       ),
                                     ),
-                                    if (navigationSubtitle != null) ...[
+                                    if (navigationSubtitle != null ||
+                                        reserveNavigationSubtitle) ...[
                                       const TdsSpacing(2),
-                                      TdsText(
-                                        navigationSubtitle!,
-                                        typography: TdsTypography.t7,
-                                        color: TdsTheme.of(
-                                          context,
-                                        ).color('grey600'),
-                                        ellipsisAfterLines: 1,
+                                      Visibility(
+                                        visible: navigationSubtitle != null,
+                                        maintainState: true,
+                                        maintainAnimation: true,
+                                        maintainSize: true,
+                                        child: TdsText(
+                                          navigationSubtitle ?? ' ',
+                                          typography: TdsTypography.t7,
+                                          color: TdsTheme.of(
+                                            context,
+                                          ).color('grey600'),
+                                          ellipsisAfterLines: 1,
+                                        ),
                                       ),
                                     ],
                                   ],

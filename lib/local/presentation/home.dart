@@ -108,6 +108,12 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     final app = AppScope.of(context),
         a = app.session.current!,
         order = a.role!.tabOrder;
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    // iOS의 떠 있는 탭만 낮추고 Android 시스템 탐색 영역은 확보한다.
+    final tabBottom =
+        TdsTheme.of(context).platform.os == TdsOS.ios && bottomInset > 24
+        ? bottomInset - 24
+        : bottomInset;
     final requests = app.workspace
         .records('requests')
         .map((r) => RequestRecord(r.id, r.data));
@@ -193,43 +199,55 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                           ],
                         ),
                       ),
-                      if (!detailOpen[selected])
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: MediaQuery.viewPaddingOf(context).bottom > 24
-                              ? MediaQuery.viewPaddingOf(context).bottom - 12
-                              : MediaQuery.viewPaddingOf(context).bottom,
-                          child: TdsLiquidTabBar(
-                            selectedIndex: order.indexOf(AppTab.values[selected]),
-                            onSelected: (index) => selectTab(order[index].index),
-                            fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
-                            items: [
-                              for (final tab in order)
-                                TdsLiquidTab(
-                                  label: a.role!.tabLabel(tab),
-                                  symbol: const [
-                                    'bag',
-                                    'bubble.left.and.bubble.right',
-                                    'house',
-                                    'storefront',
-                                    'person.crop.circle',
-                                  ][tab.index],
-                                  icon: FigmaIcon(
-                                    const [
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: tabBottom,
+                        // Keep the native selection lens alive on detail pages.
+                        // Hidden controls cannot paint, receive focus or taps,
+                        // appear in semantics, or keep fallback tickers active.
+                        child: Visibility(
+                          visible: !detailOpen[selected],
+                          maintainState: true,
+                          child: TdsFontScaleLimit(
+                            limit: MediaQuery.sizeOf(context).width < 360
+                                ? 100
+                                : 110,
+                            child: TdsLiquidTabBar(
+                              selectedIndex: order.indexOf(
+                                AppTab.values[selected],
+                              ),
+                              onSelected: (index) =>
+                                  selectTab(order[index].index),
+                              fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
+                              items: [
+                                for (final tab in order)
+                                  TdsLiquidTab(
+                                    label: a.role!.tabLabel(tab),
+                                    symbol: const [
                                       'bag',
-                                      'chat',
-                                      'home',
-                                      'store',
-                                      'person',
+                                      'bubble.left.and.bubble.right',
+                                      'house',
+                                      'storefront',
+                                      'person.crop.circle',
                                     ][tab.index],
-                                    selected: selected == tab.index,
+                                    icon: FigmaIcon(
+                                      const [
+                                        'bag',
+                                        'chat',
+                                        'home',
+                                        'store',
+                                        'person',
+                                      ][tab.index],
+                                      selected: selected == tab.index,
+                                    ),
+                                    badge: badges[tab.index],
                                   ),
-                                  badge: badges[tab.index],
-                                ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
+                      ),
                     ],
                   ),
                 ),

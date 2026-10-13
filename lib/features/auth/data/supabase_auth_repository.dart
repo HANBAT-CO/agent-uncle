@@ -6,6 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 final class SupabaseAuthRepository implements AuthRepository {
   SupabaseAuthRepository(this._client);
 
+  static const Map<String, String> _googleQueryParams = {
+    'prompt': 'select_account',
+  };
+
   final SupabaseClient _client;
 
   @override
@@ -34,9 +38,10 @@ final class SupabaseAuthRepository implements AuthRepository {
       authScreenLaunchMode: kIsWeb
           ? LaunchMode.platformDefault
           : LaunchMode.externalApplication,
+      queryParams: provider == OAuthProvider.google ? _googleQueryParams : null,
     );
   }
 
   @override
-  Future<void> signOut() => _client.auth.signOut();
+  Future<void> signOut() => _client.auth.signOut(scope: SignOutScope.local);
 }

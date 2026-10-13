@@ -111,7 +111,7 @@ void main() {
     await capture(tester, 'retailer');
     await selectTab(tester, '사입삼촌');
     await capture(tester, 'connections-tab');
-    await selectTab(tester, '내 정보');
+    await selectTab(tester, '내 프로필');
     await capture(tester, 'profile-tab');
     await selectTab(tester, '홈');
     unawaited(
@@ -133,8 +133,8 @@ void main() {
     await tester.pumpAndSettle();
     await selectTab(tester, '채팅');
     await capture(tester, 'chat-list');
-    await selectTab(tester, '사입');
-    await capture(tester, 'business-list');
+    await selectTab(tester, '사입하기');
+    await capture(tester, 'purchase-tab');
     await selectTab(tester, '홈');
     final homeScroll = find
         .descendant(
@@ -161,8 +161,8 @@ void main() {
     await capture(tester, 'request-actions');
     await tester.tap(find.byType(TdsTopNavigationBackButton));
     await tester.pumpAndSettle();
-    await selectTab(tester, '사입');
-    final button = find.text('새로 작성');
+    await selectTab(tester, '사입하기');
+    final button = find.text('삼촌한테 사입하기');
     await tester.ensureVisible(button);
     await tester.tap(button);
     await tester.pumpAndSettle();

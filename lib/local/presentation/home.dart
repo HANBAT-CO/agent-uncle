@@ -8,6 +8,8 @@ import 'common.dart';
 import 'delivery.dart';
 import 'entry.dart';
 import 'requests.dart';
+import 'retailer_home.dart';
+import 'retailer_purchase.dart';
 import 'social.dart';
 
 class HomeShell extends StatefulWidget {
@@ -105,7 +107,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final app = AppScope.of(context),
         a = app.session.current!,
-        tabs = a.role!.tabs;
+        order = a.role!.tabOrder;
     final requests = app.workspace
         .records('requests')
         .map((r) => RequestRecord(r.id, r.data));
@@ -127,7 +129,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
               .records('deliveries')
               .where((d) => d.n('received') < d.n('quantity'))
               .length
-        : requests.where((r) => !r.ended).length;
+        : 0;
     final badges = [
       businessCount,
       unread,
@@ -164,7 +166,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                         child: IndexedStack(
                           index: selected,
                           children: [
-                            for (var i = 0; i < tabs.length; i++)
+                            for (var i = 0; i < order.length; i++)
                               TickerMode(
                                 enabled: selected == i,
                                 child: TabSaveScope(
@@ -199,20 +201,20 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                               ? MediaQuery.viewPaddingOf(context).bottom - 12
                               : MediaQuery.viewPaddingOf(context).bottom,
                           child: TdsLiquidTabBar(
-                            selectedIndex: selected,
-                            onSelected: selectTab,
+                            selectedIndex: order.indexOf(AppTab.values[selected]),
+                            onSelected: (index) => selectTab(order[index].index),
                             fontAsset: 'assets/fonts/Paperlogy-5Medium.ttf',
                             items: [
-                              for (var i = 0; i < tabs.length; i++)
+                              for (final tab in order)
                                 TdsLiquidTab(
-                                  label: tabs[i],
+                                  label: a.role!.tabLabel(tab),
                                   symbol: const [
                                     'bag',
                                     'bubble.left.and.bubble.right',
                                     'house',
                                     'storefront',
                                     'person.crop.circle',
-                                  ][i],
+                                  ][tab.index],
                                   icon: FigmaIcon(
                                     const [
                                       'bag',
@@ -220,10 +222,10 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                                       'home',
                                       'store',
                                       'person',
-                                    ][i],
-                                    selected: selected == i,
+                                    ][tab.index],
+                                    selected: selected == tab.index,
                                   ),
-                                  badge: badges[i],
+                                  badge: badges[tab.index],
                                 ),
                             ],
                           ),
@@ -259,14 +261,17 @@ class HomeTabPage extends StatelessWidget {
         )
         .length;
     final page = switch (index) {
-      0 => BusinessList(onTab: onTab),
+      0 =>
+        a.role == AppRole.retailer
+            ? const RetailerPurchaseTab()
+            : BusinessList(onTab: onTab),
       1 => const ChatList(),
       2 => BackdropGroup(child: Dashboard(onTab: onTab)),
       3 => const ConnectionsList(),
       _ => const MyPage(),
     };
     return PageFrame(
-      title: index == AppTab.home.index ? homeName : a.role!.tabs[index],
+      title: index == AppTab.home.index ? homeName : a.role!.tabLabel(AppTab.values[index]),
       back: false,
       showHeaderDivider: false,
       navigationLeading: index == AppTab.home.index
@@ -358,6 +363,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), account = app.session.current!;
+    if (account.role == AppRole.retailer) {
+      return RetailerDashboard(onTab: widget.onTab);
+    }
     final theme = TdsTheme.of(context);
     final retailer = account.role == AppRole.retailer;
     final all = app.workspace

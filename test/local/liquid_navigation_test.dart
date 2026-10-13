@@ -3,6 +3,7 @@ import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/domain/models.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/home.dart';
+import 'package:agent_uncle/local/presentation/retailer_purchase.dart';
 import 'package:agent_uncle/local/presentation/social.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,7 +15,7 @@ import 'workspace_test.dart' show Fixture;
 void main() {
   for (final role in AppRole.values) {
     testWidgets(
-      'home is the third tab for $role and actions reach the right tab',
+      'role-specific tab order for $role keeps home and purchase destinations',
       (tester) async {
         final f = Fixture();
         await tester.runAsync(() async {
@@ -35,26 +36,55 @@ void main() {
           find.byType(TdsLiquidTabBar),
         );
         expect(bar.items.map((i) => i.label), role.tabs);
-        expect(bar.items[2].label, '홈');
-        expect(bar.selectedIndex, 2);
+        final homeIndex = role.tabOrder.indexOf(AppTab.home);
+        expect(bar.items[homeIndex].label, '홈');
+        expect(bar.selectedIndex, homeIndex);
         final home = tester.getCenter(find.widgetWithText(TdsTextButton, '홈'));
         final business = tester.getCenter(
-          find.widgetWithText(TdsTextButton, role.tabs[0]),
+          find.widgetWithText(TdsTextButton, role.tabLabel(AppTab.business)),
         );
         final chat = tester.getCenter(find.widgetWithText(TdsTextButton, '채팅'));
         expect(business.dx, lessThan(chat.dx));
-        expect(chat.dx, lessThan(home.dx));
+        if (role == AppRole.retailer) {
+          expect(home.dx, lessThan(business.dx));
+          expect(bar.items.map((i) => i.label), [
+            '홈',
+            '사입하기',
+            '채팅',
+            '사입삼촌',
+            '내 프로필',
+          ]);
+        } else {
+          expect(chat.dx, lessThan(home.dx));
+        }
         await tester.ensureVisible(find.text('사입 내역 전체 보기'));
         await settle(tester);
         await tester.tap(find.text('사입 내역 전체 보기'));
         await settle(tester);
-        expect(
-          tester
-              .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
-              .selectedIndex,
-          0,
-        );
-        expect(find.byType(BusinessList), findsOneWidget);
+        if (role == AppRole.retailer) {
+          expect(find.byType(TdsLiquidTabBar), findsNothing);
+          expect(find.text('사입 내역'), findsOneWidget);
+          await tester.tap(find.byType(TdsTopNavigationBackButton));
+          await settle(tester);
+          expect(
+            tester
+                .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
+                .selectedIndex,
+            homeIndex,
+          );
+          await tester.ensureVisible(find.text('주문 넣기'));
+          await tester.tap(find.text('주문 넣기'));
+          await settle(tester);
+          expect(find.byType(RetailerPurchaseTab), findsOneWidget);
+        } else {
+          expect(
+            tester
+                .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
+                .selectedIndex,
+            0,
+          );
+          expect(find.byType(BusinessList), findsOneWidget);
+        }
         await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
         await settle(tester);
         expect(find.byType(ChatList), findsOneWidget);
@@ -84,18 +114,18 @@ void main() {
     final guard = TabSaveScope.of(tester.element(find.byType(Dashboard)))!;
     guard.save = () async => throw StateError('save failed');
     final bar = tester.widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar));
-    expect(await bar.onSelected(0), isFalse);
+    expect(await bar.onSelected(1), isFalse);
     await settle(tester);
     expect(
       tester
           .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
           .selectedIndex,
-      2,
+      0,
     );
     guard.save = null;
-    expect(await bar.onSelected(0), isTrue);
+    expect(await bar.onSelected(1), isTrue);
     await settle(tester);
-    expect(find.byType(BusinessList), findsOneWidget);
+    expect(find.byType(RetailerPurchaseTab), findsOneWidget);
     await tester.pumpWidget(const SizedBox());
     app.dispose();
     await drainClose(tester, f.store.close());

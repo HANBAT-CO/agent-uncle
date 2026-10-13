@@ -40,7 +40,7 @@ class Fixture {
     );
     await session.saveProfile({
       'name': label,
-      'contact': '담당자',
+      'contact': role == AppRole.uncle ? label : '담당자',
       'phone': '01012345678',
       'businessName': label,
       'businessNumber': '1234567890',
@@ -50,6 +50,7 @@ class Fixture {
       'pickupArea': '동대문 1층',
       'deliveryArea': '서울',
       'deadline': '22:00',
+      'salesChannel': '온라인',
       'terms': true,
       'privacy': true,
     }, complete: true);

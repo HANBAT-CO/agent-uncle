@@ -110,7 +110,7 @@ void main() {
         }
 
         await show(const HomeShell());
-        await tester.tap(find.widgetWithText(TdsTextButton, '사입'));
+        await tester.tap(find.widgetWithText(TdsTextButton, '사입하기'));
         await settle(tester);
         expect(find.byType(AppLogo), findsNothing);
         await tester.tap(find.widgetWithText(TdsTextButton, '홈'));

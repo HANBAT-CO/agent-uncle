@@ -11,7 +11,7 @@ import 'package:sembast/sembast_memory.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
 import 'app_flow_test.dart' show drainClose, enter, settle, tapButton;
-import 'signup_form_test.dart' show input;
+import 'signup_form_test.dart' show channel, input;
 
 class _PhoneSession extends LocalSessionRepository {
   _PhoneSession(super.store);
@@ -64,6 +64,7 @@ void main() {
         '테스트 담당자',
       );
       await enter(tester, '연락처', '01012345678');
+      if (role == AppRole.retailer) await channel(tester, '온라인');
 
       const serverMessage = '서버 준비가 아직 완료되지 않았어요. 잠시 후 다시 시도해 주세요.';
       session.failure = const AppFailure(serverMessage);

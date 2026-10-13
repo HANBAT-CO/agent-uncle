@@ -4,6 +4,7 @@ import UIKit
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   private var addressSearchPlugin: AddressSearchPlugin?
+  private var nativeMediaPicker: NativeMediaPicker?
 
   override func application(
     _ application: UIApplication,
@@ -20,11 +21,16 @@ import UIKit
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AddressSearchPlugin") {
       addressSearchPlugin = AddressSearchPlugin.register(with: registrar)
     }
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "NativeMediaPicker") {
+      nativeMediaPicker = NativeMediaPicker.register(with: registrar)
+    }
   }
 
   override func applicationWillTerminate(_ application: UIApplication) {
     addressSearchPlugin?.dispose()
     addressSearchPlugin = nil
+    nativeMediaPicker?.dispose()
+    nativeMediaPicker = nil
     super.applicationWillTerminate(application)
   }
 }

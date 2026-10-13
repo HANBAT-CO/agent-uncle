@@ -1,5 +1,5 @@
 """Real local GoTrue/PostgREST/Storage smoke test. Never targets production.
-Run after `supabase start` and `supabase db reset --local`.
+Run after `supabase start` and `supabase migration up --local`.
 """
 import json
 import secrets
@@ -55,7 +55,12 @@ for user, role in [(retailer, 'retailer'), (uncle, 'uncle'), (stranger, 'retaile
     call(user, 'registerAttachment', {'id': attachment, 'name': 'fixture.png'})
     user['attachment'] = attachment
     user['path'] = path
-    call(user, 'saveProfile', {'complete': True, 'values': {'name': role, 'contact': '테스트', 'phone': '01012345678', 'businessName': '테스트', 'businessNumber': '1234567890', 'documentId': attachment, 'address': '서울', 'addressDetail': '1층', 'pickupArea': '동대문', 'deliveryArea': '서울', 'deadline': '23:00', 'terms': True, 'privacy': True}})
+    values = {'contact': '테스트', 'phone': '01012345678', 'terms': True, 'privacy': True}
+    if role == 'retailer':
+        values.update({'name': role, 'businessName': '테스트', 'businessNumber': '1234567890', 'documentId': attachment, 'address': '서울', 'addressDetail': '1층', 'salesChannel': '온라인'})
+    else:
+        values.update({'pickupArea': '동대문', 'deliveryArea': '서울', 'deadline': '23:00'})
+    call(user, 'saveProfile', {'complete': True, 'values': values})
 code = snapshot(uncle)['accounts'][uncle['id']]['code']
 lookup = http('/rest/v1/rpc/saip_lookup_code', {'code': code}, retailer['token'])
 assert lookup['id'] == uncle['id'] and 'businessNumber' not in lookup['data']

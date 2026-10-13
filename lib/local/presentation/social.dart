@@ -17,6 +17,18 @@ class ConnectionsList extends StatefulWidget {
 
 class _ConnectionsListState extends State<ConnectionsList> {
   String filter = '연결됨', query = '';
+
+  Widget _retailerConnectionEmptyState(BuildContext context) => TdsResult(
+    figure: const ExcludeSemantics(child: FigmaIcon('store', size: 60)),
+    title: const Text('아직 함께하는 사입삼촌이 없어요'),
+    button: TdsButton(
+      size: TdsButtonSize.small,
+      variant: TdsButtonVariant.weak,
+      onPressed: () => openPage(context, const AddConnectionPage()),
+      child: const Text('거래처 연결하기'),
+    ),
+  );
+
   @override
   Widget build(BuildContext context) {
     final search = query.trim().toLowerCase();
@@ -61,6 +73,8 @@ class _ConnectionsListState extends State<ConnectionsList> {
               ? order
               : (peerOf(a)?.name ?? '').compareTo(peerOf(b)?.name ?? '');
         });
+    final showRetailerAddConnectionCta =
+        retailer && accepted == 0 && search.isEmpty && filter != '연결 대기';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -124,19 +138,24 @@ class _ConnectionsListState extends State<ConnectionsList> {
         ),
         const TdsSpacing(12),
         if (connections.isEmpty && search.isNotEmpty)
-          const EmptyState('검색 결과가 없어요', '거래처 이름을 다시 확인해 주세요.')
-        else if (connections.isEmpty)
           EmptyState(
-            filter == '연결 대기'
-                ? '기다리는 연결 요청이 없어요'
-                : retailer
-                ? '아직 함께하는 사입삼촌이 없어요'
-                : '연결된 거래처가 없어요',
-            filter == '연결 대기'
-                ? '보내거나 받은 요청이 생기면 여기서 확인할 수 있어요.'
-                : '새 연결에서 초대 코드를 주고받아 보세요.',
-            icon: 'store',
-          ),
+            '검색 결과가 없어요',
+            retailer ? '사입삼촌 이름을 다시 확인해 주세요.' : '거래처 이름을 다시 확인해 주세요.',
+          )
+        else if (connections.isEmpty)
+          showRetailerAddConnectionCta
+              ? _retailerConnectionEmptyState(context)
+              : EmptyState(
+                  filter == '연결 대기'
+                      ? '기다리는 연결 요청이 없어요'
+                      : retailer
+                      ? '아직 함께하는 사입삼촌이 없어요'
+                      : '연결된 거래처가 없어요',
+                  filter == '연결 대기'
+                      ? '보내거나 받은 요청이 생기면 여기서 확인할 수 있어요.'
+                      : '새 연결에서 초대 코드를 주고받아 보세요.',
+                  icon: 'store',
+                ),
         for (final c in connections) ConnectionCard(c),
       ],
     );
@@ -581,6 +600,7 @@ class _ChatListState extends State<ChatList> {
   Widget build(BuildContext context) {
     final search = query.trim().toLowerCase();
     final app = AppScope.of(context),
+        retailer = app.session.current!.role == AppRole.retailer,
         messages = app.workspace.records('messages'),
         partners = app.workspace.partners
             .where((p) => p.name.toLowerCase().contains(search))
@@ -597,17 +617,25 @@ class _ChatListState extends State<ChatList> {
     return Column(
       children: [
         AppSearchField(
-          placeholder: '거래처 검색',
+          placeholder: retailer ? '사입삼촌 검색' : '거래처 검색',
           onChanged: (v) => setState(() => query = v),
         ),
         if (partners.isEmpty && search.isNotEmpty)
-          const EmptyState('검색 결과가 없어요', '거래처 이름을 다시 확인해 주세요.')
+          EmptyState(
+            '검색 결과가 없어요',
+            retailer ? '사입삼촌 이름을 다시 확인해 주세요.' : '거래처 이름을 다시 확인해 주세요.',
+          )
         else if (partners.isEmpty)
-          const EmptyState(
-            '대화할 거래처가 없어요',
-            '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.',
-            icon: 'chat',
-          ),
+          retailer
+              ? const TdsResult(
+                  figure: ExcludeSemantics(child: FigmaIcon('chat', size: 60)),
+                  title: Text('대화할 사입삼촌이 없어요'),
+                )
+              : const EmptyState(
+                  '대화할 거래처가 없어요',
+                  '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.',
+                  icon: 'chat',
+                ),
         for (final a in partners)
           Builder(
             builder: (context) {

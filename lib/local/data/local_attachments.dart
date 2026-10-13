@@ -7,13 +7,21 @@ import '../domain/models.dart';
 import 'local_store.dart';
 
 class LocalAttachmentRepository implements AttachmentRepository {
-  LocalAttachmentRepository(this.store, this.session, this.workspace);
+  LocalAttachmentRepository(
+    this.store,
+    this.session,
+    this.workspace, {
+    this.pickFile = openFile,
+  });
   final LocalStore store;
   final SessionRepository session;
   final WorkspaceRepository workspace;
+
+  /// 테스트에서 OS 파일 선택 창 대신 주입한다.
+  final Future<XFile?> Function({List<XTypeGroup> acceptedTypeGroups}) pickFile;
   @override
   Future<String?> pick({required bool document}) async {
-    final file = await openFile(
+    final file = await pickFile(
       acceptedTypeGroups: [
         XTypeGroup(
           label: document ? '사진 또는 PDF' : '사진',

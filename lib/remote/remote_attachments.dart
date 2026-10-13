@@ -5,11 +5,14 @@ import '../local/domain/models.dart';
 import 'remote_store.dart';
 
 class RemoteAttachmentRepository implements AttachmentRepository {
-  RemoteAttachmentRepository(this.store);
+  RemoteAttachmentRepository(this.store, {this.pickFile = openFile});
   final RemoteStore store;
+
+  /// 테스트에서 OS 파일 선택 창 대신 주입한다.
+  final Future<XFile?> Function({List<XTypeGroup> acceptedTypeGroups}) pickFile;
   @override
   Future<String?> pick({required bool document}) async {
-    final file = await openFile(
+    final file = await pickFile(
       acceptedTypeGroups: [
         XTypeGroup(
           label: document ? '사진 또는 PDF' : '사진',

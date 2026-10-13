@@ -5,9 +5,11 @@ import '../../core/presentation/app_splash.dart';
 import '../../features/auth/presentation/social_login_buttons.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
+import '../domain/profile_validation.dart';
 import 'common.dart';
 import 'home.dart';
 import 'profile_avatar.dart';
+import 'profile_time_field.dart';
 import 'welcome.dart';
 
 export 'welcome.dart';
@@ -183,7 +185,14 @@ class ProfileForm extends StatefulWidget {
 }
 
 class _ProfileFormState extends State<ProfileForm> {
+  static const retailerMarketOptions = ['동대문', '남대문'];
+
   final fields = <String, TextEditingController>{};
+  final focusNodes = <String, FocusNode>{};
+  final anchors = <String, GlobalKey>{};
+  final scrollController = ScrollController();
+  Map<String, String> errors = {};
+  bool submitting = false;
   bool ready = false,
       terms = false,
       privacy = false,
@@ -194,9 +203,44 @@ class _ProfileFormState extends State<ProfileForm> {
       salesChannel = '',
       transport = '',
       activityHours = '';
-  List<String> markets = [], activityDays = [];
+  List<String> markets = [], activityDays = [], otherMarkets = [];
+  bool marketOtherSelected = false, marketOtherDirty = false;
   int step = 0;
   FormSaver? saver;
+
+  static final phoneNumberFormat = TdsTextFieldFormat(
+    reset: (value) {
+      final text = value.trim();
+      final domestic = text.startsWith('+82') ? '0${text.substring(3)}' : text;
+      return TdsTextFieldFormat.phoneNumber.reset!(domestic);
+    },
+    transform: (value) {
+      final limit = value.startsWith('02') ? 10 : 11;
+      final formatted = TdsTextFieldFormat.phoneNumber.transform(value);
+      // 초과 입력을 잘라 유효한 다른 번호로 저장하지 않고, 제출 시 오류로 안내한다.
+      return value.length > limit
+          ? '$formatted${value.substring(limit)}'
+          : formatted;
+    },
+  );
+
+  static final businessNumberFormat = TdsTextFieldFormat(
+    reset: (value) => value.replaceAll(RegExp(r'\D'), ''),
+    transform: (value) {
+      final digits = value.replaceAll(RegExp(r'\D'), '');
+      if (digits.length <= 3) return digits;
+      if (digits.length <= 5) {
+        return '${digits.substring(0, 3)}-${digits.substring(3)}';
+      }
+      return '${digits.substring(0, 3)}-${digits.substring(3, 5)}-${digits.substring(5)}';
+    },
+  );
+
+  bool get retailer =>
+      AppScope.read(context).session.current!.role == AppRole.retailer;
+  List<int> get steps =>
+      retailer ? const [0, 1, 2, 3, 4, 5] : const [0, 2, 3, 4, 5];
+  GlobalKey anchor(String key) => anchors.putIfAbsent(key, GlobalKey.new);
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -219,13 +263,36 @@ class _ProfileFormState extends State<ProfileForm> {
       'intro',
       'activityStart',
       'activityEnd',
+      'marketOther',
     ]) {
-      fields[key] = TextEditingController(text: a.s(key));
+      final stored = a.s(key);
+      fields[key] = TextEditingController(
+        text: key == 'phone'
+            ? phoneNumberFormat.transform(phoneNumberFormat.reset!(stored))
+            : key == 'businessNumber'
+            ? businessNumberFormat.transform(stored)
+            : stored,
+      );
+      focusNodes[key] = FocusNode();
     }
     salesChannel = a.s('salesChannel');
     transport = a.s('transport');
     activityHours = a.s('activityHours');
-    markets = List.of(a.list('markets'));
+    final storedMarkets = [
+      for (final market
+          in a.list('markets').map((value) => value.toString().trim()))
+        if (market.isNotEmpty) market,
+    ];
+    markets = [
+      for (final market in storedMarkets)
+        if (retailerMarketOptions.contains(market)) market,
+    ];
+    otherMarkets = [
+      for (final market in storedMarkets)
+        if (!retailerMarketOptions.contains(market)) market,
+    ];
+    marketOtherSelected = otherMarkets.isNotEmpty;
+    fields['marketOther']!.text = otherMarkets.join(' · ');
     activityDays = List.of(a.list('activityDays'));
     document = a.s('documentId');
     photo = a.s('photoId');
@@ -240,15 +307,62 @@ class _ProfileFormState extends State<ProfileForm> {
     if (mounted) setState(() {});
   }
 
+  List<String> selectedMarkets() {
+    final selected = [
+      for (final option in retailerMarketOptions)
+        if (markets.contains(option)) option,
+    ];
+    if (!marketOtherSelected) return selected;
+    if (!marketOtherDirty && otherMarkets.isNotEmpty) {
+      selected.addAll(otherMarkets.where((market) => market.trim().isNotEmpty));
+      return selected.toSet().toList();
+    }
+    final custom = fields['marketOther']!.text.trim();
+    if (custom.isNotEmpty) selected.add(custom);
+    return selected.toSet().toList();
+  }
+
+  void toggleRetailerMarket(String option) {
+    if (markets.contains(option)) {
+      markets.remove(option);
+    } else {
+      markets.add(option);
+    }
+    changed();
+  }
+
+  void toggleOtherMarket() {
+    marketOtherSelected = !marketOtherSelected;
+    if (marketOtherSelected) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        focusNodes['marketOther']?.requestFocus();
+        final target = anchors['marketOther']?.currentContext;
+        if (target == null) return;
+        await Scrollable.ensureVisible(
+          target,
+          alignment: .12,
+          duration: MediaQuery.disableAnimationsOf(context)
+              ? Duration.zero
+              : const Duration(milliseconds: 300),
+          curve: TdsMotion.quick,
+        );
+      });
+    }
+    changed();
+  }
+
   Data values() => {
-    for (final e in fields.entries) e.key: e.value.text.trim(),
+    for (final e in fields.entries)
+      if (e.key != 'marketOther') e.key: e.value.text.trim(),
+    if (!retailer) 'name': fields['contact']!.text.trim(),
     'documentId': document,
     'photoId': photo,
     'terms': terms,
     'privacy': privacy,
     'working': working,
     'salesChannel': salesChannel,
-    'markets': List.of(markets),
+    'markets': selectedMarkets(),
     'transport': transport,
     'activityHours': activityHours,
     'activityStart': fields['activityStart']!.text,
@@ -256,6 +370,13 @@ class _ProfileFormState extends State<ProfileForm> {
     'activityDays': List.of(activityDays),
   };
   void changed() {
+    if (errors.isNotEmpty) {
+      final current = fieldErrors();
+      errors = {
+        for (final key in errors.keys)
+          if (current.containsKey(key)) key: current[key]!,
+      };
+    }
     if (widget.signup) saver!.change(values());
     setState(() {});
   }
@@ -265,12 +386,81 @@ class _ProfileFormState extends State<ProfileForm> {
     String title, {
     bool numeric = false,
     bool multiline = false,
-  }) => Field(
-    title,
-    controller: fields[key]!,
-    numeric: numeric,
-    multiline: multiline,
-    onChanged: (_) => changed(),
+    String? placeholder,
+    ValueChanged<String>? onChanged,
+  }) => ProfileInputTheme(
+    key: anchor(key),
+    child: Field(
+      title,
+      controller: fields[key]!,
+      focusNode: focusNodes[key],
+      format: key == 'phone'
+          ? phoneNumberFormat
+          : key == 'businessNumber'
+          ? businessNumberFormat
+          : null,
+      keyboardType: key == 'phone' ? TextInputType.phone : null,
+      numeric: numeric,
+      multiline: multiline,
+      placeholder: placeholder,
+      error: errors[key],
+      onChanged: (value) {
+        onChanged?.call(value);
+        changed();
+      },
+    ),
+  );
+
+  Widget timeField(
+    String key,
+    String title, {
+    required int initialHour,
+    bool optional = false,
+  }) => ProfileInputTheme(
+    key: anchor(key),
+    child: ProfileTimeField(
+      label: title,
+      value: fields[key]!.text,
+      initialHour: initialHour,
+      optional: optional,
+      error: errors[key],
+      onChanged: (value) {
+        fields[key]!.text = value;
+        changed();
+      },
+    ),
+  );
+
+  Widget transportChoice() => TdsGridList(
+    columns: TdsTheme.of(context).platform.fontScale > 130
+        ? 1
+        : MediaQuery.sizeOf(context).width < 390
+        ? 2
+        : 3,
+    children: [
+      for (final option in const ['도보', '오토바이', '승용차', '화물차', '기타'])
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 44),
+          child: Semantics(
+            selected: transport == option,
+            child: TdsButton(
+              size: TdsButtonSize.medium,
+              display: TdsButtonDisplay.block,
+              color: transport == option
+                  ? TdsButtonColor.primary
+                  : TdsButtonColor.dark,
+              variant: transport == option
+                  ? TdsButtonVariant.fill
+                  : TdsButtonVariant.weak,
+              onPressed: () {
+                transport = option;
+                changed();
+              },
+              child: Text(option),
+            ),
+          ),
+        ),
+    ],
   );
   @override
   void dispose() {
@@ -278,15 +468,24 @@ class _ProfileFormState extends State<ProfileForm> {
     for (final c in fields.values) {
       c.dispose();
     }
+    for (final focus in focusNodes.values) {
+      focus.dispose();
+    }
+    scrollController.dispose();
     super.dispose();
   }
 
   Future<void> leave() async {
+    if (submitting) return;
     try {
       if (widget.signup) await saver!.flush();
       if (!mounted) return;
       if (widget.signup && step > 0) {
-        setState(() => step--);
+        goToStep(steps[steps.indexOf(step) - 1]);
+        return;
+      }
+      if (widget.signup) {
+        await chooseRole();
         return;
       }
       setState(() => leaving = true);
@@ -296,39 +495,105 @@ class _ProfileFormState extends State<ProfileForm> {
     }
   }
 
-  void validateStep(bool retailer) {
-    final keys = switch (step) {
-      0 => ['name', 'contact', 'phone'],
-      1 => ['businessName', 'businessNumber'],
-      2 =>
-        retailer
-            ? ['address', 'addressDetail']
-            : ['pickupArea', 'deliveryArea', 'deadline'],
-      _ => <String>[],
+  Future<void> chooseRole() async {
+    await saver!.flush();
+    if (!mounted) return;
+    await openPage(context, const RolePage(closeOnSelect: true));
+    if (mounted) {
+      errors.clear();
+      goToStep(0);
+    }
+  }
+
+  void goToStep(int next) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => step = next);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && scrollController.hasClients) scrollController.jumpTo(0);
+    });
+  }
+
+  Map<String, String> fieldErrors() => profileFieldErrors(
+    values(),
+    role: AppScope.read(context).session.current!.role!,
+    requireSalesChannel: widget.signup && retailer,
+  );
+
+  List<String> keysForStep(int n) => switch (n) {
+    0 => [
+      if (retailer) 'name',
+      'contact',
+      'phone',
+      if (retailer) 'salesChannel',
+    ],
+    1 => ['businessName', 'businessNumber', 'documentId'],
+    2 =>
+      retailer
+          ? ['address', 'addressDetail']
+          : ['pickupArea', 'deliveryArea', 'deadline'],
+    3 => retailer ? [] : ['activityStart', 'activityEnd'],
+    5 => ['terms', 'privacy'],
+    _ => [],
+  };
+
+  bool validate() {
+    final current = fieldErrors();
+    final keys = !widget.signup || step >= 4
+        ? [
+            for (final n in steps)
+              if (step == 5 || !widget.signup || n != 5) ...keysForStep(n),
+          ]
+        : keysForStep(step);
+    final failures = {
+      for (final key in keys)
+        if (current.containsKey(key)) key: current[key]!,
     };
-    for (final key in keys) {
-      if (fields[key]!.text.trim().isEmpty) {
-        throw const AppFailure('필수 항목을 모두 입력해 주세요.');
-      }
+    setState(() => errors = failures);
+    if (failures.isEmpty) return true;
+    final first = failures.keys.first;
+    if (widget.signup) {
+      final targetStep = steps.firstWhere(
+        (n) => keysForStep(n).contains(first),
+      );
+      if (step != targetStep) goToStep(targetStep);
     }
-    if (step == 0 &&
-        !RegExp(r'^\+?[\d -]{9,16}$').hasMatch(fields['phone']!.text.trim())) {
-      throw const AppFailure('연락처를 확인해 주세요.');
-    }
-    if (step == 1) {
-      if (!RegExp(
-        r'^\d{10}$',
-      ).hasMatch(fields['businessNumber']!.text.replaceAll('-', '').trim())) {
-        throw const AppFailure('사업자등록번호 10자리를 확인해 주세요.');
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final target = anchors[first]?.currentContext;
+      if (target == null) return;
+      final focus = focusNodes[first];
+      if (focus?.context != null) {
+        focus!.requestFocus();
+      } else {
+        FocusManager.instance.primaryFocus?.unfocus();
       }
-      if (document.isEmpty) throw const AppFailure('사업자등록증을 첨부해 주세요.');
-    }
-    for (final key in ['activityStart', 'activityEnd']) {
-      final time = fields[key]!.text.trim();
-      if (time.isNotEmpty &&
-          !RegExp(r'^([01]\d|2[0-3]):[0-5]\d$').hasMatch(time)) {
-        throw const AppFailure('활동 시간은 22:00처럼 입력해 주세요.');
+      await Scrollable.ensureVisible(
+        target,
+        alignment: .12,
+        duration: MediaQuery.disableAnimationsOf(context)
+            ? Duration.zero
+            : const Duration(milliseconds: 300),
+        curve: TdsMotion.quick,
+      );
+    });
+    return false;
+  }
+
+  Future<void> submit() async {
+    if (!validate()) return;
+    final app = AppScope.read(context);
+    setState(() => submitting = true);
+    try {
+      if (widget.signup) await saver!.flush();
+      if (!mounted) return;
+      if (widget.signup && step != 5) {
+        goToStep(steps[steps.indexOf(step) + 1]);
+        return;
       }
+      await app.session.saveProfile(values(), complete: true);
+      if (!widget.signup && mounted) Navigator.pop(context);
+    } finally {
+      if (mounted) setState(() => submitting = false);
     }
   }
 
@@ -358,6 +623,41 @@ class _ProfileFormState extends State<ProfileForm> {
     ],
   );
 
+  Widget otherMarketField() => field(
+    'marketOther',
+    '사입 시장 직접 입력',
+    placeholder: '예: 평화시장',
+    onChanged: (_) => marketOtherDirty = true,
+  );
+
+  Widget marketChoice() => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const Section('사입 시장 (선택)'),
+      Inset(
+        child: TdsChip(
+          wrap: true,
+          variant: TdsChipVariant.weak,
+          margin: TdsChipMargin.none,
+          children: [
+            for (final option in retailerMarketOptions)
+              TdsChipItem(
+                text: option,
+                selected: markets.contains(option),
+                onPressed: () => toggleRetailerMarket(option),
+              ),
+            TdsChipItem(
+              text: '그외',
+              selected: marketOtherSelected,
+              onPressed: toggleOtherMarket,
+            ),
+          ],
+        ),
+      ),
+      if (marketOtherSelected) otherMarketField(),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), a = app.session.current!;
@@ -379,103 +679,135 @@ class _ProfileFormState extends State<ProfileForm> {
       child: PageFrame(
         title: widget.signup ? '${a.role!.label} 가입' : '내 정보 수정',
         scrollKey: 'profile-${widget.signup ? step : 'edit'}',
-        back: !widget.signup || step > 0,
-        bottom: ActionButton(
-          widget.signup ? (step == 5 ? '가입 완료' : '다음') : '저장하기',
-          bottom: true,
-          key: ValueKey('profile-submit-$step'),
-          onPressed: () async {
-            validateStep(retailer);
-            if (widget.signup) await saver!.flush();
-            if (widget.signup && step < 5) {
-              FocusManager.instance.primaryFocus?.unfocus();
-              setState(() => step++);
-              return;
-            }
-            await app.session.saveProfile(values(), complete: true);
-            if (!widget.signup && context.mounted) Navigator.pop(context);
-          },
+        scrollController: scrollController,
+        back: !widget.signup,
+        bottom: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ActionButton(
+              widget.signup ? (step == 5 ? '가입 완료' : '다음') : '저장하기',
+              bottom: true,
+              hasPaddingBottom: !widget.signup || retailer,
+              key: ValueKey('profile-submit-$step'),
+              onPressed: submit,
+            ),
+            if (widget.signup)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: retailer ? 8 : 0,
+                ),
+                child: TdsTextButton(
+                  size: TdsTextButtonSize.small,
+                  colorToken: 'grey600',
+                  disabled: submitting,
+                  onPressed: leave,
+                  child: retailer
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Text('이전'),
+                        )
+                      : const SizedBox(
+                          height: 44,
+                          child: Center(child: Text('이전')),
+                        ),
+                ),
+              ),
+          ],
         ),
         children: [
           if (widget.signup)
             PageHeading(
               headings[step],
-              eyebrow: '가입 · ${step + 1} / 6',
-              description: '입력한 정보는 자동으로 저장돼요.',
+              eyebrow: '가입 · ${steps.indexOf(step) + 1} / ${steps.length}',
             ),
-          if (widget.signup && step == 0)
-            Item(
-              '역할 다시 선택',
-              onTap: () async {
-                try {
-                  await saver!.flush();
-                  if (context.mounted) {
-                    await openPage(
-                      context,
-                      const RolePage(closeOnSelect: true),
-                    );
-                  }
-                } catch (_) {}
-              },
-            ),
-          if (saver!.error != null) ...[
-            Info(saver!.error!, error: true),
-            ActionButton(
-              '저장 다시 시도',
-              weak: true,
-              onPressed: () => saver!.flush(),
-            ),
-          ],
           if (show(0))
             FigmaSurface(
               children: [
                 if (!widget.signup) const Section('담당자 정보'),
-                field('name', retailer ? '매장명·쇼핑몰명' : '활동명·업체명'),
-                field('contact', '이름·담당자명'),
-                field('phone', '연락처'),
-                Inset(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: ProfileAvatar(a, photoId: photo, large: true),
-                  ),
-                ),
+                if (retailer) field('name', '매장명'),
+                field('contact', retailer ? '담당자명' : '이름(실명)'),
+                field('phone', '연락처', placeholder: '010-1234-5678'),
                 AttachmentField(
                   label: '프로필 사진',
                   ids: photo.isEmpty ? [] : [photo],
+                  preview: Inset(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ProfileAvatar(a, photoId: photo, large: true),
+                    ),
+                  ),
                   onChanged: (ids) {
                     photo = ids.firstOrNull ?? '';
                     changed();
                   },
                 ),
-                if (retailer) ...[
-                  const Section('판매 채널 (선택)'),
-                  Choices(
-                    options: const ['온라인', '오프라인', '온라인·오프라인 병행'],
-                    value: salesChannel,
-                    onChanged: (v) {
-                      salesChannel = v;
-                      changed();
-                    },
+                if (retailer)
+                  Column(
+                    key: anchor('salesChannel'),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Section('판매 채널'),
+                      const Info('온라인과 오프라인을 함께 선택할 수 있어요.'),
+                      Inset(
+                        child: TdsChip(
+                          wrap: true,
+                          variant: TdsChipVariant.weak,
+                          margin: TdsChipMargin.none,
+                          children: [
+                            for (final channel in const ['온라인', '오프라인'])
+                              TdsChipItem(
+                                text: channel,
+                                selected: salesChannel.contains(channel),
+                                onPressed: () {
+                                  final selected = <String>{
+                                    if (salesChannel.contains('온라인')) '온라인',
+                                    if (salesChannel.contains('오프라인')) '오프라인',
+                                  };
+                                  if (!selected.add(channel)) {
+                                    selected.remove(channel);
+                                  }
+                                  salesChannel = selected.length == 2
+                                      ? '온라인·오프라인 병행'
+                                      : selected.firstOrNull ?? '';
+                                  changed();
+                                },
+                              ),
+                          ],
+                        ),
+                      ),
+                      if (errors['salesChannel'] != null)
+                        Semantics(
+                          liveRegion: true,
+                          child: Info(errors['salesChannel']!, error: true),
+                        ),
+                    ],
                   ),
-                ],
               ],
             ),
-          if (show(1))
+          if (retailer && show(1))
             FigmaSurface(
               children: [
                 if (!widget.signup) const Section('사업자 정보'),
                 field('businessName', '사업자명'),
-                field('businessNumber', '사업자등록번호', numeric: true),
+                field(
+                  'businessNumber',
+                  '사업자등록번호',
+                  numeric: true,
+                  placeholder: '111-11-11111',
+                ),
                 AttachmentField(
+                  key: anchor('documentId'),
                   label: '사업자등록증 (필수)',
                   document: true,
+                  error: errors['documentId'],
                   ids: document.isEmpty ? [] : [document],
                   onChanged: (ids) {
                     document = ids.firstOrNull ?? '';
                     changed();
                   },
                 ),
-                const Info('사업자등록증 사진 또는 PDF를 첨부해 주세요. 서류 제출과 사업자 검증은 별개예요.'),
+                const Info('서류 제출과 사업자 검증은 별개예요.'),
               ],
             ),
           if (show(2))
@@ -485,14 +817,15 @@ class _ProfileFormState extends State<ProfileForm> {
                   if (!widget.signup) const Section('기본 배송지'),
                   field('address', '주소'),
                   field('addressDetail', '상세주소'),
-                  field('deliveryNote', '배송 참고사항', multiline: true),
+                  if (!widget.signup)
+                    field('deliveryNote', '배송 참고사항', multiline: true),
                   if (!widget.signup) const Info('변경한 기본 배송지는 새 요청부터 적용돼요.'),
                 ] else ...[
                   if (!widget.signup) const Section('활동·운영 정보'),
                   field('pickupArea', '도매 픽업 구역'),
                   const Info('시장·상가·건물·층까지 입력해 주세요.'),
                   field('deliveryArea', '소매 배송 지역'),
-                  field('deadline', '요청 마감시간'),
+                  timeField('deadline', '요청 마감시간', initialHour: 23),
                   field('holiday', '휴무·안내사항', multiline: true),
                   field('intro', '소개', multiline: true),
                   Toggle(
@@ -510,17 +843,13 @@ class _ProfileFormState extends State<ProfileForm> {
           if (show(3))
             FigmaSurface(
               children: [
-                multiChoice('사입 시장 (선택)', const ['동대문', '남대문'], markets),
+                if (retailer)
+                  marketChoice()
+                else
+                  multiChoice('사입 시장 (선택)', const ['동대문', '남대문'], markets),
                 if (!retailer) ...[
                   const Section('이동 수단 (선택)'),
-                  Choices(
-                    options: const ['도보', '오토바이', '승용차', '화물차', '기타'],
-                    value: transport,
-                    onChanged: (v) {
-                      transport = v;
-                      changed();
-                    },
-                  ),
+                  transportChoice(),
                   const Section('활동 시간대 (선택)'),
                   Choices(
                     options: const ['주간 09–18', '야간 22–06', '일정에 따라 달라요'],
@@ -530,8 +859,18 @@ class _ProfileFormState extends State<ProfileForm> {
                       changed();
                     },
                   ),
-                  field('activityStart', '활동 시작 (HH:mm, 선택)'),
-                  field('activityEnd', '활동 종료 (HH:mm, 선택)'),
+                  timeField(
+                    'activityStart',
+                    '활동 시작',
+                    initialHour: 22,
+                    optional: true,
+                  ),
+                  timeField(
+                    'activityEnd',
+                    '활동 종료',
+                    initialHour: 6,
+                    optional: true,
+                  ),
                   const Info('종료가 시작보다 이르면 다음 날 종료예요. 요청 마감과 휴무 안내는 별도로 적용돼요.'),
                   multiChoice('활동 요일 (선택)', const [
                     '월',
@@ -549,33 +888,38 @@ class _ProfileFormState extends State<ProfileForm> {
             FigmaSurface(
               children: [
                 Item(
-                  fields['name']!.text,
+                  retailer ? fields['name']!.text : fields['contact']!.text,
                   subtitle:
                       '${fields['contact']!.text} · ${fields['phone']!.text}',
                 ),
                 QuantityRow('역할', a.role!.label),
-                QuantityRow('사업자명', fields['businessName']!.text),
-                QuantityRow('사업자등록번호', fields['businessNumber']!.text),
-                QuantityRow('사업자 서류', document.isEmpty ? '미첨부' : '첨부 완료'),
+                if (retailer) ...[
+                  QuantityRow('판매 채널', salesChannel),
+                  Item('사업자명', subtitle: fields['businessName']!.text),
+                  Item('사업자등록번호', subtitle: fields['businessNumber']!.text),
+                  QuantityRow('사업자 서류', document.isEmpty ? '미첨부' : '첨부 완료'),
+                ],
                 Item(
                   retailer ? '기본 배송지' : '활동 구역',
                   subtitle: retailer
                       ? '${fields['address']!.text} ${fields['addressDetail']!.text}'
                       : '${fields['pickupArea']!.text} · ${fields['deliveryArea']!.text}',
                 ),
-                QuantityRow(
+                Item(
                   '사입 시장',
-                  markets.isEmpty ? '미선택' : markets.join(' · '),
+                  subtitle: selectedMarkets().isEmpty
+                      ? '미선택'
+                      : selectedMarkets().join(' · '),
                 ),
               ],
             ),
-            Item('정보 수정하기', onTap: () => setState(() => step = 0)),
+            Item('정보 수정하기', onTap: () => goToStep(0)),
           ],
           if (widget.signup && step == 5) ...[
-            const Info('개발용 동의 화면이에요. 정식 약관·개인정보 처리방침은 서비스 운영 전에 확정돼요.'),
             FigmaSurface(
               children: [
                 Inset(
+                  key: anchor('terms'),
                   child: TdsCheckbox(
                     checked: terms,
                     onChanged: (v) {
@@ -585,7 +929,13 @@ class _ProfileFormState extends State<ProfileForm> {
                     child: const Text('[필수] 서비스 이용 동의 확인'),
                   ),
                 ),
+                if (errors['terms'] != null)
+                  Semantics(
+                    liveRegion: true,
+                    child: Info(errors['terms']!, error: true),
+                  ),
                 Inset(
+                  key: anchor('privacy'),
                   child: TdsCheckbox(
                     checked: privacy,
                     onChanged: (v) {
@@ -595,6 +945,11 @@ class _ProfileFormState extends State<ProfileForm> {
                     child: const Text('[필수] 개인정보 처리 동의 확인'),
                   ),
                 ),
+                if (errors['privacy'] != null)
+                  Semantics(
+                    liveRegion: true,
+                    child: Info(errors['privacy']!, error: true),
+                  ),
                 Item(
                   '약관·개인정보 처리 안내',
                   onTap: () => openPage(
@@ -610,19 +965,19 @@ class _ProfileFormState extends State<ProfileForm> {
               ],
             ),
           ],
-          if (widget.signup)
-            Inset(
-              child: TdsTextButton(
-                size: TdsTextButtonSize.small,
-                onPressed: () async {
-                  try {
-                    await saver!.flush();
-                    await app.session.signOut();
-                  } catch (_) {}
-                },
-                child: const Text('저장하고 로그아웃'),
-              ),
+          // 자동 저장 결과가 입력칸 위에 끼어들면 키보드가 열린 상태에서
+          // 폼과 터치 위치가 이동한다. 안내는 현재 단계의 입력 뒤에 둔다.
+          if (saver!.error != null) ...[
+            Semantics(
+              liveRegion: true,
+              child: Info(saver!.error!, error: true),
             ),
+            ActionButton(
+              '저장 다시 시도',
+              weak: true,
+              onPressed: () => saver!.flush(),
+            ),
+          ],
         ],
       ),
     );

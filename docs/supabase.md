@@ -64,6 +64,24 @@ iOS URL Scheme을 등록했고 Flutter 기본 딥링크 처리는 꺼 Supabase�
 공급자 로그인 페이지를 여는 것과 실제 사용자 인증 완료는 구분합니다. 실제 계정의
 비밀번호·추가 인증·동의 화면은 사용자가 직접 진행해야 합니다.
 
+### Google OAuth 화면의 서비스명과 도메인 표시는 별개
+
+현재 앱은 Supabase hosted OAuth를 사용하고 기본 `SUPABASE_URL`도
+`https://auicerytbhnqeakmkscs.supabase.co`입니다. Google에 검증·게시된 브랜드가 없으면
+로그인 화면에 이 프로젝트 도메인이 보일 수 있습니다. 앱 이름·로고는 Google Auth
+Platform Branding에서 검증·게시하며, 실제 인증 서버 주소 변경은 별도 도메인 설정입니다.
+
+2026-10-11 후속: 앱 이름 `사입삼춘`, 로고, 사용자가 등록한 Notion 개인정보처리방침·약관을
+확인하고 Audience를 외부/프로덕션으로 전환했습니다. 브랜드 검증은 홈페이지 응답 오류와
+Notion 처리방침 도메인 오류로 실패했습니다. 홈페이지는 `https://www.the-saena.ai/`로
+수정해 저장했으나, 처리방침을 게시할 유효한 도메인이 없어 브랜드 재검증·게시는 미완료입니다.
+콘솔에서도 브랜딩이 사용자에게 표시되지 않는다고 안내합니다. 사이트 제작·배포는 사용자의
+추가 작업 제한에 따라 진행하지 않았으며, OAuth callback과 Supabase 도메인은 유지했습니다.
+
+정리와 실제 콘솔 변경 절차는 [Google OAuth 브랜딩 정리](google-oauth-branding.md)를
+따릅니다. 이 문서에서 Google Branding, Audience, OAuth Client, Supabase custom
+domain/vanity subdomain, 앱 복귀 URL과 공급자 callback URL의 차이를 구분해 적었습니다.
+
 ### Google 인증 코드 교환 실패
 
 앱으로 복귀한 뒤 `Unable to exchange external code`가 발생하면 Supabase Auth 로그의

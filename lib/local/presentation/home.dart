@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/scheduler.dart' show SchedulerPhase;
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
@@ -29,10 +31,19 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   late final observers = List.generate(
     5,
     (index) => _TabRouteObserver((open) {
-      if (detailOpen[index] == open) return;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) setState(() => detailOpen[index] = open);
-      });
+      void update() {
+        if (mounted && detailOpen[index] != open) {
+          setState(() => detailOpen[index] = open);
+        }
+      }
+
+      if (WidgetsBinding.instance.schedulerPhase ==
+          SchedulerPhase.persistentCallbacks) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => update());
+      } else {
+        // 전환 완료 콜백은 마지막 프레임 이후에도 올 수 있으므로 바로 갱신한다.
+        update();
+      }
     }),
   );
 
@@ -184,13 +195,13 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                                     child: Navigator(
                                       key: navigators[i],
                                       observers: [observers[i]],
-                                      onGenerateRoute: (_) =>
-                                          PageRouteBuilder<void>(
-                                            pageBuilder: (context, a, b) =>
-                                                HomeTabPage(
-                                                  index: i,
-                                                  onTab: selectTab,
-                                                ),
+                                      onGenerateRoute: (settings) =>
+                                          appPageRoute<void>(
+                                            settings: settings,
+                                            builder: (context) => HomeTabPage(
+                                              index: i,
+                                              onTab: selectTab,
+                                            ),
                                           ),
                                     ),
                                   ),
@@ -866,7 +877,13 @@ class _TabRouteObserver extends NavigatorObserver {
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     routes.remove(route);
-    changed(routes.length > 1);
+    if (routes.length <= 1 && route is TransitionRoute<dynamic>) {
+      // 스와이프가 끝나기 전에 탭이 상세 화면 위로 나타나지 않게 한다.
+      // 진행 중 새 화면이 열렸다면 완료 시점의 스택을 다시 확인한다.
+      unawaited(route.completed.then((_) => changed(routes.length > 1)));
+    } else {
+      changed(routes.length > 1);
+    }
   }
 
   @override

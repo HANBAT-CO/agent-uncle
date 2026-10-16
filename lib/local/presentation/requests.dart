@@ -767,6 +767,13 @@ class RequestDetailPage extends StatelessWidget {
       navigationSubtitle: '$title · $stageLabel',
       bottom: primary,
       children: [
+        if (!r.ended &&
+            r.s('status') == 'accepted' &&
+            app.push?.liveSupported == true)
+          ActionButton(
+            '잠금화면에서 진행 보기',
+            onPressed: () => app.push!.startActivity(id),
+          ),
         FigmaSurface(
           children: [
             Inset(

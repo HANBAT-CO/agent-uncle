@@ -5,6 +5,7 @@ import 'remote_attachments.dart';
 import 'remote_session.dart';
 import 'remote_store.dart';
 import 'remote_workspace.dart';
+import 'push_notifications.dart';
 
 Future<AppServices> openRemoteServices(
   SupabaseClient client,
@@ -19,5 +20,6 @@ Future<AppServices> openRemoteServices(
     session: session,
     workspace: workspace,
     attachments: RemoteAttachmentRepository(store),
+    push: PushNotifications(session),
   );
 }

@@ -1437,9 +1437,31 @@ class NotificationSettingsPage extends StatelessWidget {
     return PageFrame(
       title: '알림 설정',
       children: [
-        const Info(
-          '알림 배지에 표시할 종류를 선택해요. 설정과 관계없이 알림함에서 전체 이력을 확인할 수 있어요. 원격 푸시는 아직 연결하지 않았어요.',
-        ),
+        const Info('받고 싶은 알림을 선택해요. 설정과 관계없이 알림함에서 전체 이력을 확인할 수 있어요.'),
+        if (app.push case final push?)
+          FigmaSurface(
+            children: [
+              Info(
+                push.enabled
+                    ? '이 기기의 알림이 켜져 있어요.'
+                    : '새 소식을 바로 받으려면 기기 알림을 허용해 주세요.',
+              ),
+              if (!push.configured) const Info('알림 서비스 설정이 아직 준비되지 않았어요.'),
+              if (push.error case final error?) Info(error),
+              ActionButton('알림 허용', onPressed: push.requestPermission),
+              ActionButton('기기 알림 설정', onPressed: push.openSettings),
+              if (push.liveSupported) ...[
+                Toggle(
+                  '잠금화면에서 사입 진행 보기',
+                  value: push.liveEnabled,
+                  onChanged: push.setLiveEnabled,
+                ),
+                const Info(
+                  '주문 상세에서 진행 알림을 시작할 수 있어요. 지원하는 iPhone에서는 Dynamic Island에도 표시돼요.',
+                ),
+              ],
+            ],
+          ),
         FigmaSurface(
           children: [
             for (final e in {

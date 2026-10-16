@@ -5,19 +5,24 @@ import 'data/local_session.dart';
 import 'data/local_store.dart';
 import 'data/local_workspace.dart';
 import 'domain/models.dart';
+import '../remote/push_notifications.dart';
 
 class AppServices extends ChangeNotifier {
   AppServices({
     required this.session,
     required this.workspace,
     required this.attachments,
+    this.push,
   }) {
     session.addListener(notifyListeners);
     workspace.addListener(notifyListeners);
+    push?.addListener(notifyListeners);
+    push?.start();
   }
   final SessionRepository session;
   final WorkspaceRepository workspace;
   final AttachmentRepository attachments;
+  final PushNotifications? push;
   static Future<AppServices> local(Database database) async {
     final store = LocalStore(database);
     await store.initialize();
@@ -32,6 +37,8 @@ class AppServices extends ChangeNotifier {
 
   @override
   void dispose() {
+    push?.removeListener(notifyListeners);
+    push?.dispose();
     session.removeListener(notifyListeners);
     workspace.removeListener(notifyListeners);
     session.dispose();

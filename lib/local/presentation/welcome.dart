@@ -3,6 +3,7 @@ import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/theme/app_theme.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
+import 'account_deletion.dart';
 import 'common.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -180,6 +181,16 @@ class _RolePageState extends State<RolePage> {
         const PageHeading('어떤 일을 하고 계신가요?', description: '업무에 맞는 화면을 준비할게요.'),
         for (final role in AppRole.values) _roleCard(context, role),
         if (error != null) Info(error!, error: true),
+        Inset(
+          child: TdsTextButton(
+            size: TdsTextButtonSize.small,
+            disabled: working,
+            onPressed: () => _once(
+              () async => openPage<void>(context, const AccountDeletionPage()),
+            ),
+            child: const Text('가입 정보 삭제'),
+          ),
+        ),
       ],
     ),
   );

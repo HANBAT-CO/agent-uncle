@@ -11,6 +11,7 @@ import '../domain/models.dart';
 import '../domain/profile_validation.dart';
 
 import 'address_search.dart';
+import 'account_deletion.dart';
 import 'common.dart';
 import 'home.dart';
 import 'profile_avatar.dart';
@@ -35,7 +36,10 @@ class _SessionGateState extends State<SessionGate> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final nextAccountId = AppScope.of(context).session.current?.id;
+    final account = AppScope.of(context).session.current;
+    final nextAccountId = account == null
+        ? null
+        : '${account.id}:${account.b('deletionPending')}';
     if (nextAccountId != accountId) {
       accountId = nextAccountId;
       navigatorKey = GlobalKey<NavigatorState>();
@@ -78,6 +82,9 @@ class AccountLanding extends StatelessWidget {
       return session.isRemote
           ? const SocialLoginPage()
           : const LocalLoginPage();
+    }
+    if (session.current!.b('deletionPending')) {
+      return const AccountDeletionPage();
     }
     if (session.current!.role == null) return const RolePage();
     if (!session.current!.complete) {
@@ -1649,29 +1656,8 @@ class MyPage extends StatelessWidget {
             child: TdsTextButton(
               size: TdsTextButtonSize.small,
               colorToken: 'grey600',
-              onPressed: () => openPage(
-                context,
-                PageFrame(
-                  title: '탈퇴 안내',
-                  children: [
-                    const Info(
-                      '진행 중 요청 정리와 기록 처리 정책이 확정되면 탈퇴를 제공할 예정이에요. 현재 계정과 거래 기록은 삭제하지 않아요.',
-                    ),
-                    ActionButton(
-                      '탈퇴 전 확인 사항',
-                      weak: true,
-                      onPressed: () async {
-                        await confirm(
-                          context,
-                          '탈퇴 정책을 준비하고 있어요',
-                          '진행 중 거래와 보존할 기록에 대한 정책이 확정된 뒤 탈퇴할 수 있어요. 지금은 계정이 삭제되지 않아요.',
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              child: const Text('탈퇴 안내'),
+              onPressed: () => openPage(context, const AccountDeletionPage()),
+              child: const Text('회원 탈퇴'),
             ),
           ),
         ),

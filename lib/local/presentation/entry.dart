@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
 import '../../core/address/address_models.dart';
+import '../../core/legal/legal_documents.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../../core/presentation/app_splash.dart';
@@ -1027,16 +1028,6 @@ class _ProfileFormState extends State<ProfileForm> {
     ],
   );
 
-  void openConsentPolicy() => openPage(
-    context,
-    PolicyPage(
-      '가입 동의 안내',
-      AppScope.read(context).session.isRemote
-          ? '현재 개발 검증 중인 서비스입니다. 정식 약관과 개인정보 처리방침은 확정 전입니다. 가입정보·거래 기록·첨부파일은 서버에 저장되며, 거래에 필요한 정보는 연결된 상대방과 공유됩니다. 사업자 서류는 상대방에게 공개되지 않습니다.'
-          : '현재는 로컬 개발용 가입 흐름입니다. 정식 약관과 개인정보 처리방침은 확정 전이며, 입력과 첨부는 이 기기에 저장됩니다.',
-    ),
-  );
-
   Widget uncleConsent() => FigmaSurface(
     children: [
       TdsAgreementV3SingleCheckboxField(
@@ -1058,7 +1049,7 @@ class _ProfileFormState extends State<ProfileForm> {
         checked: terms,
         necessity: TdsAgreementV3Necessity.mandatory,
         arrowType: TdsAgreementV3Arrow.link,
-        onArrowPressEnd: openConsentPolicy,
+        onArrowPressEnd: () => openLegalDocument(context, LegalDocument.terms),
         onCheckedChange: (value) {
           terms = value;
           changed();
@@ -1073,7 +1064,8 @@ class _ProfileFormState extends State<ProfileForm> {
         checked: privacy,
         necessity: TdsAgreementV3Necessity.mandatory,
         arrowType: TdsAgreementV3Arrow.link,
-        onArrowPressEnd: openConsentPolicy,
+        onArrowPressEnd: () =>
+            openLegalDocument(context, LegalDocument.privacy),
         onCheckedChange: (value) {
           privacy = value;
           changed();
@@ -1382,7 +1374,11 @@ class _ProfileFormState extends State<ProfileForm> {
                     liveRegion: true,
                     child: Info(errors['privacy']!, error: true),
                   ),
-                Item('약관·개인정보 처리 안내', onTap: openConsentPolicy),
+                for (final document in LegalDocument.values)
+                  Item(
+                    '${document.title} 전문 보기',
+                    onTap: () => openLegalDocument(context, document),
+                  ),
               ],
             ),
           ],
@@ -1403,6 +1399,21 @@ class _ProfileFormState extends State<ProfileForm> {
       ),
     );
   }
+}
+
+Future<void> openLegalDocument(
+  BuildContext context,
+  LegalDocument document,
+) async {
+  final opened = await document.open();
+  if (!context.mounted || opened) return;
+  await openPage<void>(
+    context,
+    PolicyPage(
+      document.title,
+      '브라우저를 열지 못했어요. 다시 시도하거나 아래 주소를 브라우저에서 열어 주세요.\n${document.url}',
+    ),
+  );
 }
 
 class PolicyPage extends StatelessWidget {
@@ -1590,6 +1601,11 @@ class MyPage extends StatelessWidget {
         const Section('설정'),
         FigmaSurface(
           children: [
+            for (final document in LegalDocument.values)
+              Item(
+                document.title,
+                onTap: () => openLegalDocument(context, document),
+              ),
             Item(
               '사업자 서류',
               leading: const FigmaIcon('document'),

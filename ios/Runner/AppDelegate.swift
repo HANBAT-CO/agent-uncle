@@ -15,6 +15,25 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "LegalDocuments") {
+      let channel = FlutterMethodChannel(name: "agent_uncle/legal_documents", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in
+        guard call.method == "open" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        guard let arguments = call.arguments as? [String: Any],
+              let rawURL = arguments["url"] as? String,
+              ["https://www.the-saena.ai/terms", "https://www.the-saena.ai/privacy"].contains(rawURL),
+              let url = URL(string: rawURL) else {
+          result(false)
+          return
+        }
+        UIApplication.shared.open(url, options: [:]) { opened in
+          result(opened)
+        }
+      }
+    }
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "TdsLiquidGlassHost") {
       TdsLiquidGlassHost.register(with: registrar)
     }

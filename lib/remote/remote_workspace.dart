@@ -183,10 +183,11 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     }
     final me = profile(store.userId!)!;
     return saveDraft(newId(), {
-      ...r.data,
+      ...reusableRequestFields(r.data),
       'address': me.s('address'),
       'addressDetail': me.s('addressDetail'),
       'note': me.s('deliveryNote'),
+      'destinationOverride': false,
       if (!partners.any((p) => p.id == r.s('uncleId'))) 'uncleId': '',
     });
   }

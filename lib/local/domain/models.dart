@@ -66,6 +66,31 @@ List<Data> requestWholesalers(Data data) {
   ];
 }
 
+/// 새 요청에는 작성 정보만 재사용한다. 과거 지급·회수·회차는 이어 붙이지 않는다.
+Data reusableRequestFields(Data data) => {
+  for (final key in const [
+    'uncleId',
+    'requestType',
+    'wholesaler',
+    'location',
+    'product',
+    'option',
+    'quantity',
+    'address',
+    'addressDetail',
+    'note',
+    'photos',
+    'receivingShop',
+    'destinationOverride',
+  ])
+    if (data.containsKey(key)) key: data[key],
+  if (data.containsKey('wholesalers'))
+    'wholesalers': [
+      for (final row in requestWholesalers(data))
+        {...row, if (row.containsKey('paymentMode')) 'paymentMode': 'review'},
+    ],
+};
+
 String requestTitle(Data data) {
   final product = textOf(data, 'product').trim();
   if (!isWholesalerOnlyRequest(data) && product.isNotEmpty) return product;

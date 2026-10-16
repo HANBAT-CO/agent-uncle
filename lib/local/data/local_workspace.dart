@@ -784,10 +784,11 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     }
     final next = newId();
     await saveDraft(next, {
-      ..._fields(r.data),
+      ...reusableRequestFields(r.data),
       'address': me.s('address'),
       'addressDetail': me.s('addressDetail'),
       'note': me.s('deliveryNote'),
+      'destinationOverride': false,
       if (!partners.any((p) => p.id == r.s('uncleId'))) 'uncleId': '',
     });
     return next;

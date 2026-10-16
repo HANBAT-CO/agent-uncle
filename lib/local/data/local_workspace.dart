@@ -124,6 +124,16 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
   Account _directoryAccount(Account account) =>
       Account(account.id, _directoryProfile(account));
 
+  Account _colleagueAccount(Account account) => Account(account.id, {
+    ..._directoryProfile(account),
+    'teamMemberships': [
+      for (final team in snapshot.all('teams'))
+        if (team.s('status') == 'active' &&
+            team.list('memberIds').contains(account.id))
+          {'id': team.id, 'name': team.s('name')},
+    ],
+  });
+
   bool _belongs(Data r) => [
     textOf(r, 'retailerId'),
     textOf(r, 'uncleId'),
@@ -192,19 +202,32 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
         .where((r) => r.s('status') == 'accepted')
         .map((r) => r.s('from') == actor ? r.s('to') : r.s('from'))
         .toSet();
-    return snapshot.accounts.where((a) => ids.contains(a.id)).toList();
+    return snapshot.accounts
+        .where((a) => ids.contains(a.id))
+        .map((a) => Account(a.id, withoutBankAccount(a.data)))
+        .toList();
   }
 
   @override
   Account? profile(String id) {
-    if (id != session.current?.id &&
-        !records(
+    final r = snapshot.get('accounts', id);
+    if (r == null) return null;
+    final account = Account(id, r.data);
+    if (id == session.current?.id ||
+        records(
           'connections',
         ).any((r) => r.s('from') == id || r.s('to') == id)) {
-      return null;
+      return id == session.current?.id
+          ? account
+          : Account(id, withoutBankAccount(r.data));
     }
-    final r = snapshot.get('accounts', id);
-    return r == null ? null : Account(id, r.data);
+    final colleague = records(
+      'colleagueConnections',
+    ).any((r) => r.s('fromId') == id || r.s('toId') == id);
+    final teammate = records(
+      'teams',
+    ).any((r) => r.list('memberIds').contains(id));
+    return colleague || teammate ? _colleagueAccount(account) : null;
   }
 
   @override
@@ -404,6 +427,51 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       );
     }
     return _directoryAccount(peer);
+  }
+
+  @override
+  Future<List<Account>> searchColleagues({
+    required String query,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    final me = session.current;
+    if (me == null ||
+        !me.complete ||
+        me.role != AppRole.uncle ||
+        me.b('deletionPending')) {
+      throw const AppFailure('가입을 완료한 사입삼촌만 동료를 검색할 수 있어요.');
+    }
+    final term = query.trim().toLowerCase();
+    if (term.isEmpty ||
+        term.length > 100 ||
+        limit < 1 ||
+        limit > 50 ||
+        offset < 0) {
+      throw const AppFailure('동료의 이름이나 #코드를 입력해 주세요.');
+    }
+    final code = RegExp(r'^#[0-9]{4}$').hasMatch(term);
+    final matches =
+        snapshot.accounts
+            .where(
+              (account) =>
+                  account.id != me.id &&
+                  account.complete &&
+                  account.role == AppRole.uncle &&
+                  !account.b('deletionPending') &&
+                  (code
+                      ? account.publicCode == term
+                      : [
+                          account.name,
+                          account.nickname,
+                        ].any((name) => name.toLowerCase().contains(term))),
+            )
+            .toList()
+          ..sort((a, b) {
+            final comparison = a.displayName.compareTo(b.displayName);
+            return comparison == 0 ? a.id.compareTo(b.id) : comparison;
+          });
+    return matches.skip(offset).take(limit).map(_colleagueAccount).toList();
   }
 
   @override

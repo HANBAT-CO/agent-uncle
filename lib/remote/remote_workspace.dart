@@ -41,13 +41,21 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
         .where((r) => r.s('status') == 'accepted')
         .map((r) => r.s('from') == store.userId ? r.s('to') : r.s('from'))
         .toSet();
-    return snapshot.accounts.where((a) => ids.contains(a.id)).toList();
+    return snapshot.accounts
+        .where((a) => ids.contains(a.id))
+        .map((a) => Account(a.id, withoutBankAccount(a.data)))
+        .toList();
   }
 
   @override
   Account? profile(String id) {
     final row = snapshot.get('accounts', id);
-    return row == null ? null : Account(row.id, row.data);
+    return row == null
+        ? null
+        : Account(
+            row.id,
+            row.id == store.userId ? row.data : withoutBankAccount(row.data),
+          );
   }
 
   @override
@@ -67,6 +75,35 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
         Map<String, Object?>.from(row['data'] as Map),
       );
       return account;
+    } catch (e) {
+      throw AppFailure(friendlyError(e));
+    }
+  }
+
+  @override
+  Future<List<Account>> searchColleagues({
+    required String query,
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    try {
+      final rows =
+          await store.client.rpc(
+                'saip_search_colleagues',
+                params: {
+                  'query': query,
+                  'limit_count': limit,
+                  'offset_count': offset,
+                },
+              )
+              as List;
+      return [
+        for (final value in rows)
+          Account(
+            value['id'] as String,
+            Map<String, Object?>.from(value['data'] as Map),
+          ),
+      ];
     } catch (e) {
       throw AppFailure(friendlyError(e));
     }

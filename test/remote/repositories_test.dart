@@ -165,6 +165,30 @@ class Harness {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  test('연결 거래처의 계좌는 숨기고 본인 계좌만 보여 준다', () async {
+    final h = Harness();
+    final bank = {
+      'bankName': '테스트은행',
+      'bankAccount': '123456789012',
+      'bankHolder': '예금주',
+    };
+    (h.tables['accounts'] as Map)[actor].addAll(bank);
+    (h.tables['accounts'] as Map)[peer] = {
+      'role': 'uncle',
+      'complete': true,
+      ...bank,
+    };
+    h.tables['connections'] = {
+      'c': {'from': actor, 'to': peer, 'status': 'accepted'},
+    };
+    await h.open();
+    addTearDown(h.close);
+    for (final key in bank.keys) {
+      expect(h.workspace.profile(actor)!.s(key), bank[key]);
+      expect(h.workspace.profile(peer)!.s(key), '');
+      expect(h.workspace.partners.single.s(key), '');
+    }
+  });
   test('a committed command remains successful when refresh fails', () async {
     final h = Harness();
     await h.open();

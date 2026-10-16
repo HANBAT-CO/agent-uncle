@@ -304,6 +304,11 @@ abstract class WorkspaceRepository extends ChangeNotifier {
   Account? profile(String id);
   RequestRecord? request(String id);
   Future<Account> lookupCode(String code);
+  Future<List<Account>> searchColleagues({
+    required String query,
+    int limit = 20,
+    int offset = 0,
+  });
   Future<List<Account>> searchPartners({
     String query = '',
     String region = '',

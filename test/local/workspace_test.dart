@@ -42,6 +42,9 @@ class Fixture {
       'name': label,
       'contact': role == AppRole.uncle ? label : '담당자',
       'phone': '010${session.accounts.length.toString().padLeft(8, '0')}',
+      'bankName': '테스트은행',
+      'bankAccount': '123456789012',
+      'bankHolder': label,
       'businessName': label,
       'businessNumber': '1234567890',
       'documentId': file,
@@ -150,6 +153,12 @@ void main() {
       expect(all.single.s('phone'), '');
       expect(all.single.s('address'), '');
       expect(all.single.s('documentId'), '');
+      for (final key in ['bankName', 'bankAccount', 'bankHolder']) {
+        expect(all.single.s(key), '');
+        expect(f.workspace.profile(f.uncle)!.s(key), '');
+        expect(f.workspace.partners.single.s(key), '');
+        expect(f.workspace.profile(f.retailer)!.s(key), isNotEmpty);
+      }
 
       final byName = await f.workspace.searchPartners(query: '삼촌');
       expect(byName.map((account) => account.id), [f.uncle]);

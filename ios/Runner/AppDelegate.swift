@@ -15,6 +15,32 @@ import UIKit
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "AppRelease") {
+      let channel = FlutterMethodChannel(name: "agent_uncle/app_release", binaryMessenger: registrar.messenger())
+      channel.setMethodCallHandler { call, result in
+        if call.method == "info" {
+          result([
+            "platform": "ios",
+            "version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+            "buildNumber": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "",
+          ])
+          return
+        }
+        guard call.method == "openStore" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        guard let arguments = call.arguments as? [String: Any],
+              let rawURL = arguments["url"] as? String,
+              let url = URL(string: rawURL), url.scheme == "https", url.host == "apps.apple.com",
+              url.user == nil, url.password == nil, url.port == nil, url.fragment == nil,
+              url.path.range(of: #"/id[0-9]+$"#, options: .regularExpression) != nil else {
+          result(false)
+          return
+        }
+        UIApplication.shared.open(url, options: [:]) { opened in result(opened) }
+      }
+    }
     if let registrar = engineBridge.pluginRegistry.registrar(forPlugin: "LegalDocuments") {
       let channel = FlutterMethodChannel(name: "agent_uncle/legal_documents", binaryMessenger: registrar.messenger())
       channel.setMethodCallHandler { call, result in

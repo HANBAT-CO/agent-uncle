@@ -36,6 +36,15 @@ bool _hasWholesalerValue(Data row) =>
     textOf(row, 'wholesaler').trim().isNotEmpty ||
     textOf(row, 'location').trim().isNotEmpty;
 
+// 자동 선택된 삼촌·배송지·기본 수량은 주문서 작성 내용에 포함하지 않는다.
+// 이전 형식의 초안에 남아 있는 상품·사진 등은 보존한다.
+bool _hasDraftContent(Data values) =>
+    requestWholesalers(values).any(_hasWholesalerValue) ||
+    textOf(values, 'product').trim().isNotEmpty ||
+    textOf(values, 'option').trim().isNotEmpty ||
+    stringsOf(values, 'photos').isNotEmpty ||
+    (nullableNumberOf(values, 'quantity') ?? 1) != 1;
+
 String _wholesalerLabel(Data row, {String fallback = '도매처 요청'}) {
   final wholesaler = textOf(row, 'wholesaler').trim();
   final location = textOf(row, 'location').trim();
@@ -65,6 +74,7 @@ class _RequestEditorState extends State<RequestEditor> {
   TabSaveGuard? tabGuard;
   int version = 0;
   bool ready = false, leaving = false, savingToLeave = false;
+  bool draftExists = false;
   bool get editing => widget.requestId != null;
   @override
   void didChangeDependencies() {
@@ -81,6 +91,7 @@ class _RequestEditorState extends State<RequestEditor> {
               .firstOrNull
               ?.data;
     initialData = data == null ? <String, Object?>{} : {...data};
+    draftExists = !editing && data != null;
     peer = textOf(initialData, 'uncleId', widget.peerId ?? '');
     if (peer.isEmpty && app.workspace.partners.length == 1) {
       peer = app.workspace.partners.first.id;
@@ -112,7 +123,17 @@ class _RequestEditorState extends State<RequestEditor> {
         );
       }
     }
-    saver = FormSaver((values) => app.workspace.saveDraft(id, values));
+    saver = FormSaver((values) async {
+      // 저장과 비우기를 같은 큐에서 처리해야 진행 중인 저장이 빈 초안을
+      // 다시 만들지 않는다. 실패 시 FormSaver의 재시도와 뒤로가기 보호를 쓴다.
+      if (_hasDraftContent(values)) {
+        await app.workspace.saveDraft(id, values);
+        draftExists = true;
+      } else if (draftExists) {
+        await app.workspace.deleteDraft(id);
+        draftExists = false;
+      }
+    });
     saver!.addListener(refresh);
     if (!editing) {
       tabGuard = TabSaveScope.of(context);
@@ -233,9 +254,9 @@ class _RequestEditorState extends State<RequestEditor> {
     super.dispose();
   }
 
-  String draftStatusText() =>
+  String? draftStatusText() =>
       saver!.error ??
-      (saver!.saving ? '저장 중…' : '초안 저장됨');
+      (saver!.saving ? '저장 중…' : (draftExists ? '초안 저장됨' : null));
 
   String requestSummary(Account? selected) {
     final lines = <String>['담당: ${selected?.name ?? '미선택'}'];
@@ -310,6 +331,7 @@ class _RequestEditorState extends State<RequestEditor> {
     final selected = app.workspace.partners
         .where((a) => a.id == peer)
         .firstOrNull;
+    final draftStatus = draftStatusText();
     return PopScope(
       // iOS는 canPop이 false이면 제스처 콜백도 호출하지 않는다.
       // 자동저장이 끝난 초안은 바로 돌아가고, 미저장/실패 상태는 보존한다.
@@ -400,7 +422,8 @@ class _RequestEditorState extends State<RequestEditor> {
             )
           else
             const Info('도매처는 최대 10곳까지 입력할 수 있어요.'),
-          if (!editing) Info(draftStatusText(), error: saver!.error != null),
+          if (!editing && draftStatus != null)
+            Info(draftStatus, error: saver!.error != null),
           if (saver!.error != null)
             ActionButton(
               '초안 저장 다시 시도',

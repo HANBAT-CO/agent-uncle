@@ -93,10 +93,13 @@ class _ChatMessageActionsState extends State<ChatMessageActions> {
             onClose: () => setState(() => open = false),
             dropdown: TdsMenuDropdown(
               children: [
-                TdsMenuDropdownItem(
-                  onPressed: () => choose(delete: false),
-                  child: const Text('메시지 수정'),
-                ),
+                if (!app.workspace.isChatBlocked(
+                  widget.message.s('recipientId'),
+                ))
+                  TdsMenuDropdownItem(
+                    onPressed: () => choose(delete: false),
+                    child: const Text('메시지 수정'),
+                  ),
                 TdsMenuDropdownItem(
                   onPressed: () => choose(delete: true),
                   child: const Text('메시지 삭제'),
@@ -158,7 +161,9 @@ class _ChatMessageEditorState extends State<ChatMessageEditor> {
         .where((m) => m.id == widget.message.id)
         .firstOrNull;
     final unavailable =
-        current == null || !canChangeMessage(current, app.session.current?.id);
+        current == null ||
+        !canChangeMessage(current, app.session.current?.id) ||
+        app.workspace.isChatBlocked(widget.message.s('recipientId'));
     final changed = !unavailable && current.version != widget.message.version;
     return PageFrame(
       title: '메시지 수정',

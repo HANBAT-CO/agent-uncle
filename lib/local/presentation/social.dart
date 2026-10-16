@@ -661,7 +661,31 @@ class _ChatPageState extends State<ChatPage> {
   String messageId = newId();
   late String requestId = widget.requestId;
   bool sending = false, pickingMedia = false;
+  bool changingBlock = false;
   String? sendError;
+
+  Future<void> changeBlock() async {
+    if (changingBlock || sending) return;
+    final workspace = AppScope.read(context).workspace;
+    final blocked = workspace.hasBlockedUser(widget.peerId);
+    setState(() => changingBlock = true);
+    try {
+      final approved = await confirm(
+        context,
+        blocked ? '차단을 해제할까요?' : '이 사용자를 차단할까요?',
+        blocked
+            ? '상대방도 차단을 해제한 상태라면 다시 대화할 수 있어요.'
+            : '서로 메시지와 사진을 보내거나 메시지를 수정할 수 없어요. 기존 대화와 거래 기록, 진행 중인 사입 업무는 유지돼요.',
+      );
+      if (!approved || !mounted) return;
+      await workspace.setChatBlocked(widget.peerId, !blocked, newId());
+      if (mounted) setState(() => sendError = null);
+    } catch (error) {
+      if (mounted) setState(() => sendError = error.toString());
+    } finally {
+      if (mounted) setState(() => changingBlock = false);
+    }
+  }
 
   NativeMediaPicker get mediaPicker =>
       widget.mediaPicker ?? defaultNativeMediaPicker;
@@ -809,6 +833,8 @@ class _ChatPageState extends State<ChatPage> {
     final app = AppScope.of(context),
         me = app.session.current!,
         peer = app.workspace.profile(widget.peerId);
+    final blocked = app.workspace.isChatBlocked(widget.peerId);
+    final blockedByMe = app.workspace.hasBlockedUser(widget.peerId);
     final rows = app.workspace
         .records('messages')
         .where(
@@ -852,14 +878,25 @@ class _ChatPageState extends State<ChatPage> {
         scrollKey: 'chat-${widget.peerId}',
         reverse: true,
         scrollController: conversationScroll,
-        trailing: me.role == AppRole.retailer
-            ? TdsIconButton(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TdsTextButton(
+              size: TdsTextButtonSize.small,
+              semanticLabel: blockedByMe ? '사용자 차단 해제' : '사용자 차단',
+              disabled: changingBlock || sending,
+              onPressed: changeBlock,
+              child: Text(blockedByMe ? '차단 해제' : '차단'),
+            ),
+            if (me.role == AppRole.retailer)
+              TdsIconButton(
                 semanticLabel: '새 사입 요청',
                 onPressed: () =>
                     openPage(context, RequestEditor(peerId: widget.peerId)),
                 child: const FigmaIcon('plus'),
-              )
-            : null,
+              ),
+          ],
+        ),
         header: requestId.isNotEmpty && MediaQuery.sizeOf(context).height > 600
             ? FigmaSurface(
                 children: [
@@ -889,59 +926,67 @@ class _ChatPageState extends State<ChatPage> {
           margin: 12,
           children: [
             if (sendError != null) Info(sendError!, error: true),
-            TdsTextField(
-              controller: body,
-              placeholder: '메시지를 입력하세요',
-              semanticLabel: '메시지',
-              variant: TdsTextFieldVariant.box,
-              paddingTop: 0,
-              paddingBottom: 8,
-              onSubmitted: (_) => send(),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  TdsIconButton(
-                    semanticLabel: photos.isEmpty
-                        ? '사진 첨부'
-                        : '사진 추가, ${photos.length}장 첨부됨',
-                    disabled: sending || pickingMedia,
-                    onPressed: sending || pickingMedia ? null : attachPhoto,
-                    child: FigmaIcon('camera', selected: photos.isNotEmpty),
-                  ),
-                  if (photos.isNotEmpty) StatusBadge('${photos.length}'),
-                  const SizedBox(width: 8),
-                  TdsIconButton(
-                    semanticLabel: requestId.isEmpty ? '요청 연결' : '연결된 요청 변경',
-                    disabled: sending,
-                    variant: requestId.isEmpty
-                        ? TdsIconButtonVariant.clear
-                        : TdsIconButtonVariant.fill,
-                    backgroundColor: TdsTheme.of(context).color('blue50'),
-                    onPressed: sending ? null : chooseRequest,
-                    child: FigmaIcon('link', selected: requestId.isNotEmpty),
-                  ),
-                  const Spacer(),
-                  const SizedBox(width: 8),
-                  TdsButton(
-                    size: TdsButtonSize.large,
-                    semanticLabel: '메시지 전송',
-                    loading: sending,
-                    disabled: sending,
-                    onPressed: send,
-                    child: FigmaIcon(
-                      'send',
-                      color: TdsButtonColors.resolve(
-                        TdsTheme.of(context),
-                        TdsButtonColor.primary,
-                        TdsButtonVariant.fill,
-                      ).foreground,
-                    ),
-                  ),
-                ],
+            if (blocked)
+              Info(
+                blockedByMe
+                    ? '차단한 사용자예요. 차단을 해제하면 다시 대화할 수 있어요.'
+                    : '지금은 이 사용자와 대화할 수 없어요.',
+              )
+            else ...[
+              TdsTextField(
+                controller: body,
+                placeholder: '메시지를 입력하세요',
+                semanticLabel: '메시지',
+                variant: TdsTextFieldVariant.box,
+                paddingTop: 0,
+                paddingBottom: 8,
+                onSubmitted: (_) => send(),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    TdsIconButton(
+                      semanticLabel: photos.isEmpty
+                          ? '사진 첨부'
+                          : '사진 추가, ${photos.length}장 첨부됨',
+                      disabled: sending || pickingMedia,
+                      onPressed: sending || pickingMedia ? null : attachPhoto,
+                      child: FigmaIcon('camera', selected: photos.isNotEmpty),
+                    ),
+                    if (photos.isNotEmpty) StatusBadge('${photos.length}'),
+                    const SizedBox(width: 8),
+                    TdsIconButton(
+                      semanticLabel: requestId.isEmpty ? '요청 연결' : '연결된 요청 변경',
+                      disabled: sending,
+                      variant: requestId.isEmpty
+                          ? TdsIconButtonVariant.clear
+                          : TdsIconButtonVariant.fill,
+                      backgroundColor: TdsTheme.of(context).color('blue50'),
+                      onPressed: sending ? null : chooseRequest,
+                      child: FigmaIcon('link', selected: requestId.isNotEmpty),
+                    ),
+                    const Spacer(),
+                    const SizedBox(width: 8),
+                    TdsButton(
+                      size: TdsButtonSize.large,
+                      semanticLabel: '메시지 전송',
+                      loading: sending,
+                      disabled: sending,
+                      onPressed: send,
+                      child: FigmaIcon(
+                        'send',
+                        color: TdsButtonColors.resolve(
+                          TdsTheme.of(context),
+                          TdsButtonColor.primary,
+                          TdsButtonVariant.fill,
+                        ).foreground,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ),
         children: [
@@ -1071,6 +1116,7 @@ class _ChatPageState extends State<ChatPage> {
                         ActionButton(
                           '메시지 다시 보내기',
                           weak: true,
+                          enabled: !blocked,
                           onPressed: () async {
                             await app.workspace.sendMessage(
                               widget.peerId,

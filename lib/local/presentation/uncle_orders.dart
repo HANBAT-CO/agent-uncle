@@ -17,32 +17,23 @@ enum UncleOrderFilter {
   backorder,
   recheck,
   issues,
+  received,
   completed,
 }
 
 extension UncleOrderFilterInfo on UncleOrderFilter {
   String get label => switch (this) {
     UncleOrderFilter.all => '전체 내역',
-    UncleOrderFilter.incoming => '새 요청',
+    UncleOrderFilter.incoming => '사입 요청',
     UncleOrderFilter.awaitingReply => '답변 대기',
-    UncleOrderFilter.inProgress => '진행 중',
+    UncleOrderFilter.inProgress => '사입 중',
     UncleOrderFilter.awaitingDelivery => '전달 대기',
     UncleOrderFilter.awaitingReceipt => '수령 대기',
     UncleOrderFilter.backorder => '미송',
     UncleOrderFilter.recheck => '재확인',
     UncleOrderFilter.issues => '문제·협의',
-    UncleOrderFilter.completed => '완료',
-  };
-
-  String get homeLabel => switch (this) {
-    UncleOrderFilter.incoming => '확인할 새 사입 요청',
-    UncleOrderFilter.awaitingReply => '상대방 확인 대기',
-    UncleOrderFilter.inProgress => '진행 중인 사입',
-    UncleOrderFilter.awaitingDelivery => '확보 후 전달 대기',
-    UncleOrderFilter.awaitingReceipt => '소매업자 수령 대기',
-    UncleOrderFilter.recheck => '다시 확인할 미송',
-    UncleOrderFilter.issues => '문제·협의 확인',
-    _ => label,
+    UncleOrderFilter.received => '완료(입금 전)',
+    UncleOrderFilter.completed => '입금 완료',
   };
 
   TdsBadgeColor get color => switch (this) {
@@ -51,6 +42,7 @@ extension UncleOrderFilterInfo on UncleOrderFilter {
     UncleOrderFilter.awaitingReceipt => TdsBadgeColor.teal,
     UncleOrderFilter.recheck || UncleOrderFilter.issues => TdsBadgeColor.red,
     UncleOrderFilter.all ||
+    UncleOrderFilter.received ||
     UncleOrderFilter.completed => TdsBadgeColor.elephant,
     _ => TdsBadgeColor.blue,
   };
@@ -65,7 +57,8 @@ extension UncleOrderFilterInfo on UncleOrderFilter {
     UncleOrderFilter.backorder => '남아 있는 미송이 없어요',
     UncleOrderFilter.recheck => '오늘 다시 확인할 미송이 없어요',
     UncleOrderFilter.issues => '확인할 문제나 협의가 없어요',
-    UncleOrderFilter.completed => '완료한 사입이 아직 없어요',
+    UncleOrderFilter.received => '수령 완료 후 입금을 기다리는 사입이 없어요',
+    UncleOrderFilter.completed => '입금 완료한 사입이 아직 없어요',
   };
 }
 
@@ -74,17 +67,22 @@ extension UncleOrderFilterInfo on UncleOrderFilter {
 bool uncleMatchesOrderFilter(RequestRecord request, UncleOrderFilter filter) {
   if (filter == UncleOrderFilter.all) return true;
   if (filter == UncleOrderFilter.completed) {
-    return request.s('status') == 'completed';
+    return request.paymentComplete;
   }
-  if (request.ended) return false;
+  if (filter == UncleOrderFilter.received) {
+    return request.receiptComplete && !request.paymentComplete;
+  }
+  if (request.receiptComplete ||
+      ['cancelled', 'rejected'].contains(request.s('status'))) {
+    return false;
+  }
   return switch (filter) {
     UncleOrderFilter.incoming => request.s('status') == 'pending',
     UncleOrderFilter.awaitingReply => request.needsReply,
-    UncleOrderFilter.inProgress =>
-      request.s('status') != 'pending' &&
-          (request.remaining > 0 ||
-              (request.available == 0 &&
-                  request.delivered <= request.received)),
+    UncleOrderFilter.inProgress => [
+      'accepted',
+      'completed',
+    ].contains(request.s('status')),
     UncleOrderFilter.awaitingDelivery => request.available > 0,
     UncleOrderFilter.awaitingReceipt => request.delivered > request.received,
     UncleOrderFilter.backorder => request.backorder > 0,
@@ -103,7 +101,10 @@ List<RequestRecord> filterUncleOrders(
     .toList();
 
 int uncleOrderPriority(RequestRecord request) {
-  if (request.ended) return 7;
+  if (request.receiptComplete ||
+      ['cancelled', 'rejected'].contains(request.s('status'))) {
+    return 7;
+  }
   if (request.n('openIssues') > 0 || request.s('proposalId').isNotEmpty) {
     return 0;
   }
@@ -115,27 +116,44 @@ int uncleOrderPriority(RequestRecord request) {
   return 4;
 }
 
-class UncleOrdersPage extends StatefulWidget {
-  const UncleOrdersPage({this.initialFilter = UncleOrderFilter.all, super.key});
+class UncleOrdersSection extends StatefulWidget {
+  const UncleOrdersSection({
+    this.initialFilter = UncleOrderFilter.all,
+    super.key,
+  });
 
   final UncleOrderFilter initialFilter;
 
   @override
-  State<UncleOrdersPage> createState() => _UncleOrdersPageState();
+  State<UncleOrdersSection> createState() => UncleOrdersSectionState();
 }
 
-class _UncleOrdersPageState extends State<UncleOrdersPage> {
+class UncleOrdersSectionState extends State<UncleOrdersSection> {
   late UncleOrderFilter filter = widget.initialFilter;
   String query = '', group = '거래처별';
+  final _headingKey = GlobalKey();
+
+  void showFilter(UncleOrderFilter value) {
+    setState(() {
+      filter = value;
+      query = '';
+    });
+    scrollToSection(_headingKey);
+  }
+
+  @override
+  void didUpdateWidget(covariant UncleOrdersSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialFilter != widget.initialFilter) {
+      filter = widget.initialFilter;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
     if (app.session.current?.role != AppRole.uncle) {
-      return const PageFrame(
-        title: '업무 내역',
-        children: [EmptyState('사입삼촌 전용 화면이에요', '사입삼촌 계정에서 업무를 확인해 주세요.')],
-      );
+      return const EmptyState('사입삼촌 전용 화면이에요', '사입삼촌 계정에서 업무를 확인해 주세요.');
     }
     final all = app.workspace
         .records('requests')
@@ -175,15 +193,41 @@ class _UncleOrdersPageState extends State<UncleOrdersPage> {
       all,
       UncleOrderFilter.awaitingDelivery,
     ).fold<int>(0, (sum, request) => sum + request.available);
-    return PageFrame(
-      title: '업무 내역',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Section(
+          '사입 내역',
+          key: _headingKey,
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          typography: TdsTypography.t4,
+          fontWeight: TdsFontWeight.bold,
+        ),
         AppSearchField(
-          placeholder: '상품·도매처·거래처 검색',
+          placeholder: '도매처·거래처 검색',
+          value: query,
           onChanged: (value) => setState(() => query = value),
         ),
         Choices(
-          options: [for (final value in UncleOrderFilter.values) value.label],
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          options: [
+            for (final value in const [
+              UncleOrderFilter.all,
+              UncleOrderFilter.incoming,
+              UncleOrderFilter.inProgress,
+              UncleOrderFilter.received,
+              UncleOrderFilter.completed,
+            ])
+              value.label,
+            if (![
+              UncleOrderFilter.all,
+              UncleOrderFilter.incoming,
+              UncleOrderFilter.inProgress,
+              UncleOrderFilter.received,
+              UncleOrderFilter.completed,
+            ].contains(filter))
+              filter.label,
+          ],
           value: filter.label,
           onChanged: (value) => setState(() {
             filter = UncleOrderFilter.values.firstWhere(
@@ -192,10 +236,11 @@ class _UncleOrdersPageState extends State<UncleOrdersPage> {
           }),
         ),
         FigmaSurface(
+          padding: const EdgeInsets.symmetric(vertical: 4),
           children: [
             Item(
-              '상품 전달하기',
-              subtitle: '전달 가능 $available장 · 전달 이력도 확인할 수 있어요',
+              '전달 가능 $available장',
+              verticalPadding: TdsListRowVerticalPadding.small,
               leading: const FigmaIcon('bag'),
               onTap: () => openPage(
                 context,
@@ -205,22 +250,24 @@ class _UncleOrdersPageState extends State<UncleOrdersPage> {
           ],
         ),
         Choices(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           options: const ['거래처별', '도매처별'],
           value: group,
           onChanged: (value) => setState(() => group = value),
         ),
         if (rows.isEmpty)
-          EmptyState(
+          EmptyState.titleOnly(
             search.isEmpty ? filter.emptyTitle : '검색 결과가 없어요',
-            search.isEmpty
-                ? '요청을 받으면 단계별로 여기에서 확인할 수 있어요.'
-                : '상품명이나 도매처, 거래처 이름을 다시 확인해 주세요.',
           )
         else ...[
-          Section('${filter.label} ${rows.length}건'),
+          Section(
+            '${filter.label} ${rows.length}건',
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+          ),
           for (final entry in groups.entries) ...[
             Section(
               '${group == '도매처별' ? (entry.key.isEmpty ? '도매처 미지정' : entry.key) : app.workspace.profile(entry.key)?.name ?? '거래처'} · ${entry.value.length}건',
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
             ),
             for (final request in entry.value)
               _UncleOrderCard(
@@ -273,6 +320,7 @@ class _UncleOrderCard extends StatelessWidget {
                   child: Text(badge.label),
                 ),
               if (badges.isEmpty) StatusBadge(request.statusLabel),
+              if (request.paymentComplete) StatusBadge(request.paymentLabel),
             ],
           ),
         ),

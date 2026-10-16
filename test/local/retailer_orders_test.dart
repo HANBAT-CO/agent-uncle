@@ -1,5 +1,6 @@
 import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/domain/models.dart';
+import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/retailer_orders.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -116,7 +117,7 @@ Future<void> chooseWait(Fixture fixture, String requestId) async {
 }
 
 void main() {
-  test('상태 필터가 수령과 수령 후 7일 경계까지 일관되게 분류한다', () async {
+  test('수령 완료 후에도 입금을 신고하기 전까지 입금 전 단계에 남는다', () async {
     final fixture = Fixture();
     await fixture.start();
     final pending = await createRetailerRequest(fixture, product: '대기 셔츠');
@@ -164,7 +165,7 @@ void main() {
         requests,
         RetailerOrderFilter.inProgress,
       ).map((request) => request.id).toSet(),
-      {sourcing, delivery, backorder},
+      {sourcing, delivery, receipt, backorder},
     );
     expect(
       requests
@@ -200,7 +201,7 @@ void main() {
             .add(const Duration(days: 7))
             .subtract(const Duration(microseconds: 1)),
       ).map((request) => request.id).toSet(),
-      {receipt, completed},
+      {completed},
     );
     expect(
       filterRetailerOrders(
@@ -208,7 +209,7 @@ void main() {
         RetailerOrderFilter.received,
         now: receivedAt.add(const Duration(days: 7)),
       ).map((request) => request.id),
-      [receipt],
+      [completed],
     );
     expect(
       filterRetailerOrders(
@@ -216,8 +217,15 @@ void main() {
         RetailerOrderFilter.completed,
         now: receivedAt.add(const Duration(days: 7)),
       ).map((request) => request.id),
-      [completed],
+      isEmpty,
     );
+    final paid = RequestRecord(completed, {
+      ...fixture.workspace.request(completed)!.data,
+      'paymentReported': true,
+    });
+    expect(retailerIsCompleted(paid), isTrue);
+    expect(retailerIsReceived(paid), isFalse);
+    expect(paid.paymentLabel, '운영 확인 대기');
     await fixture.close();
   });
 
@@ -232,7 +240,8 @@ void main() {
       await shareResult(fixture, delivery, acquired: 2, backorder: 1);
       await acceptRequest(fixture, receipt);
       await shareResult(fixture, receipt, acquired: 3, backorder: 0);
-      await deliverRequest(fixture, receipt, 2);
+      final deliveryId = await deliverRequest(fixture, receipt, 3);
+      await receiveDelivery(fixture, deliveryId, 3);
       await fixture.session.signIn(fixture.retailer);
       final draftId = newId();
       await fixture.workspace.saveDraft(draftId, {
@@ -257,7 +266,11 @@ void main() {
       AppScope(
         services: services,
         child: branded(
-          const RetailerOrdersPage(initialFilter: RetailerOrderFilter.all),
+          const PageFrame(
+            title: '홈',
+            back: false,
+            children: [RetailerOrdersSection()],
+          ),
         ),
       ),
     );
@@ -269,7 +282,7 @@ void main() {
     expect(find.textContaining('수령 재킷'), findsOneWidget);
 
     await tester.tap(
-      find.descendant(of: find.byType(TdsTab), matching: find.text('수령')),
+      find.descendant(of: find.byType(TdsTab), matching: find.text('수령(입금 전)')),
     );
     await settle(tester);
     expect(find.textContaining('대기 셔츠'), findsNothing);
@@ -298,11 +311,11 @@ void main() {
 
     await tester.enterText(searchField, '');
     await settle(tester);
-    await tester.tap(find.text('임시저장·다시 요청'));
+    await tester.tap(find.text('임시저장 1건'));
     await settle(tester);
     expect(find.text('요청 작성'), findsOneWidget);
     expect(find.text('작성 중'), findsOneWidget);
-    expect(find.text('최근 요청'), findsOneWidget);
+    expect(find.text('이전 요청으로 다시 작성'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox());

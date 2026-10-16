@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
@@ -21,43 +19,37 @@ extension RetailerOrderFilterLabel on RetailerOrderFilter {
     RetailerOrderFilter.all => '전체 내역',
     RetailerOrderFilter.pendingConfirmation => '대기',
     RetailerOrderFilter.inProgress => '진행 중',
-    RetailerOrderFilter.received => '수령',
-    RetailerOrderFilter.completed => '완료',
+    RetailerOrderFilter.received => '수령(입금 전)',
+    RetailerOrderFilter.completed => '입금 완료',
   };
 
   String get emptyTitle => switch (this) {
     RetailerOrderFilter.all => '아직 사입 요청이 없어요',
     RetailerOrderFilter.pendingConfirmation => '대기 중인 요청이 없어요',
     RetailerOrderFilter.inProgress => '진행 중인 요청이 없어요',
-    RetailerOrderFilter.received => '수령 단계 요청이 없어요',
-    RetailerOrderFilter.completed => '완료한 요청이 아직 없어요',
-  };
-
-  String get emptyDescription => switch (this) {
-    RetailerOrderFilter.all => '사입하기 탭에서 새 주문을 넣거나 초안·재요청을 이어서 진행해 보세요.',
-    RetailerOrderFilter.pendingConfirmation => '사입삼촌 확인을 기다리는 요청만 여기에서 보여요.',
-    RetailerOrderFilter.inProgress => '확보·전달·미송·문제 확인이 진행 중인 요청을 여기에서 모아 봐요.',
-    RetailerOrderFilter.received => '수령 확인 전이거나 수령 확인 후 7일 이내 요청이 여기에서 보여요.',
-    RetailerOrderFilter.completed => '수령 확인 후 7일이 지난 요청만 완료로 옮겨져요.',
+    RetailerOrderFilter.received => '수령 후 입금할 요청이 없어요',
+    RetailerOrderFilter.completed => '입금 완료한 요청이 아직 없어요',
   };
 }
 
 RetailerOrderFilter retailerOrderFilterFromLabel(String label) =>
     RetailerOrderFilter.values.firstWhere((filter) => filter.label == label);
 
-enum RetailerHomeStatus { pendingConfirmation, inProgress, received }
+enum RetailerHomeStatus { pendingConfirmation, inProgress, received, completed }
 
 extension RetailerHomeStatusInfo on RetailerHomeStatus {
   String get label => switch (this) {
     RetailerHomeStatus.pendingConfirmation => '대기',
-    RetailerHomeStatus.inProgress => '진행',
-    RetailerHomeStatus.received => '수령',
+    RetailerHomeStatus.inProgress => '진행 중',
+    RetailerHomeStatus.received => '수령(입금 전)',
+    RetailerHomeStatus.completed => '입금 완료',
   };
 
-  TdsBadgeColor get chipColor => switch (this) {
-    RetailerHomeStatus.pendingConfirmation => TdsBadgeColor.blue,
-    RetailerHomeStatus.inProgress => TdsBadgeColor.yellow,
-    RetailerHomeStatus.received => TdsBadgeColor.teal,
+  TdsBadgeColor get badgeColor => switch (this) {
+    RetailerHomeStatus.pendingConfirmation => TdsBadgeColor.yellow,
+    RetailerHomeStatus.inProgress => TdsBadgeColor.green,
+    RetailerHomeStatus.received => TdsBadgeColor.elephant,
+    RetailerHomeStatus.completed => TdsBadgeColor.blue,
   };
 
   RetailerOrderFilter get filter => switch (this) {
@@ -65,17 +57,20 @@ extension RetailerHomeStatusInfo on RetailerHomeStatus {
       RetailerOrderFilter.pendingConfirmation,
     RetailerHomeStatus.inProgress => RetailerOrderFilter.inProgress,
     RetailerHomeStatus.received => RetailerOrderFilter.received,
+    RetailerHomeStatus.completed => RetailerOrderFilter.completed,
   };
 }
 
 bool retailerHasPendingConfirmation(RequestRecord request) =>
-    !retailerIsClosedWithoutCompletion(request) && request.s('status') == 'pending';
+    !retailerIsClosedWithoutCompletion(request) &&
+    request.s('status') == 'pending';
 
 bool retailerIsAwaitingDelivery(RequestRecord request) =>
     !retailerIsClosedWithoutCompletion(request) && request.available > 0;
 
 bool retailerIsAwaitingReceipt(RequestRecord request) =>
-    !retailerIsClosedWithoutCompletion(request) && request.delivered > request.received;
+    !retailerIsClosedWithoutCompletion(request) &&
+    request.delivered > request.received;
 
 bool retailerNeedsReply(RequestRecord request) =>
     !retailerIsClosedWithoutCompletion(request) &&
@@ -89,40 +84,11 @@ bool retailerIsClosedWithoutCompletion(RequestRecord request) {
   return status == 'cancelled' || status == 'rejected';
 }
 
-DateTime? retailerCompletionBoundary(RequestRecord request) {
-  final receivedAt = request.receivedAt;
-  if (receivedAt == null ||
-      request.s('status') != 'completed' ||
-      request.received <= 0 ||
-      request.received != request.delivered ||
-      request.received != request.quantity - request.cancelled ||
-      request.n('held') > 0) {
-    return null;
-  }
-  if (retailerIsAwaitingReceipt(request) ||
-      retailerIsAwaitingDelivery(request) ||
-      retailerHasBackorder(request) ||
-      retailerNeedsReply(request) ||
-      request.remaining > 0 ||
-      request.s('proposalId').isNotEmpty) {
-    return null;
-  }
-  return receivedAt.add(const Duration(days: 7));
-}
+bool retailerIsCompleted(RequestRecord request, {DateTime? now}) =>
+    request.paymentComplete;
 
-bool retailerIsCompleted(RequestRecord request, {DateTime? now}) {
-  final boundary = retailerCompletionBoundary(request);
-  if (boundary == null) return false;
-  return !boundary.isAfter(now ?? DateTime.now());
-}
-
-bool retailerIsReceived(RequestRecord request, {DateTime? now}) {
-  if (retailerIsClosedWithoutCompletion(request)) return false;
-  if (retailerIsAwaitingReceipt(request)) return true;
-  final boundary = retailerCompletionBoundary(request);
-  if (boundary == null) return false;
-  return boundary.isAfter(now ?? DateTime.now());
-}
+bool retailerIsReceived(RequestRecord request, {DateTime? now}) =>
+    request.receiptComplete && !request.paymentComplete;
 
 bool retailerIsInProgress(RequestRecord request, {DateTime? now}) {
   if (retailerIsClosedWithoutCompletion(request) ||
@@ -160,8 +126,7 @@ int retailerHomeCount(
   Iterable<RequestRecord> requests,
   RetailerHomeStatus status, {
   DateTime? now,
-}) =>
-    filterRetailerOrders(requests, status.filter, now: now).length;
+}) => filterRetailerOrders(requests, status.filter, now: now).length;
 
 int retailerOrderPriority(RequestRecord request, {DateTime? now}) {
   if (retailerHasPendingConfirmation(request)) return 0;
@@ -176,47 +141,28 @@ int retailerOrderPriority(RequestRecord request, {DateTime? now}) {
 }
 
 int compareRetailerOrders(RequestRecord a, RequestRecord b, {DateTime? now}) {
-  final priority = retailerOrderPriority(a, now: now).compareTo(
-    retailerOrderPriority(b, now: now),
-  );
+  final priority = retailerOrderPriority(
+    a,
+    now: now,
+  ).compareTo(retailerOrderPriority(b, now: now));
   return priority != 0
       ? priority
       : b.s('updatedAt').compareTo(a.s('updatedAt'));
 }
 
-class RetailerOrdersPage extends StatelessWidget {
-  const RetailerOrdersPage({
-    this.initialFilter = RetailerOrderFilter.all,
-    super.key,
-  });
-
-  final RetailerOrderFilter initialFilter;
-
-  @override
-  Widget build(BuildContext context) => PageFrame(
-    title: '사입 내역',
-    children: [RetailerOrdersSection(initialFilter: initialFilter)],
-  );
-}
-
 class RetailerOrdersSection extends StatefulWidget {
   const RetailerOrdersSection({
     this.initialFilter = RetailerOrderFilter.all,
-    this.showHeading = false,
-    this.onCompletionBoundary,
     super.key,
   });
 
   final RetailerOrderFilter initialFilter;
-  final bool showHeading;
-  final VoidCallback? onCompletionBoundary;
 
   @override
-  State<RetailerOrdersSection> createState() => _RetailerOrdersSectionState();
+  State<RetailerOrdersSection> createState() => RetailerOrdersSectionState();
 }
 
-class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
-    with WidgetsBindingObserver {
+class RetailerOrdersSectionState extends State<RetailerOrdersSection> {
   static const _filters = [
     RetailerOrderFilter.all,
     RetailerOrderFilter.pendingConfirmation,
@@ -227,24 +173,14 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
 
   late RetailerOrderFilter filter = widget.initialFilter;
   String query = '';
-  Timer? _completionBoundaryTimer;
-  DateTime? _scheduledBoundary;
+  final _headingKey = GlobalKey();
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _refreshCompletion();
-  }
-
-  void _refreshCompletion() {
-    if (!mounted) return;
-    setState(() {});
-    widget.onCompletionBoundary?.call();
+  void showFilter(RetailerOrderFilter value) {
+    setState(() {
+      filter = value;
+      query = '';
+    });
+    scrollToSection(_headingKey);
   }
 
   @override
@@ -256,18 +192,10 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
   }
 
   @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _completionBoundaryTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context);
     final current = app.session.current;
     if (current?.role != AppRole.retailer) {
-      _cancelBoundaryRefresh();
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: const [
@@ -283,7 +211,6 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
             .map((record) => RequestRecord(record.id, record.data))
             .toList(growable: false)
           ..sort((a, b) => compareRetailerOrders(a, b, now: now));
-    _syncBoundaryRefresh(all, now);
 
     final search = query.trim().toLowerCase();
     final rows =
@@ -296,27 +223,35 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (widget.showHeading) const Section('사입 내역'),
+        Section(
+          '사입 내역',
+          key: _headingKey,
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+          typography: TdsTypography.t4,
+          fontWeight: TdsFontWeight.bold,
+        ),
         AppSearchField(
-          placeholder: '상품·도매처·사입삼촌 검색',
+          placeholder: '도매처·사입삼촌 검색',
+          value: query,
           onChanged: (value) => setState(() => query = value),
         ),
         TdsTab(
           semanticLabel: '사입 내역 필터',
           fluid: true,
+          size: TdsTabSize.small,
           items: [
             for (final candidate in _filters)
               TdsTabItem(text: candidate.label, selected: filter == candidate),
           ],
           onChanged: (index) => setState(() => filter = _filters[index]),
         ),
-        const TdsSpacing(12),
         FigmaSurface(
+          padding: const EdgeInsets.symmetric(vertical: 4),
           children: [
             Item(
-              '임시저장·다시 요청',
+              '임시저장 $drafts건',
+              verticalPadding: TdsListRowVerticalPadding.small,
               leading: const FigmaIcon('clock'),
-              subtitle: '임시저장 $drafts건',
               onTap: () => openPage(
                 context,
                 const PageFrame(title: '요청 작성', children: [RequestHub()]),
@@ -325,11 +260,14 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
           ],
         ),
         if (rows.isEmpty && search.isNotEmpty)
-          const EmptyState('검색 결과가 없어요', '상품명이나 도매처, 사입삼촌 이름을 다시 확인해 주세요.')
+          const EmptyState.titleOnly('검색 결과가 없어요')
         else if (rows.isEmpty)
-          EmptyState(filter.emptyTitle, filter.emptyDescription)
+          EmptyState.titleOnly(filter.emptyTitle)
         else ...[
-          Section('${filter.label} ${rows.length}건'),
+          Section(
+            '${filter.label} ${rows.length}건',
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 4),
+          ),
           for (final request in rows)
             _RetailerOrderCard(
               request: request,
@@ -338,35 +276,6 @@ class _RetailerOrdersSectionState extends State<RetailerOrdersSection>
             ),
         ],
       ],
-    );
-  }
-
-  void _cancelBoundaryRefresh() {
-    _scheduledBoundary = null;
-    _completionBoundaryTimer?.cancel();
-    _completionBoundaryTimer = null;
-  }
-
-  void _syncBoundaryRefresh(List<RequestRecord> requests, DateTime now) {
-    final nextBoundary = requests
-        .map(retailerCompletionBoundary)
-        .whereType<DateTime>()
-        .where((boundary) => boundary.isAfter(now))
-        .fold<DateTime?>(
-          null,
-          (earliest, boundary) =>
-              earliest == null || boundary.isBefore(earliest)
-              ? boundary
-              : earliest,
-        );
-    if (nextBoundary == _scheduledBoundary) return;
-    _cancelBoundaryRefresh();
-    _scheduledBoundary = nextBoundary;
-    if (nextBoundary == null) return;
-    final delay = nextBoundary.difference(now);
-    _completionBoundaryTimer = Timer(
-      (delay.isNegative ? Duration.zero : delay) + const Duration(seconds: 1),
-      _refreshCompletion,
     );
   }
 
@@ -461,14 +370,17 @@ class _RetailerOrderCard extends StatelessWidget {
       return [(color: TdsBadgeColor.red, label: '거절')];
     }
     if (retailerIsCompleted(request, now: now)) {
-      return [(color: TdsBadgeColor.blue, label: '완료')];
+      return [
+        (color: TdsBadgeColor.blue, label: '입금 완료'),
+        (color: TdsBadgeColor.elephant, label: request.paymentLabel),
+      ];
     }
     final badges = <({TdsBadgeColor color, String label})>[];
     if (retailerHasPendingConfirmation(request)) {
-      badges.add((color: TdsBadgeColor.blue, label: '확인 대기'));
+      badges.add((color: TdsBadgeColor.blue, label: '대기'));
     }
     if (retailerIsReceived(request, now: now)) {
-      badges.add((color: TdsBadgeColor.teal, label: '수령'));
+      badges.add((color: TdsBadgeColor.teal, label: '수령(입금 전)'));
     } else {
       if (retailerIsAwaitingDelivery(request)) {
         badges.add((color: TdsBadgeColor.green, label: '전달 대기'));
@@ -523,6 +435,8 @@ class _RetailerOrderCard extends StatelessWidget {
         .where((label) => label.isNotEmpty)
         .toList(growable: false);
     if (labels.isEmpty) return '';
-    return labels.length == 1 ? labels.first : '${labels.first} 외 ${labels.length - 1}곳';
+    return labels.length == 1
+        ? labels.first
+        : '${labels.first} 외 ${labels.length - 1}곳';
   }
 }

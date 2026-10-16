@@ -12,6 +12,7 @@ import 'retailer_home.dart';
 import 'retailer_purchase.dart';
 import 'social.dart';
 import 'uncle_home.dart';
+import 'uncle_orders.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -26,6 +27,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   bool ready = false;
   Timer? timer;
   final navigators = List.generate(5, (_) => GlobalKey<NavigatorState>());
+  final uncleOrdersKey = GlobalKey<UncleOrdersSectionState>();
   final guards = List.generate(5, (_) => TabSaveGuard());
   final detailOpen = List.filled(5, false);
   late final observers = List.generate(
@@ -63,6 +65,11 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     } finally {
       changingTab = false;
     }
+  }
+
+  Future<void> openHomeOrders() async {
+    if (!await selectTab(AppTab.home.index) || !mounted) return;
+    uncleOrdersKey.currentState?.showFilter(UncleOrderFilter.all);
   }
 
   @override
@@ -226,6 +233,8 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
                                               builder: (context) => HomeTabPage(
                                                 index: i,
                                                 onTab: selectTab,
+                                                onOpenOrders: openHomeOrders,
+                                                uncleOrdersKey: uncleOrdersKey,
                                               ),
                                             ),
                                       ),
@@ -298,9 +307,17 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
 }
 
 class HomeTabPage extends StatelessWidget {
-  const HomeTabPage({required this.index, required this.onTab, super.key});
+  const HomeTabPage({
+    required this.index,
+    required this.onTab,
+    required this.onOpenOrders,
+    required this.uncleOrdersKey,
+    super.key,
+  });
   final int index;
   final ValueChanged<int> onTab;
+  final VoidCallback onOpenOrders;
+  final GlobalKey<UncleOrdersSectionState> uncleOrdersKey;
   @override
   Widget build(BuildContext context) {
     final app = AppScope.of(context), a = app.session.current!;
@@ -320,9 +337,11 @@ class HomeTabPage extends StatelessWidget {
       0 =>
         a.role == AppRole.retailer
             ? const RetailerPurchaseTab()
-            : BusinessList(onTab: onTab),
+            : BusinessList(onOpenOrders: onOpenOrders),
       1 => const ChatList(),
-      2 => BackdropGroup(child: Dashboard(onTab: onTab)),
+      2 => BackdropGroup(
+        child: Dashboard(onTab: onTab, uncleOrdersKey: uncleOrdersKey),
+      ),
       3 => const ConnectionsList(),
       _ => const MyPage(),
     };
@@ -348,22 +367,24 @@ class HomeTabPage extends StatelessWidget {
 }
 
 class Dashboard extends StatelessWidget {
-  const Dashboard({required this.onTab, super.key});
+  const Dashboard({required this.onTab, this.uncleOrdersKey, super.key});
   final ValueChanged<int> onTab;
+  final GlobalKey<UncleOrdersSectionState>? uncleOrdersKey;
 
   @override
   Widget build(BuildContext context) =>
       AppScope.of(context).session.current!.role == AppRole.retailer
       ? RetailerDashboard(onTab: onTab)
-      : UncleDashboard(onTab: onTab);
+      : UncleDashboard(onTab: onTab, ordersKey: uncleOrdersKey);
 }
 
 class BusinessList extends StatelessWidget {
-  const BusinessList({required this.onTab, super.key});
-  final ValueChanged<int> onTab;
+  const BusinessList({required this.onOpenOrders, super.key});
+  final VoidCallback onOpenOrders;
 
   @override
-  Widget build(BuildContext context) => const UncleWorkTab();
+  Widget build(BuildContext context) =>
+      UncleWorkTab(onOpenOrders: onOpenOrders);
 }
 
 /// The Figma tab bar belongs to root screens. Each tab still owns its stack,

@@ -1,5 +1,6 @@
 import 'package:agent_uncle/local/app_services.dart';
 import 'package:agent_uncle/local/domain/models.dart';
+import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/delivery.dart';
 import 'package:agent_uncle/local/presentation/requests.dart';
 import 'package:agent_uncle/local/presentation/uncle_orders.dart';
@@ -13,7 +14,7 @@ import '../support/request_workflow.dart';
 import 'workspace_test.dart' show Fixture;
 
 void main() {
-  test('부분 확보·전달·답변 대기는 함께 분류하고 종료된 요청은 활성 업무에서 제외한다', () {
+  test('부분 업무와 완료 후 미해결 요청은 활성 업무에 남고 수령·입금 완료는 분리한다', () {
     RequestRecord order(String id, Data values) =>
         RequestRecord(id, {'status': 'accepted', 'quantity': 5, ...values});
     final today = dateOnly(DateTime.now());
@@ -40,6 +41,19 @@ void main() {
         'recheck': dateOnly(DateTime.now().add(const Duration(days: 1))),
       }),
       order('held', {'acquired': 5, 'held': 5, 'openIssues': 1}),
+      order('received', {
+        'status': 'completed',
+        'acquired': 5,
+        'delivered': 5,
+        'received': 5,
+      }),
+      order('paid', {
+        'status': 'completed',
+        'acquired': 5,
+        'delivered': 5,
+        'received': 5,
+        'paymentReported': true,
+      }),
       for (final status in ['completed', 'cancelled', 'rejected'])
         order(status, {
           'status': status,
@@ -55,14 +69,26 @@ void main() {
     final expected = <UncleOrderFilter, Set<String>>{
       UncleOrderFilter.all: rows.map((row) => row.id).toSet(),
       UncleOrderFilter.incoming: {'new'},
-      UncleOrderFilter.awaitingReply: {'partial'},
-      UncleOrderFilter.inProgress: {'partial', 'recheck', 'scheduled', 'held'},
-      UncleOrderFilter.awaitingDelivery: {'partial', 'scheduled'},
-      UncleOrderFilter.awaitingReceipt: {'partial'},
-      UncleOrderFilter.backorder: {'partial', 'recheck', 'scheduled'},
+      UncleOrderFilter.awaitingReply: {'partial', 'completed'},
+      UncleOrderFilter.inProgress: {
+        'partial',
+        'recheck',
+        'scheduled',
+        'held',
+        'completed',
+      },
+      UncleOrderFilter.awaitingDelivery: {'partial', 'scheduled', 'completed'},
+      UncleOrderFilter.awaitingReceipt: {'partial', 'completed'},
+      UncleOrderFilter.backorder: {
+        'partial',
+        'recheck',
+        'scheduled',
+        'completed',
+      },
       UncleOrderFilter.recheck: {'recheck'},
-      UncleOrderFilter.issues: {'partial', 'held'},
-      UncleOrderFilter.completed: {'completed'},
+      UncleOrderFilter.issues: {'partial', 'held', 'completed'},
+      UncleOrderFilter.received: {'received'},
+      UncleOrderFilter.completed: {'paid'},
     };
     for (final entry in expected.entries) {
       expect(
@@ -73,7 +99,7 @@ void main() {
     }
   });
 
-  testWidgets('업무 내역에서 상태·검색·묶음과 주문 상세·전달 페이지를 사용할 수 있다', (tester) async {
+  testWidgets('홈 사입 내역에서 상태·검색·묶음과 주문 상세·전달 페이지를 사용할 수 있다', (tester) async {
     final fixture = Fixture();
     late String pending, delivery, receipt;
     await tester.runAsync(() async {
@@ -96,8 +122,14 @@ void main() {
       AppScope(
         services: services,
         child: branded(
-          const UncleOrdersPage(
-            initialFilter: UncleOrderFilter.awaitingDelivery,
+          const PageFrame(
+            title: '홈',
+            back: false,
+            children: [
+              UncleOrdersSection(
+                initialFilter: UncleOrderFilter.awaitingDelivery,
+              ),
+            ],
           ),
         ),
       ),
@@ -132,8 +164,8 @@ void main() {
     await settle(tester);
     expect(find.text('동대문 도매상 · 2건'), findsOneWidget);
 
-    await tester.ensureVisible(find.widgetWithText(TdsChipItem, '새 요청'));
-    await tester.tap(find.widgetWithText(TdsChipItem, '새 요청'));
+    await tester.ensureVisible(find.widgetWithText(TdsChipItem, '사입 요청'));
+    await tester.tap(find.widgetWithText(TdsChipItem, '사입 요청'));
     await settle(tester);
     expect(card(pending), findsOneWidget);
     expect(card(delivery), findsNothing);
@@ -145,8 +177,8 @@ void main() {
     await tester.tap(find.byType(TdsTopNavigationBackButton));
     await settle(tester);
 
-    await tester.ensureVisible(find.text('상품 전달하기'));
-    await tester.tap(find.text('상품 전달하기'));
+    await tester.ensureVisible(find.text('전달 가능 3장'));
+    await tester.tap(find.text('전달 가능 3장'));
     await settle(tester);
     expect(find.byType(DeliveryList), findsOneWidget);
     expect(find.text('상품 전달'), findsOneWidget);

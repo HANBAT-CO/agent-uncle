@@ -1,14 +1,29 @@
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 
+import '../../core/theme/app_theme.dart';
 import '../app_services.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'billing_summary.dart';
+import 'team_work.dart';
+import 'workflow_sync.dart';
+import 'update_notice.dart';
 import 'uncle_orders.dart';
 
-class UncleDashboard extends StatelessWidget {
-  const UncleDashboard({required this.onTab, super.key});
+class UncleDashboard extends StatefulWidget {
+  const UncleDashboard({required this.onTab, this.ordersKey, super.key});
   final ValueChanged<int> onTab;
+  final GlobalKey<UncleOrdersSectionState>? ordersKey;
+
+  @override
+  State<UncleDashboard> createState() => _UncleDashboardState();
+}
+
+class _UncleDashboardState extends State<UncleDashboard> {
+  final _ordersKey = GlobalKey<UncleOrdersSectionState>();
+  GlobalKey<UncleOrdersSectionState> get ordersKey =>
+      widget.ordersKey ?? _ordersKey;
 
   @override
   Widget build(BuildContext context) {
@@ -16,39 +31,51 @@ class UncleDashboard extends StatelessWidget {
         .records('requests')
         .map((record) => RequestRecord(record.id, record.data))
         .toList();
-    Future<void> openOrders(UncleOrderFilter filter) =>
-        openPage(context, UncleOrdersPage(initialFilter: filter));
-    Widget statusRow(UncleOrderFilter filter) {
+    void showOrders(UncleOrderFilter filter) =>
+        ordersKey.currentState?.showFilter(filter);
+    Widget statusRow(
+      UncleOrderFilter filter, {
+      String? label,
+      TdsBadgeColor? badgeColor,
+    }) {
       final rows = filterUncleOrders(requests, filter);
       final count = filter == UncleOrderFilter.awaitingDelivery
           ? '${rows.fold<int>(0, (sum, request) => sum + request.available)}장'
           : '${rows.length}건';
       return TdsListRow(
         key: ValueKey('uncle-status-${filter.name}'),
-        left: TdsBadge(
-          size: TdsBadgeSize.xsmall,
-          color: filter.color,
-          variant: TdsBadgeVariant.weak,
-          child: Text(filter.label),
+        semanticLabel: label ?? filter.label,
+        left: badgeColor == null
+            ? TdsBadge(
+                size: TdsBadgeSize.xsmall,
+                color: filter.color,
+                variant: TdsBadgeVariant.weak,
+                child: Text(filter.label),
+              )
+            : OrderStatusChipTheme(
+                badgeColor: badgeColor,
+                child: TdsChip(
+                  kind: TdsChipKind.action,
+                  margin: TdsChipMargin.none,
+                  children: [TdsChipItem(text: label!, inert: true)],
+                ),
+              ),
+        contents: TdsText(
+          count,
+          typography: TdsTypography.t4,
+          fontWeight: TdsFontWeight.bold,
         ),
-        contents: TdsListRowTexts(
-          type: TdsListRowTextType.row2TypeA,
-          top: Text(count),
-          bottom: Text(filter.homeLabel),
-        ),
-        right: TdsTextButton(
-          size: TdsTextButtonSize.small,
-          onPressed: () => openOrders(filter),
-          child: const Text('보기'),
-        ),
-        onPressed: () => openOrders(filter),
+        onPressed: () => showOrders(filter),
       );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        ActionButton('업무 시작하기', onPressed: () => onTab(AppTab.business.index)),
+        ActionButton(
+          '업무 시작하기',
+          onPressed: () => widget.onTab(AppTab.business.index),
+        ),
         FigmaSurface(
           margin: 12,
           style: FigmaSurfaceStyle.glass,
@@ -64,25 +91,47 @@ class UncleDashboard extends StatelessWidget {
                 ),
               ),
             ),
+            statusRow(
+              UncleOrderFilter.incoming,
+              label: '사입 요청',
+              badgeColor: TdsBadgeColor.yellow,
+            ),
+            statusRow(
+              UncleOrderFilter.inProgress,
+              label: '사입 중',
+              badgeColor: TdsBadgeColor.green,
+            ),
+            statusRow(
+              UncleOrderFilter.received,
+              label: '완료(입금 전)',
+              badgeColor: TdsBadgeColor.elephant,
+            ),
+            statusRow(UncleOrderFilter.completed),
+            const TdsBorder(),
             statusRow(UncleOrderFilter.awaitingReply),
-            statusRow(UncleOrderFilter.incoming),
-            statusRow(UncleOrderFilter.inProgress),
             statusRow(UncleOrderFilter.awaitingDelivery),
-            statusRow(UncleOrderFilter.awaitingReceipt),
             statusRow(UncleOrderFilter.recheck),
             if (filterUncleOrders(requests, UncleOrderFilter.issues).isNotEmpty)
               statusRow(UncleOrderFilter.issues),
-            const TdsBorder(),
-            Item('업무 내역 전체 보기', onTap: () => openOrders(UncleOrderFilter.all)),
           ],
         ),
+        UncleOrdersSection(key: ordersKey),
+        const InvoiceSummary(),
+        ActionButton(
+          '팀 픽업·인계 업무',
+          weak: true,
+          onPressed: () => openPage(context, const TeamWorkPage()),
+        ),
+        const WorkflowSyncNotice(),
+        const UpdateNotice(),
       ],
     );
   }
 }
 
 class UncleWorkTab extends StatelessWidget {
-  const UncleWorkTab({super.key});
+  const UncleWorkTab({required this.onOpenOrders, super.key});
+  final VoidCallback onOpenOrders;
 
   @override
   Widget build(BuildContext context) => Column(
@@ -95,15 +144,16 @@ class UncleWorkTab extends StatelessWidget {
           child: FigmaIcon('bag', selected: true, size: 44),
         ),
       ),
-      const PageHeading(
-        '오늘의 사입을\n차근차근 시작해요',
-        description: '새 요청 확인부터 확보와 전달까지\n필요한 업무를 한곳에서 처리해요.',
-      ),
+      const PageHeading('오늘의 사입을\n차근차근 시작해요'),
       const TdsSpacing(16),
+      ActionButton('사입 업무 시작하기', onPressed: onOpenOrders),
       ActionButton(
-        '사입 업무 시작하기',
-        onPressed: () => openPage(context, const UncleOrdersPage()),
+        '팀 픽업·인계 업무',
+        weak: true,
+        onPressed: () => openPage(context, const TeamWorkPage()),
       ),
+      const InvoiceSummary(),
+      const WorkflowSyncNotice(),
       const TdsSpacing(32),
     ],
   );

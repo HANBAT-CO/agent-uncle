@@ -2,6 +2,7 @@ import 'dart:math';
 
 import '../domain/chat_content_policy.dart';
 import '../domain/models.dart';
+import '../domain/order_payment.dart';
 import '../domain/workflow_payload.dart';
 import '../domain/billing_models.dart';
 import '../domain/team_models.dart';
@@ -155,6 +156,21 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
         )
         .toList();
     rows.sort((a, b) => b.s('createdAt').compareTo(a.s('createdAt')));
+    if (table == 'requests') {
+      return [
+        for (final row in rows)
+          Record(row.id, projectOrderPayment(snapshot, row)),
+      ];
+    }
+    if (table == 'invoices') {
+      return [
+        for (final row in rows)
+          Record(row.id, {
+            ...row.data,
+            'requestIds': invoiceRequestIds(snapshot, row),
+          }),
+      ];
+    }
     return rows;
   }
 
@@ -182,7 +198,9 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
   @override
   RequestRecord? request(String id) {
     final r = snapshot.get('requests', id);
-    return r == null || !_belongs(r.data) ? null : RequestRecord(id, r.data);
+    return r == null || !_belongs(r.data)
+        ? null
+        : RequestRecord(id, projectOrderPayment(snapshot, r));
   }
 
   void _checkVersion(Data record, int version) {

@@ -1,6 +1,7 @@
 import 'package:sembast/sembast.dart';
 import '../local/domain/chat_content_policy.dart';
 import '../local/domain/models.dart';
+import '../local/domain/order_payment.dart';
 import 'remote_store.dart';
 
 class RemoteWorkspaceRepository extends WorkspaceRepository {

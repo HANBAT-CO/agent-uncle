@@ -470,8 +470,7 @@ class RequestHub extends StatelessWidget {
           onPressed: () => openPage(context, const RequestEditor()),
         ),
         const Section('작성 중'),
-        if (drafts.isEmpty)
-          const EmptyState('작성 중인 요청이 없어요', '연결 전에도 초안을 작성할 수 있어요.'),
+        if (drafts.isEmpty) const EmptyState.titleOnly('작성 중인 요청이 없어요'),
         for (final d in drafts) ...[
           Item(
             requestTitle(d.data),
@@ -500,7 +499,7 @@ class RequestHub extends StatelessWidget {
             ),
           ),
         ],
-        const Section('최근 요청'),
+        if (recent.isNotEmpty) const Section('이전 요청으로 다시 작성'),
         for (final r in recent) ...[
           RequestCard(
             RequestRecord(r.id, r.data),

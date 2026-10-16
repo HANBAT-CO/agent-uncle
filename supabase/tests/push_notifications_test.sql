@@ -1,0 +1,88 @@
+begin;
+select no_plan();
+insert into auth.users(id,email) values
+ ('81111111-1111-4111-8111-111111111111','push-a@example.test'),
+ ('82222222-2222-4222-8222-222222222222','push-b@example.test');
+insert into auth.sessions(id,user_id) values
+ ('83333333-3333-4333-8333-333333333333','81111111-1111-4111-8111-111111111111');
+select saip_private.put('accounts','81111111-1111-4111-8111-111111111111','{"role":"retailer","complete":true}',array['81111111-1111-4111-8111-111111111111']::uuid[]);
+select saip_private.put('accounts','82222222-2222-4222-8222-222222222222','{"role":"uncle","complete":true}',array['82222222-2222-4222-8222-222222222222']::uuid[]);
+select saip_private.put('requests','push-request','{"status":"accepted","quantity":10,"acquired":4}',array['81111111-1111-4111-8111-111111111111','82222222-2222-4222-8222-222222222222']::uuid[]);
+select set_config('request.jwt.claims','{"sub":"81111111-1111-4111-8111-111111111111","role":"authenticated","session_id":"83333333-3333-4333-8333-333333333333"}',true);
+set local role authenticated;
+select lives_ok($$select public.saip_register_push('{"id":"84444444-4444-4444-8444-444444444444","binding":"85555555-5555-4555-8555-555555555555","platform":"ios","environment":"development","token":"0123456789abcdef0123456789abcdef","activitySecret":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","enabled":true,"liveEnabled":true}')$$,'로그인 세션에 기기 등록');
+select throws_ok('select * from saip_private.push_devices','42501',null,'클라이언트는 토큰 테이블 조회 불가');
+select throws_ok('select public.saip_claim_push()','42501',null,'클라이언트는 발송 작업 claim 불가');
+select lives_ok($$select public.saip_prepare_activity('84444444-4444-4444-8444-444444444444','85555555-5555-4555-8555-555555555555','push-request')$$,'접근 가능한 진행 주문만 활동 준비');
+select throws_ok($$select public.saip_prepare_activity('84444444-4444-4444-8444-444444444444','85555555-5555-4555-8555-555555555555','missing')$$,'P0001',null,'다른 주문 활동 준비 거절');
+set local role anon;
+select throws_ok($$select public.saip_activity_token('84444444-4444-4444-8444-444444444444','85555555-5555-4555-8555-555555555555','wrong','push-request','activity-token-0123456789')$$,'P0001',null,'등록 비밀값 불일치 거절');
+select lives_ok($$select public.saip_activity_token('84444444-4444-4444-8444-444444444444','85555555-5555-4555-8555-555555555555','0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef','push-request','activity-token-0123456789')$$,'준비된 활동의 백그라운드 토큰 등록');
+reset role;
+create temporary table claimed as select public.saip_claim_push() as job;
+select is((select job->>'event' from claimed),'update','시작은 앱에서 하고 서버는 update 전송');
+select is((select job->'contentState'->>'acquired' from claimed),'4','최신 확보 수량 반영');
+select is((select count(*) from public.saip_claim_push()),0::bigint,'진행 중 lease 중복 claim 금지');
+select public.saip_finish_push((job->>'id')::uuid,(job->>'lease')::uuid,'accepted') from claimed;
+update public.saip_records set data=data||'{"status":"completed"}' where collection='requests' and id='push-request';
+update saip_private.push_activities set last_timestamp=ceil(extract(epoch from clock_timestamp()))::bigint+10;
+select is((select count(*) from public.saip_claim_push()),0::bigint,'Live Activity timestamp가 증가하기 전에는 발송을 미룬다');
+update saip_private.push_activities set last_timestamp=0;
+update saip_private.push_outbox set available_at=now() where state='pending';
+truncate claimed;
+insert into claimed select public.saip_claim_push();
+select is((select job->>'event' from claimed),'end','완료 시 활동 종료');
+select public.saip_finish_push((job->>'id')::uuid,(job->>'lease')::uuid,'accepted') from claimed;
+select ok((select ended from saip_private.push_activities),'종료 접수 기록');
+
+create function pg_temp.notice(n text, k text default 'chat') returns void language sql as $$
+ select saip_private.put('notices',n,jsonb_build_object('ownerId','81111111-1111-4111-8111-111111111111','kind',k,'targetId','82222222-2222-4222-8222-222222222222','requestId','push-request','read',false),array['81111111-1111-4111-8111-111111111111']::uuid[])
+$$;
+select pg_temp.notice('push-notice');
+select is((select count(*) from saip_private.push_outbox where notice_id='push-notice'),1::bigint,'INSERT 알림 fanout');
+select pg_temp.notice('push-notice');
+select is((select count(*) from saip_private.push_outbox where notice_id='push-notice'),1::bigint,'알림 수정은 재발송하지 않음');
+truncate claimed;
+insert into claimed select public.saip_claim_push();
+select is((select job->>'body' from claimed),'새 메시지가 도착했어요.','잠금화면은 채팅 원문을 포함하지 않음');
+select public.saip_finish_push((job->>'id')::uuid,gen_random_uuid(),'accepted') from claimed;
+select is((select state from saip_private.push_outbox where notice_id='push-notice'),'sending','잘못된 lease 완료 거절');
+select public.saip_finish_push((job->>'id')::uuid,(job->>'lease')::uuid,'retry','temporary',1) from claimed;
+select is((select state from saip_private.push_outbox where notice_id='push-notice'),'pending','일시 오류는 재시도');
+update saip_private.push_outbox set available_at=now() where notice_id='push-notice';
+truncate claimed;
+insert into claimed select public.saip_claim_push();
+update saip_private.push_devices set token='rotated-device-token-0123456789';
+select public.saip_finish_push((job->>'id')::uuid,(job->>'lease')::uuid,'invalid') from claimed;
+select ok((select enabled from saip_private.push_devices),'이전 토큰 실패가 회전한 토큰을 비활성화하지 않음');
+
+update public.saip_records set data=data||'{"notificationSettings":{"chat":false,"request":false}}' where collection='accounts' and id='81111111-1111-4111-8111-111111111111';
+select pg_temp.notice('push-muted');
+select pg_temp.notice('push-muted-invoice','invoice');
+select is((select count(*) from public.saip_claim_push()),0::bigint,'채팅 및 청구 알림 설정을 발송 직전 적용');
+update public.saip_records set data=data||'{"notificationSettings":{}}' where collection='accounts' and id='81111111-1111-4111-8111-111111111111';
+select saip_private.put('chatBlocks','push-block','{"blocked":true}',array['81111111-1111-4111-8111-111111111111','82222222-2222-4222-8222-222222222222']::uuid[]);
+select pg_temp.notice('push-blocked');
+select is((select count(*) from public.saip_claim_push()),0::bigint,'차단한 상대 채팅 알림 제외');
+delete from public.saip_records where collection='chatBlocks' and id='push-block';
+select pg_temp.notice('push-read');
+update public.saip_records set data=data||'{"read":true}' where collection='notices' and id='push-read';
+select is((select count(*) from public.saip_claim_push()),0::bigint,'이미 읽은 알림 제외');
+select pg_temp.notice('push-expired-session');
+update auth.sessions set not_after=now()-interval '1 second' where id='83333333-3333-4333-8333-333333333333';
+select is((select count(*) from public.saip_claim_push()),0::bigint,'만료된 세션 발송 제외');
+update auth.sessions set not_after=null where id='83333333-3333-4333-8333-333333333333';
+update saip_private.push_outbox set created_at=now()-interval '31 days' where state in ('accepted','skipped','dead');
+select public.saip_prune_push();
+select is((select count(*) from saip_private.push_outbox),0::bigint,'30일이 지난 처리 이력 삭제');
+select pg_temp.notice('push-logout');
+delete from auth.sessions where id='83333333-3333-4333-8333-333333333333';
+select is((select count(*) from public.saip_claim_push()),0::bigint,'로그아웃된 세션 발송 제외');
+set local role authenticated;
+select throws_ok($$select public.saip_register_push('{"id":"84444444-4444-4444-8444-444444444444"}')$$,'P0001','로그인이 필요해요.','폐기된 세션 토큰으로 재등록 불가');
+reset role;
+update public.saip_records set data=data||'{"deletionPending":true}' where collection='accounts' and id='81111111-1111-4111-8111-111111111111';
+select is((select count(*) from saip_private.push_devices),0::bigint,'탈퇴 진행 시 기기 토큰 삭제');
+select is((select count(*) from saip_private.push_outbox),0::bigint,'탈퇴 진행 시 발송 대기열 삭제');
+select * from finish();
+rollback;

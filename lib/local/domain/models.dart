@@ -17,6 +17,7 @@ int? nullableNumberOf(Data data, String key) {
   if (value is String) return int.tryParse(value.trim());
   return null;
 }
+
 bool flagOf(Data data, String key) => data[key] == true;
 List<String> stringsOf(Data data, String key) =>
     (data[key] as List?)?.cast<String>() ?? const [];
@@ -42,6 +43,15 @@ List<Data> requestWholesalers(Data data) {
             'location': entry['location'] is String
                 ? (entry['location'] as String).trim()
                 : '',
+            if (entry.containsKey('paymentMode'))
+              'paymentMode':
+                  const [
+                    'advance',
+                    'direct',
+                    'review',
+                  ].contains(entry['paymentMode'])
+                  ? entry['paymentMode']
+                  : 'review',
           },
     ];
   }
@@ -61,7 +71,9 @@ String requestTitle(Data data) {
       .where((name) => name.isNotEmpty)
       .toList();
   if (names.isEmpty) return '새 사입 요청';
-  return names.length == 1 ? names.first : '${names.first} 외 ${names.length - 1}곳';
+  return names.length == 1
+      ? names.first
+      : '${names.first} 외 ${names.length - 1}곳';
 }
 
 class AppFailure implements Exception {
@@ -133,9 +145,7 @@ class RequestRecord extends Record {
   const RequestRecord(super.id, super.data);
   DateTime? get receivedAt =>
       DateTime.tryParse(s('receivedAt')) ??
-      (s('status') == 'completed'
-          ? DateTime.tryParse(s('updatedAt'))
-          : null);
+      (s('status') == 'completed' ? DateTime.tryParse(s('updatedAt')) : null);
   int get quantity => n('quantity');
   int get acquired => n('acquired');
   int get delivered => n('delivered');
@@ -149,23 +159,49 @@ class RequestRecord extends Record {
       max(0, acquired - acquiredCancelled - delivered - n('held'));
   bool get ended =>
       ['completed', 'cancelled', 'rejected'].contains(s('status'));
+
+  /// 물류 완료와 입금은 별개다. 전액 송금 신고는 운영 입금 확인과 구분한다.
+  bool get receiptComplete =>
+      s('status') == 'completed' &&
+      received > 0 &&
+      received == delivered &&
+      received == quantity - cancelled &&
+      n('held') == 0 &&
+      n('openIssues') == 0 &&
+      !needsReply &&
+      s('proposalId').isEmpty &&
+      remaining == 0 &&
+      available == 0;
+  bool get paymentComplete => receiptComplete && b('paymentReported');
+  String get paymentLabel => !paymentComplete
+      ? '입금 전'
+      : b('paymentConfirmed')
+      ? '운영 입금 확인'
+      : '운영 확인 대기';
   bool get needsReply => b('needsReply');
   bool get overdue =>
       backorder > 0 &&
       !needsReply &&
       s('recheck').isNotEmpty &&
       s('recheck').compareTo(dateOnly(DateTime.now())) <= 0;
+  String stageLabelFor(AppRole role) {
+    if (s('status') == 'rejected') return '거절';
+    if (s('status') == 'cancelled') return '취소 종료';
+    if (paymentComplete) return '입금 완료';
+    if (receiptComplete) {
+      return role == AppRole.retailer ? '수령(입금 전)' : '완료(입금 전)';
+    }
+    if (s('status') == 'pending') {
+      return role == AppRole.retailer ? '대기' : '사입 요청';
+    }
+    return role == AppRole.retailer ? '진행 중' : '사입 중';
+  }
+
   String get statusLabel {
     if (s('status') == 'rejected') return '거절';
     if (s('status') == 'cancelled') return '취소 종료';
-    if (s('status') == 'completed') {
-      final receivedTime = receivedAt;
-      return receivedTime != null &&
-              !DateTime.now().isBefore(
-                receivedTime.add(const Duration(days: 7)),
-              )
-          ? '완료'
-          : '수령';
+    if (receiptComplete) {
+      return paymentComplete ? '입금 완료' : '수령(입금 전)';
     }
     if (n('openIssues') > 0) return '문제 확인 중';
     if (s('proposalId').isNotEmpty) return '변경·취소 협의 중';

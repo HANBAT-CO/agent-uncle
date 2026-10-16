@@ -129,7 +129,7 @@ extension AppRoleLabel on AppRole {
     AppTab.home => '홈',
     AppTab.business => this == AppRole.retailer ? '사입하기' : '업무',
     AppTab.chat => this == AppRole.retailer ? '채팅' : '대화',
-    AppTab.connections => this == AppRole.retailer ? '사입삼촌' : '거래처',
+    AppTab.connections => this == AppRole.retailer ? '사입삼촌' : '연결',
     AppTab.profile => this == AppRole.retailer ? '내 프로필' : '내 정보',
   };
   List<String> get tabs => tabOrder.map(tabLabel).toList(growable: false);

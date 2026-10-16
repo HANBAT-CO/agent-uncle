@@ -10,6 +10,7 @@ import 'delivery.dart';
 import 'profile_avatar.dart';
 import 'connection_search.dart';
 import 'chat_message_actions.dart';
+import 'team_work.dart';
 
 export 'connection_search.dart' show AddConnectionPage;
 
@@ -21,6 +22,7 @@ class ConnectionsList extends StatefulWidget {
 
 class _ConnectionsListState extends State<ConnectionsList> {
   String filter = '연결됨', query = '';
+  int audience = 0;
 
   Widget _retailerConnectionEmptyState(BuildContext context) => TdsResult(
     figure: const ExcludeSemantics(child: FigmaIcon('store', size: 60)),
@@ -38,6 +40,17 @@ class _ConnectionsListState extends State<ConnectionsList> {
     final search = query.trim().toLowerCase();
     final app = AppScope.of(context);
     final retailer = app.session.current!.role == AppRole.retailer;
+    final audienceTabs = TdsTab(
+      semanticLabel: '연결 대상',
+      items: [
+        TdsTabItem(text: '거래처', selected: audience == 0),
+        TdsTabItem(text: '사입 동료', selected: audience == 1),
+      ],
+      onChanged: (index) => setState(() => audience = index),
+    );
+    if (!retailer && audience == 1) {
+      return Column(children: [audienceTabs, const UncleTeamConnections()]);
+    }
     final all = app.workspace.records('connections').toList();
     Account? peerOf(Record record) => app.workspace.profile(
       record.s(record.s('from') == app.session.current!.id ? 'to' : 'from'),
@@ -82,6 +95,7 @@ class _ConnectionsListState extends State<ConnectionsList> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (!retailer) audienceTabs,
         const TdsSpacing(16),
         FigmaSurface(
           children: [
@@ -106,7 +120,7 @@ class _ConnectionsListState extends State<ConnectionsList> {
                 size: TdsButtonSize.large,
                 variant: TdsButtonVariant.weak,
                 onPressed: () => openPage(context, const AddConnectionPage()),
-                child: const Text('새 연결'),
+                child: Text(retailer ? '새 연결' : '소매 거래처 추가'),
               ),
             ),
             if (incoming > 0) ...[
@@ -509,6 +523,7 @@ class ChatList extends StatefulWidget {
 
 class _ChatListState extends State<ChatList> {
   String query = '';
+  int audience = 0;
   @override
   Widget build(BuildContext context) {
     final search = query.trim().toLowerCase();
@@ -518,6 +533,17 @@ class _ChatListState extends State<ChatList> {
         partners = app.workspace.partners
             .where((p) => p.name.toLowerCase().contains(search))
             .toList();
+    final audienceTabs = TdsTab(
+      semanticLabel: '대화 대상',
+      items: [
+        TdsTabItem(text: '거래처', selected: audience == 0),
+        TdsTabItem(text: '팀 동료', selected: audience == 1),
+      ],
+      onChanged: (index) => setState(() => audience = index),
+    );
+    if (!retailer && audience == 1) {
+      return Column(children: [audienceTabs, const UncleTeamChats()]);
+    }
     partners.sort((a, b) {
       String latest(String id) =>
           messages
@@ -529,6 +555,7 @@ class _ChatListState extends State<ChatList> {
     });
     return Column(
       children: [
+        if (!retailer) audienceTabs,
         AppSearchField(
           placeholder: retailer ? '사입삼촌 검색' : '거래처 검색',
           onChanged: (v) => setState(() => query = v),

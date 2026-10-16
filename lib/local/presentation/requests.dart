@@ -11,6 +11,7 @@ import 'address_search.dart';
 import 'social.dart';
 import 'delivery.dart';
 import 'request_partner_picker.dart';
+import 'team_work.dart';
 
 class _WholesalerFields {
   _WholesalerFields({String wholesaler = '', String location = ''})
@@ -767,6 +768,15 @@ class RequestDetailPage extends StatelessWidget {
                 leading: const FigmaIcon('truck'),
                 subtitle: '실제로 전달한 수량을 기록해요',
                 onTap: () => openPage(context, DeliveryBatchPage([id])),
+              ),
+            if (!retailer &&
+                !['pending', 'rejected', 'cancelled'].contains(r.s('status')))
+              Item(
+                '팀 업무 보기',
+                leading: const FigmaIcon('chat'),
+                subtitle: '포장·인계·전달 현황은 팀 업무 화면에서 이어서 확인해요.',
+                onTap: () =>
+                    openPage(context, PickupRequestWorkPage(requestId: id)),
               ),
           ],
         ),

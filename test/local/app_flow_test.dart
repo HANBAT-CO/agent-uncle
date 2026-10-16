@@ -302,8 +302,8 @@ void main() {
     await settle(tester);
     await tester.tap(find.text('사입 업무 시작하기'));
     await settle(tester);
-    await tester.ensureVisible(find.text('상품 전달하기'));
-    await tester.tap(find.text('상품 전달하기'));
+    await tester.ensureVisible(find.text('전달 가능 0장'));
+    await tester.tap(find.text('전달 가능 0장'));
     await settle(tester);
     expect(find.text('지금 전달할 물품이 없어요'), findsOneWidget);
     expect(tester.takeException(), isNull);

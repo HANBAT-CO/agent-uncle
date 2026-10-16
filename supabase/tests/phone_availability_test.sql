@@ -11,6 +11,11 @@ select ok(has_function_privilege('authenticated', 'public.saip_check_phone_avail
 select ok(not has_function_privilege('authenticated', 'saip_private.normalize_korean_phone(text)', 'EXECUTE'),
   '비공개 정규화 함수는 직접 실행할 수 없다');
 
+-- 탈퇴 후 남은 JWT를 차단하므로 실제 Auth 주체도 함께 준비한다.
+insert into auth.users(id,email) values
+  ('a1111111-1111-4111-8111-111111111111','phone-self@example.test'),
+  ('a2222222-2222-4222-8222-222222222222','phone-peer@example.test'),
+  ('a3333333-3333-4333-8333-333333333333','phone-draft@example.test');
 insert into public.saip_records(collection, id, data, readers) values
   ('accounts', 'a1111111-1111-4111-8111-111111111111',
    '{"phone":"010-0000-1001","complete":true,"role":"retailer"}',

@@ -18,6 +18,7 @@ insert into signup_values values
  ('retailer','{"name":"매장","contact":"담당자","phone":"010-1234-5678","businessName":"사업자","businessNumber":"123-45-67890","documentId":"signup-doc-r","address":"서울","addressDetail":"1층","salesChannel":"온라인","terms":true,"privacy":true}'),
  ('uncle','{"contact":"담당자","phone":"01087654321","pickupArea":"동대문","deliveryArea":"서울","deadline":"23:00","terms":true,"privacy":true}');
 grant select on signup_values to authenticated;
+update signup_values set fields=fields||'{"bankName":"테스트은행","bankAccount":"1234-5678-9012","bankHolder":"가입자"}';
 
 set local role authenticated;
 select set_config('request.jwt.claim.sub','44444444-4444-4444-8444-444444444444',true);
@@ -46,7 +47,10 @@ from signup_values p cross join (values
  ('businessName','사업자명 항목을 입력해 주세요.'),
  ('businessNumber','사업자등록번호 항목을 입력해 주세요.'),
  ('address','주소 항목을 입력해 주세요.'),
- ('addressDetail','상세주소 항목을 입력해 주세요.')
+ ('addressDetail','상세주소 항목을 입력해 주세요.'),
+ ('bankName','은행명 항목을 입력해 주세요.'),
+ ('bankAccount','계좌번호 항목을 입력해 주세요.'),
+ ('bankHolder','예금주명 항목을 입력해 주세요.')
 ) m(key,message) where p.role='retailer';
 select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"phone":"010-12","documentId":"signup-doc-r"}}','signup-r-bad-phone')$$,
   'P0001','연락처를 010-1234-5678 형식으로 입력해 주세요.','retailer malformed phone is rejected');
@@ -90,7 +94,10 @@ from signup_values p cross join (values
  ('contact','이름(실명) 항목을 입력해 주세요.'),
  ('pickupArea','도매 픽업 구역 항목을 입력해 주세요.'),
  ('deliveryArea','소매 배송 지역 항목을 입력해 주세요.'),
- ('deadline','요청 마감시간 항목을 입력해 주세요.')
+ ('deadline','요청 마감시간 항목을 입력해 주세요.'),
+ ('bankName','은행명 항목을 입력해 주세요.'),
+ ('bankAccount','계좌번호 항목을 입력해 주세요.'),
+ ('bankHolder','예금주명 항목을 입력해 주세요.')
 ) m(key,message) where p.role='uncle';
 select throws_ok($$select public.saip_command('saveProfile','{"complete":true,"values":{"phone":"+82 10 1234 5678"}}','signup-u-dup-phone')$$,
   'P0001','이미 가입을 완료한 다른 계정에서 사용 중인 연락처예요.','uncle cannot complete with another account''s normalized phone');
@@ -114,6 +121,27 @@ select throws_ok($$select public.saip_check_phone_available('010-12')$$,
   'P0001','연락처를 010-1234-5678 형식으로 입력해 주세요.','phone availability check rejects malformed numbers');
 select throws_ok($$select public.saip_command('saveProfile','{"values":{"fee":1000000001}}','signup-u-fee-too-large')$$,
   'P0001','건당 수수료는 0원 이상 1,000,000,000원 이하 정수로 입력해 주세요.','fees above the public limit are rejected');
+
+select throws_ok(format('select public.saip_command(%L,%L::jsonb,%L)',
+  'saveProfile',jsonb_build_object('values',jsonb_build_object('bankAccount',v.account))::text,'signup-bank-invalid-'||v.account),
+  'P0001','은행명·계좌번호·예금주명을 확인해 주세요.','잘못된 계좌번호를 거부한다: '||v.account)
+from (values ('1234567'),('123456789012345678901'),('1234abc5678')) v(account);
+select throws_ok($$select public.saip_command('saveProfile','{"values":{"bankAccount":12345678}}','signup-bank-numeric')$$,
+  'P0001','계좌 정보를 확인해 주세요.','계좌번호는 앞자리 0이 보존되는 문자열로 받는다');
+select lives_ok($$select public.saip_command('saveProfile','{"values":{"bankName":" 새은행 ","bankAccount":" 0012-3456-7890 ","bankHolder":" 새예금주 "}}','signup-bank-first')$$,
+  '은행명·계좌번호·예금주명을 저장한다');
+select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'bankAccount','0012-3456-7890',
+  '계좌 앞자리 0과 구분 기호를 보존하고 주변 공백을 제거한다');
+select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'bankHolder','새예금주',
+  '예금주명 주변 공백을 제거한다');
+select lives_ok($$select public.saip_command('saveProfile','{"values":{"bankAccount":"9988-7766-5544"}}','signup-bank-latest')$$,
+  '계좌번호를 변경한다');
+select lives_ok($$select public.saip_command('saveProfile','{"values":{"bankName":" 새은행 ","bankAccount":" 0012-3456-7890 ","bankHolder":" 새예금주 "}}','signup-bank-first')$$,
+  '이전 성공 요청은 같은 작업 번호로 재시도할 수 있다');
+select is(public.saip_snapshot()->'accounts'->'55555555-5555-4555-8555-555555555555'->>'bankAccount','9988-7766-5544',
+  '이전 성공 요청 재시도가 최신 계좌를 덮어쓰지 않는다');
+select throws_ok($$select public.saip_command('saveProfile','{"values":{"bankAccount":"1111-2222-3333"}}','signup-bank-latest')$$,
+  'P0001','같은 작업 번호로 다른 내용을 전송할 수 없어요.','같은 작업 번호로 다른 계좌 저장을 거부한다');
 
 select * from finish();
 rollback;

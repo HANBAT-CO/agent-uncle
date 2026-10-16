@@ -49,3 +49,4 @@ app.*.map.json
 
 # Claude Code personal overrides
 .claude/settings.local.json
+android/app/google-services.json

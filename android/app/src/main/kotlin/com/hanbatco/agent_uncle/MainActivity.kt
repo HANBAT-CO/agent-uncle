@@ -13,6 +13,7 @@ class MainActivity : FlutterFragmentActivity() {
     private var addressSearchPlugin: AddressSearchPlugin? = null
     private var legalDocumentsChannel: MethodChannel? = null
     private var appReleaseChannel: MethodChannel? = null
+    private var pushNotifications: PushNotifications? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -51,6 +52,8 @@ class MainActivity : FlutterFragmentActivity() {
                 }
             }
         }
+        pushNotifications?.dispose()
+        pushNotifications = PushNotifications(this, flutterEngine.dartExecutor.binaryMessenger)
         legalDocumentsChannel?.setMethodCallHandler(null)
         legalDocumentsChannel = MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
@@ -88,6 +91,8 @@ class MainActivity : FlutterFragmentActivity() {
     override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
         appReleaseChannel?.setMethodCallHandler(null)
         appReleaseChannel = null
+        pushNotifications?.dispose()
+        pushNotifications = null
         legalDocumentsChannel?.setMethodCallHandler(null)
         legalDocumentsChannel = null
         nativeMediaPicker?.dispose()
@@ -95,5 +100,27 @@ class MainActivity : FlutterFragmentActivity() {
         addressSearchPlugin?.dispose()
         addressSearchPlugin = null
         super.cleanUpFlutterEngine(flutterEngine)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pushNotifications?.capture(intent)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PushState.foreground = true
+        PushState.emit()
+    }
+
+    override fun onPause() {
+        PushState.foreground = false
+        super.onPause()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 8017) PushState.emit()
     }
 }

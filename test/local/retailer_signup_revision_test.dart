@@ -8,6 +8,7 @@ import 'package:agent_uncle/local/domain/models.dart';
 import 'package:agent_uncle/local/presentation/common.dart';
 import 'package:agent_uncle/local/presentation/entry.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart' show databaseFactoryMemory;
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
@@ -90,6 +91,9 @@ Future<void> goToRetailerMarketStep(WidgetTester tester) async {
   await enter(tester, '매장명', '평화상회');
   await enter(tester, '담당자명', '김소매');
   await enter(tester, '연락처', '01012345678');
+  await enter(tester, '은행명', '우리은행');
+  await enter(tester, '계좌번호', '123-456-789012');
+  await enter(tester, '예금주명', '테스트 담당자');
   await chip(tester, '온라인');
   await tapButton(tester, '다음');
   await enter(tester, '사업자명', '평화상회');
@@ -128,6 +132,38 @@ void main() {
 
     await tapButton(tester, '다음');
     await tapButton(tester, '다음');
+    const legalChannel = MethodChannel('agent_uncle/legal_documents');
+    final openedUrls = <String>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      legalChannel,
+      (call) async {
+        openedUrls.add((call.arguments as Map)['url'] as String);
+        return true;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        legalChannel,
+        null,
+      ),
+    );
+    for (final title in ['서비스 이용약관 전문 보기', '개인정보처리방침 전문 보기']) {
+      final link = find.widgetWithText(Item, title);
+      await tester.ensureVisible(link);
+      await tester.tap(link);
+      await settle(tester);
+    }
+    expect(openedUrls, [
+      'https://www.the-saena.ai/terms',
+      'https://www.the-saena.ai/privacy',
+    ]);
+    // 전문 열람만으로 필수 동의가 선택되지는 않는다.
+    for (final label in ['[필수] 서비스 이용 동의 확인', '[필수] 개인정보 처리 동의 확인']) {
+      final checkbox = tester.widget<TdsCheckbox>(
+        find.widgetWithText(TdsCheckbox, label),
+      );
+      expect(checkbox.checked, isFalse);
+    }
     expect(
       find.text('개발용 동의 화면이에요. 정식 약관·개인정보 처리방침은 서비스 운영 전에 확정돼요.'),
       findsNothing,

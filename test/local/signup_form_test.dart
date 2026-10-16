@@ -97,6 +97,9 @@ void main() {
     await enter(tester, '매장명', '한밭 매장');
     await enter(tester, '담당자명', '홍담당');
     await enter(tester, '연락처', '01012');
+    await enter(tester, '은행명', '우리은행');
+    await enter(tester, '계좌번호', '123-456-789012');
+    await enter(tester, '예금주명', '테스트 담당자');
     await channel(tester, '온라인');
     await channel(tester, '오프라인');
     expect(f.session.current!.s('salesChannel'), '온라인·오프라인 병행');
@@ -171,7 +174,11 @@ void main() {
     await tapButton(tester, '다음');
     await tapButton(tester, '다음');
     expect(
-      tester.widget<TdsTextFieldButton>(find.byKey(const ValueKey('address-selector'))).hasError,
+      tester
+          .widget<TdsTextFieldButton>(
+            find.byKey(const ValueKey('address-selector')),
+          )
+          .hasError,
       isTrue,
     );
     expect(tester.widget<TdsTextField>(input('상세주소')).hasError, isTrue);
@@ -195,6 +202,9 @@ void main() {
     );
     await enter(tester, '이름(실명)', '김한밭');
     await enter(tester, '연락처', '01098765432');
+    await enter(tester, '은행명', '우리은행');
+    await enter(tester, '계좌번호', '123-456-789012');
+    await enter(tester, '예금주명', '테스트 담당자');
     await tapButton(tester, '다음');
     expect(find.text('가입 · 2 / 5'), findsOneWidget);
     expect(find.byKey(const ValueKey('pickupArea-selector')), findsOneWidget);
@@ -236,7 +246,14 @@ void main() {
     await channel(tester, '야간 22–06');
     await settle(tester);
     expect(f.session.current!.data['markets'], ['동대문', '평화시장']);
-    expect(f.session.current!.data['activityDays'], ['월', '화', '수', '목', '금', '토']);
+    expect(f.session.current!.data['activityDays'], [
+      '월',
+      '화',
+      '수',
+      '목',
+      '금',
+      '토',
+    ]);
     expect(f.session.current!.s('activityStart'), '22:00');
     expect(f.session.current!.s('activityEnd'), '06:00');
     await tapButton(tester, '다음');
@@ -251,7 +268,13 @@ void main() {
     await tester.tap(editRegions);
     await settle(tester);
     expect(find.text('수정 완료'), findsOneWidget);
-    await selectRegion(tester, 'deliveryArea', '경기', city: '의정부시', replace: true);
+    await selectRegion(
+      tester,
+      'deliveryArea',
+      '경기',
+      city: '의정부시',
+      replace: true,
+    );
     await tapButton(tester, '수정 완료');
     expect(find.text('가입 정보를 확인해 주세요'), findsOneWidget);
     expect(find.text('경기 의정부시'), findsOneWidget);
@@ -287,6 +310,8 @@ void main() {
     await tapButton(tester, '가입 완료');
     expect(f.session.current!.complete, isTrue);
     expect(f.session.current!.name, '김한밭');
+    expect(find.text('받을 대금과 지급 현황을\n놓치지 않아요'), findsOneWidget);
+    await tapButton(tester, '건너뛰기');
     expect(find.text('김한밭 삼촌'), findsOneWidget);
     expect(f.session.current!.s('documentId'), isEmpty);
     expect(f.session.current!.s('businessNumber'), isEmpty);
@@ -303,6 +328,9 @@ void main() {
     await enter(tester, '매장명', '이전 매장');
     await enter(tester, '담당자명', '김삼촌');
     await enter(tester, '연락처', '01012345678');
+    await enter(tester, '은행명', '우리은행');
+    await enter(tester, '계좌번호', '123-456-789012');
+    await enter(tester, '예금주명', '테스트 담당자');
     await channel(tester, '온라인');
     await tapButton(tester, '다음');
     await enter(tester, '사업자등록번호', '12345');
@@ -324,7 +352,9 @@ void main() {
     await tapButton(tester, '다음');
     final allConsent = find.byKey(const ValueKey('uncle-consent-all'));
     await tester.ensureVisible(allConsent);
-    await tester.tap(find.descendant(of: allConsent, matching: find.byType(TdsCheckbox)));
+    await tester.tap(
+      find.descendant(of: allConsent, matching: find.byType(TdsCheckbox)),
+    );
     await settle(tester);
     expect(f.session.current!.b('terms'), isTrue);
     expect(f.session.current!.b('privacy'), isTrue);
@@ -346,6 +376,9 @@ void main() {
       await f.open(tester, AppRole.uncle, scale: 180);
       await enter(tester, '이름(실명)', '김한밭');
       await enter(tester, '연락처', '01012345678');
+      await enter(tester, '은행명', '우리은행');
+      await enter(tester, '계좌번호', '123-456-789012');
+      await enter(tester, '예금주명', '테스트 담당자');
       await tapButton(tester, '다음');
       await selectRegion(tester, 'pickupArea', '서울', district: '중구');
       await selectRegion(tester, 'deliveryArea', '서울');

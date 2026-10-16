@@ -297,6 +297,9 @@ class _ProfileFormState extends State<ProfileForm> {
       'nickname',
       'contact',
       'phone',
+      'bankName',
+      'bankAccount',
+      'bankHolder',
       'fee',
       'businessName',
       'businessNumber',
@@ -707,6 +710,7 @@ class _ProfileFormState extends State<ProfileForm> {
     values(),
     role: AppScope.read(context).session.current!.role!,
     requireSalesChannel: widget.signup && retailer,
+    requireBankAccount: widget.signup,
   );
 
   List<String> keysForStep(int n) => switch (n) {
@@ -714,6 +718,9 @@ class _ProfileFormState extends State<ProfileForm> {
       if (retailer) 'name',
       'contact',
       'phone',
+      'bankName',
+      'bankAccount',
+      'bankHolder',
       'nickname',
       if (retailer) 'salesChannel',
     ],
@@ -748,6 +755,9 @@ class _ProfileFormState extends State<ProfileForm> {
       } else {
         FocusManager.instance.primaryFocus?.unfocus();
       }
+      // 입력창의 기본 포커스 스크롤이 끝난 뒤 오류 필드 전체를 배치한다.
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || !target.mounted) return;
       await Scrollable.ensureVisible(
         target,
         alignment: .12,
@@ -985,6 +995,10 @@ class _ProfileFormState extends State<ProfileForm> {
         if (fields['intro']!.text.trim().isNotEmpty)
           Item('소개', subtitle: fields['intro']!.text),
       ]),
+      reviewSection('정산 계좌', 0, [
+        Item(fields['bankName']!.text, subtitle: fields['bankAccount']!.text),
+        QuantityRow('예금주명', fields['bankHolder']!.text),
+      ]),
       reviewSection('사입 시장·활동 일정', 3, [
         Item(
           '사입 시장',
@@ -1134,6 +1148,13 @@ class _ProfileFormState extends State<ProfileForm> {
                 if (retailer) field('name', '매장명'),
                 field('contact', retailer ? '담당자명' : '이름(실명)'),
                 field('phone', '연락처', placeholder: '010-1234-5678'),
+                const Section('정산 계좌'),
+                const Inset(
+                  child: Info('정산·환불에 사용할 본인 계좌를 입력해 주세요. 거래처에는 공개되지 않아요.'),
+                ),
+                field('bankName', '은행명', placeholder: '예: 우리은행'),
+                field('bankAccount', '계좌번호', numeric: true),
+                field('bankHolder', '예금주명'),
                 field(
                   'nickname',
                   '검색용 별명 (선택)',
@@ -1274,6 +1295,12 @@ class _ProfileFormState extends State<ProfileForm> {
                 if (fields['nickname']!.text.trim().isNotEmpty)
                   QuantityRow('검색용 별명', fields['nickname']!.text.trim()),
                 QuantityRow('역할', a.role!.label),
+                Item(
+                  '정산 계좌',
+                  subtitle:
+                      '${fields['bankName']!.text} ${fields['bankAccount']!.text}',
+                ),
+                QuantityRow('예금주명', fields['bankHolder']!.text),
                 if (retailer) ...[
                   QuantityRow('판매 채널', salesChannel),
                   Item('사업자명', subtitle: fields['businessName']!.text),

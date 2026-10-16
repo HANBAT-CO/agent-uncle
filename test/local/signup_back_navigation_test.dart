@@ -68,6 +68,9 @@ void main() {
           'name': '테스트 매장',
           'contact': '김담당',
           'phone': '01012345678',
+          'bankName': '우리은행',
+          'bankAccount': '123-456-789012',
+          'bankHolder': '테스트 담당자',
           'salesChannel': '온라인',
         });
       }

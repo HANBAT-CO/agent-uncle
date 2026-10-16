@@ -64,6 +64,9 @@ void main() {
         '테스트 담당자',
       );
       await enter(tester, '연락처', '01012345678');
+      await enter(tester, '은행명', '우리은행');
+      await enter(tester, '계좌번호', '123-456-789012');
+      await enter(tester, '예금주명', '테스트 담당자');
       if (role == AppRole.retailer) await channel(tester, '온라인');
 
       const serverMessage = '서버 준비가 아직 완료되지 않았어요. 잠시 후 다시 시도해 주세요.';

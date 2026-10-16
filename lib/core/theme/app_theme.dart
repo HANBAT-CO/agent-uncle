@@ -174,6 +174,85 @@ class ProfileInputTheme extends StatelessWidget {
   }
 }
 
+/// 홈 상태 칩에 TDS 배지의 상태 색상과 큰 제목 서체를 적용한다.
+class OrderStatusChipThemeData extends AppThemeData {
+  const OrderStatusChipThemeData({
+    required this.badgeColor,
+    super.colorScheme,
+    super.primary,
+    super.platform,
+  });
+
+  final TdsBadgeColor badgeColor;
+
+  @override
+  Color color(String name) {
+    final tokens = TdsThemeData(colorScheme: colorScheme);
+    final badge =
+        '${badgeColor.name[0].toUpperCase()}${badgeColor.name.substring(1)}';
+    return switch (name) {
+      'greyOpacity50' => tokens.color(
+        badgeColor == TdsBadgeColor.elephant
+            ? 'grey500'
+            : '${badgeColor.name}500',
+      ),
+      'greyOpacity100' => tokens.color('t${badge}BadgeBackground'),
+      'greyOpacity700' => tokens.color('t${badge}BadgeColor'),
+      _ => super.color(name),
+    };
+  }
+
+  @override
+  TextStyle textStyle({
+    TdsTypography typography = TdsTypography.st10,
+    TdsFontWeight fontWeight = TdsFontWeight.regular,
+    Color? color,
+  }) => super.textStyle(
+    typography: typography == TdsTypography.t6 ? TdsTypography.t3 : typography,
+    fontWeight: typography == TdsTypography.t6
+        ? TdsFontWeight.bold
+        : fontWeight,
+    color: color,
+  );
+
+  @override
+  OrderStatusChipThemeData copyWith({
+    TdsColorPreference? colorScheme,
+    Color? primary,
+    TdsPlatform? platform,
+  }) => OrderStatusChipThemeData(
+    badgeColor: badgeColor,
+    colorScheme: colorScheme ?? this.colorScheme,
+    primary: primary ?? this.primary,
+    platform: platform ?? this.platform,
+  );
+}
+
+class OrderStatusChipTheme extends StatelessWidget {
+  const OrderStatusChipTheme({
+    required this.badgeColor,
+    required this.child,
+    super.key,
+  });
+
+  final TdsBadgeColor badgeColor;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = TdsTheme.of(context);
+    return TdsTheme(
+      data: OrderStatusChipThemeData(
+        badgeColor: badgeColor,
+        colorScheme: theme.colorScheme,
+        primary: theme.primary,
+        platform: theme.platform,
+      ),
+      child: child,
+    );
+  }
+}
+
 /// The supplied symbol is kept in its original black and original aspect ratio.
 class AppLogo extends StatelessWidget {
   const AppLogo({this.width = 112, super.key});

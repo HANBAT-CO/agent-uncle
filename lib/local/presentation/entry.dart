@@ -16,6 +16,7 @@ import 'home.dart';
 import 'profile_avatar.dart';
 import 'profile_time_field.dart';
 import 'region_selection.dart';
+import 'role_onboarding.dart';
 import 'welcome.dart';
 
 export 'welcome.dart';
@@ -81,6 +82,12 @@ class AccountLanding extends StatelessWidget {
     if (session.current!.role == null) return const RolePage();
     if (!session.current!.complete) {
       return ProfileForm(key: ValueKey(session.current!.id), signup: true);
+    }
+    if (session.roleOnboardingPending) {
+      return RoleOnboardingPage(
+        key: ValueKey('role-onboarding:${session.current!.id}'),
+        role: session.current!.role!,
+      );
     }
     return HomeShell(key: ValueKey(session.current!.id));
   }
@@ -865,6 +872,8 @@ class _ProfileFormState extends State<ProfileForm> {
         goToStep(target);
         return;
       }
+      if (widget.signup) await app.session.prepareRoleOnboarding();
+      if (!mounted) return;
       await app.session.saveProfile(values(), complete: true);
       if (!widget.signup && mounted) Navigator.pop(context);
     } catch (error) {

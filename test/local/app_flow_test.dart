@@ -170,6 +170,8 @@ void main() {
     }
     await tapButton(tester, '가입 완료');
     expect(session.current!.complete, true);
+    expect(find.text('원하는 상품을\n정확하게 전달해요'), findsOneWidget);
+    await tapButton(tester, '건너뛰기');
     for (final label in AppRole.retailer.tabs) {
       expect(find.widgetWithText(TdsTextButton, label), findsOneWidget);
     }

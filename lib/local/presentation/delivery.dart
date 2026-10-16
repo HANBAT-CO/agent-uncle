@@ -55,9 +55,8 @@ class _DeliveryListState extends State<DeliveryList> {
         ),
         if (filter == '전달할 물품') ...[
           if (groups.isEmpty)
-            EmptyState(
+            EmptyState.titleOnly(
               '지금 전달할 물품이 없어요',
-              '업무에서 실제 확보한 수량을 기록해 주세요.',
               action: widget.onWork == null ? null : '오늘 업무로',
               onAction: widget.onWork,
             ),
@@ -96,8 +95,7 @@ class _DeliveryListState extends State<DeliveryList> {
               ],
             ),
         ] else ...[
-          if (rows.isEmpty)
-            const EmptyState('전달 내역이 없어요', '실제 전달을 기록하면 회차별로 확인할 수 있어요.'),
+          if (rows.isEmpty) const EmptyState.titleOnly('전달 내역이 없어요'),
           for (final d in rows) DeliveryCard(d),
         ],
       ],

@@ -149,7 +149,6 @@ class _ConnectionsListState extends State<ConnectionsList> {
               Item(
                 '거래처 검색',
                 key: const ValueKey('uncle-partner-directory'),
-                subtitle: '새로운 소매 거래처를 찾아보세요',
                 leading: const TdsAssetIcon(name: 'icn-searchfield', size: 24),
                 onTap: () => openPage(context, const AddConnectionPage()),
               ),
@@ -170,22 +169,16 @@ class _ConnectionsListState extends State<ConnectionsList> {
         ),
         const TdsSpacing(12),
         if (connections.isEmpty && search.isNotEmpty)
-          EmptyState(
-            '검색 결과가 없어요',
-            retailer ? '사입삼촌 이름을 다시 확인해 주세요.' : '거래처 이름을 다시 확인해 주세요.',
-          )
+          const EmptyState.titleOnly('검색 결과가 없어요')
         else if (connections.isEmpty)
           showRetailerAddConnectionCta
               ? _retailerConnectionEmptyState(context)
-              : EmptyState(
+              : EmptyState.titleOnly(
                   filter == '연결 대기'
                       ? '기다리는 연결 요청이 없어요'
                       : retailer
                       ? '아직 함께하는 사입삼촌이 없어요'
                       : '연결된 거래처가 없어요',
-                  filter == '연결 대기'
-                      ? '보내거나 받은 요청이 생기면 여기서 확인할 수 있어요.'
-                      : '거래처를 검색해 연결 요청을 보내 보세요.',
                   icon: 'store',
                 ),
         for (final c in connections) ConnectionCard(c),
@@ -334,11 +327,6 @@ class ConnectionCard extends StatelessWidget {
           ),
         ],
         if (record.s('status') == 'pending') ...[
-          Info(
-            own
-                ? '상대방이 수락하면 사입 요청과 대화를 시작할 수 있어요.'
-                : '연결을 수락하면 사입 요청과 대화를 주고받을 수 있어요.',
-          ),
           if (!own)
             ActionButton(
               '연결 수락',
@@ -505,7 +493,6 @@ class PartnerPage extends StatelessWidget {
           ],
         ),
         Section('요청 이력 ${history.length}건'),
-        if (history.isEmpty) const Info('함께 진행한 사입 요청이 여기에 쌓여요.'),
         for (final r in history)
           RequestCard(
             RequestRecord(r.id, r.data),
@@ -562,21 +549,12 @@ class _ChatListState extends State<ChatList> {
           onChanged: (v) => setState(() => query = v),
         ),
         if (partners.isEmpty && search.isNotEmpty)
-          EmptyState(
-            '검색 결과가 없어요',
-            retailer ? '사입삼촌 이름을 다시 확인해 주세요.' : '거래처 이름을 다시 확인해 주세요.',
-          )
+          const EmptyState.titleOnly('검색 결과가 없어요')
         else if (partners.isEmpty)
-          retailer
-              ? const TdsResult(
-                  figure: ExcludeSemantics(child: FigmaIcon('chat', size: 60)),
-                  title: Text('대화할 사입삼촌이 없어요'),
-                )
-              : const EmptyState(
-                  '대화할 거래처가 없어요',
-                  '거래처 연결을 수락하면 1:1 채팅을 시작할 수 있어요.',
-                  icon: 'chat',
-                ),
+          EmptyState.titleOnly(
+            retailer ? '대화할 사입삼촌이 없어요' : '대화할 거래처가 없어요',
+            icon: 'chat',
+          ),
         for (final a in partners)
           Builder(
             builder: (context) {
@@ -992,11 +970,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
         children: [
           if (rows.isEmpty)
-            const EmptyState(
-              '아직 메시지가 없어요',
-              '요청에 관한 이야기를 나눠 보세요.',
-              icon: 'chat',
-            ),
+            const EmptyState.titleOnly('아직 메시지가 없어요', icon: 'chat'),
           for (final (index, m) in rows.indexed) ...[
             if (index == 0 ||
                 displayTime(

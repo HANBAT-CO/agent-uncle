@@ -337,13 +337,7 @@ class _AddConnectionPageState extends State<AddConnectionPage> {
     Section(retailer ? '함께할 사입삼촌' : '함께할 소매업자'),
     if (_loading && _results.isEmpty) const Info('거래처를 찾고 있어요…'),
     if (!_loading && _searchError == null && _results.isEmpty)
-      EmptyState(
-        '검색 결과가 없어요',
-        retailer
-            ? '닉네임·코드를 확인하거나 지역과 수수료 조건을 바꿔보세요.'
-            : '닉네임이나 #0000 코드를 다시 확인해 주세요.',
-        icon: 'store',
-      ),
+      const EmptyState.titleOnly('검색 결과가 없어요', icon: 'store'),
     for (final account in _results) _partnerCard(account),
     if (_searchError != null) ...[
       Info(_searchError!, error: true),
@@ -419,17 +413,11 @@ class _AddConnectionPageState extends State<AddConnectionPage> {
     return PageFrame(
       title: '상대방 연결',
       children: [
-        const PageHeading(
-          '함께할 거래처를 찾아요',
-          description: '상대방이 거래 요청을 수락하면 사입과 채팅을 시작할 수 있어요.',
-        ),
+        const PageHeading('함께할 거래처를 찾아요'),
         if (me.s('publicCode').isNotEmpty)
           FigmaSurface(
             children: [
-              Item(
-                '내 검색 코드 ${me.s('publicCode')}',
-                subtitle: '이 코드로 상대방이 나를 찾을 수 있어요.',
-              ),
+              Item('내 검색 코드 ${me.s('publicCode')}'),
               ActionButton(
                 '검색 코드 복사',
                 weak: true,

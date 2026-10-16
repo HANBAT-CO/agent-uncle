@@ -131,7 +131,7 @@ void main() {
 
     expect(find.text('검색 결과가 없어요'), findsOneWidget);
     expect(find.text('거래처 연결하기'), findsNothing);
-    expect(find.text('사입삼촌 이름을 다시 확인해 주세요.'), findsOneWidget);
+    expect(find.text('사입삼촌 이름을 다시 확인해 주세요.'), findsNothing);
 
     await tester.pumpWidget(const SizedBox());
     await drainClose(tester, connected.close());

@@ -65,7 +65,7 @@ void main() {
             '홈',
             '업무',
             '대화',
-            '거래처',
+            '연결',
             '내 정보',
           ]);
         }
@@ -75,10 +75,9 @@ void main() {
           await tester.ensureVisible(waiting);
           await tester.tap(waiting);
           await settle(tester);
-          expect(find.byType(TdsLiquidTabBar), findsNothing);
+          expect(find.byType(TdsLiquidTabBar), findsOneWidget);
           expect(find.text('사입 내역'), findsOneWidget);
-          await tester.tap(find.byType(TdsTopNavigationBackButton));
-          await settle(tester);
+          expect(find.byType(TdsTopNavigationBackButton), findsNothing);
           expect(
             tester
                 .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
@@ -90,13 +89,13 @@ void main() {
           await settle(tester);
           expect(find.byType(RetailerPurchaseTab), findsOneWidget);
         } else {
-          await tester.ensureVisible(find.text('업무 내역 전체 보기'));
-          await tester.tap(find.text('업무 내역 전체 보기'));
+          final waiting = find.byKey(const ValueKey('uncle-status-incoming'));
+          await tester.ensureVisible(waiting);
+          await tester.tap(waiting);
           await settle(tester);
-          expect(find.byType(TdsLiquidTabBar), findsNothing);
-          expect(find.byType(UncleOrdersPage), findsOneWidget);
-          await tester.tap(find.byType(TdsTopNavigationBackButton));
-          await settle(tester);
+          expect(find.byType(TdsLiquidTabBar), findsOneWidget);
+          expect(find.byType(UncleOrdersSection), findsOneWidget);
+          expect(find.byType(TdsTopNavigationBackButton), findsNothing);
           expect(
             tester
                 .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
@@ -111,9 +110,15 @@ void main() {
           expect(find.text('업무 내역 전체 보기'), findsNothing);
           await tester.tap(find.text('사입 업무 시작하기'));
           await settle(tester);
-          expect(find.byType(UncleOrdersPage), findsOneWidget);
-          await tester.tap(find.byType(TdsTopNavigationBackButton));
-          await settle(tester);
+          expect(find.byType(UncleOrdersSection), findsOneWidget);
+          expect(find.text('사입 내역').hitTestable(), findsOneWidget);
+          expect(find.byType(TdsTopNavigationBackButton), findsNothing);
+          expect(
+            tester
+                .widget<TdsLiquidTabBar>(find.byType(TdsLiquidTabBar))
+                .selectedIndex,
+            homeIndex,
+          );
         }
         await tester.tap(
           find.widgetWithText(TdsTextButton, role.tabLabel(AppTab.chat)),

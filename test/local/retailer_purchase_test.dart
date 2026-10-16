@@ -45,7 +45,7 @@ void main() {
     expect(find.widgetWithText(TdsButton, '삼촌한테 사입하기'), findsOneWidget);
     expect(find.byType(TdsButton), findsOneWidget);
     expect(find.text('새로 작성'), findsNothing);
-    expect(find.text('임시저장·다시 요청'), findsNothing);
+    expect(find.textContaining('임시저장'), findsNothing);
     await tapButton(tester, '삼촌한테 사입하기');
     expect(find.byType(RequestEditor), findsOneWidget);
     expect(tester.takeException(), isNull);
@@ -256,8 +256,8 @@ void main() {
     expect(request.n('quantity'), 1);
     expect(request.s('product'), isEmpty);
     expect(request.data['wholesalers'], [
-      {'wholesaler': '도매상', 'location': '상가 3층'},
-      {'wholesaler': '두 번째 도매', 'location': 'B동 1층'},
+      {'wholesaler': '도매상', 'location': '상가 3층', 'paymentMode': 'review'},
+      {'wholesaler': '두 번째 도매', 'location': 'B동 1층', 'paymentMode': 'review'},
     ]);
     expect(request.s('address'), '서울시 중구');
     expect(request.s('addressDetail'), '101호');

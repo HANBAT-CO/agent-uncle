@@ -13,7 +13,7 @@ import '../support/request_workflow.dart';
 import 'workspace_test.dart' show Fixture;
 
 void main() {
-  testWidgets('삼촌 홈 수치와 보기가 같은 단계의 업무 내역으로 연결된다', (tester) async {
+  testWidgets('삼촌 홈 상태를 누르면 같은 화면의 해당 내역으로 스크롤한다', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(375, 812);
     addTearDown(tester.view.reset);
@@ -83,16 +83,22 @@ void main() {
     await settle(tester);
     expect(tabs, [AppTab.business.index]);
     tabs.clear();
+    expect(find.text('보기'), findsNothing);
+    expect(find.byType(UncleOrdersSection), findsOneWidget);
 
     final cases = <UncleOrderFilter, (String, Set<String>)>{
       UncleOrderFilter.awaitingReply: ('1건', {'delivery'}),
       UncleOrderFilter.incoming: ('1건', {'pending'}),
-      UncleOrderFilter.inProgress: ('3건', {'sourcing', 'delivery', 'recheck'}),
+      UncleOrderFilter.inProgress: (
+        '4건',
+        {'sourcing', 'delivery', 'receipt', 'recheck'},
+      ),
       UncleOrderFilter.awaitingDelivery: (
         '4장',
         {'delivery', 'receipt', 'recheck'},
       ),
-      UncleOrderFilter.awaitingReceipt: ('1건', {'receipt'}),
+      UncleOrderFilter.received: ('1건', {'completed'}),
+      UncleOrderFilter.completed: ('0건', {}),
       UncleOrderFilter.recheck: ('1건', {'recheck'}),
     };
     for (final entry in cases.entries) {
@@ -101,19 +107,15 @@ void main() {
         find.descendant(of: status, matching: find.text(entry.value.$1)),
         findsOneWidget,
       );
-      final view = find.descendant(
-        of: status,
-        matching: find.widgetWithText(TdsTextButton, '보기'),
-      );
-      await tester.ensureVisible(view);
-      await tester.tap(view);
+      await tester.ensureVisible(status);
+      await tester.tap(status);
       await settle(tester);
-      expect(find.byType(UncleOrdersPage), findsOneWidget);
+      expect(find.byType(PageFrame), findsOneWidget);
+      expect(find.byType(TdsTopNavigationBackButton), findsNothing);
+      expect(find.text('사입 내역').hitTestable(), findsOneWidget);
       expect(
-        tester
-            .widget<UncleOrdersPage>(find.byType(UncleOrdersPage))
-            .initialFilter,
-        entry.key,
+        Scrollable.of(tester.element(find.text('사입 내역'))).position.pixels,
+        greaterThan(0),
       );
       for (final order in ids.entries) {
         expect(
@@ -123,12 +125,10 @@ void main() {
         );
       }
       expect(tabs, isEmpty);
-      await tester.tap(find.byType(TdsTopNavigationBackButton));
-      await settle(tester);
     }
 
-    await tester.ensureVisible(find.text('업무 내역 전체 보기'));
-    await tester.tap(find.text('업무 내역 전체 보기'));
+    await tester.ensureVisible(find.widgetWithText(TdsChipItem, '전체 내역'));
+    await tester.tap(find.widgetWithText(TdsChipItem, '전체 내역'));
     await settle(tester);
     expect(find.text('전체 내역 6건'), findsOneWidget);
     for (final id in ids.values) {

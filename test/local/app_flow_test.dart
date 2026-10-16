@@ -216,8 +216,8 @@ void main() {
       expect(find.byType(RequestEditor), findsNothing);
       await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
       await settle(tester);
-      await tester.ensureVisible(find.text('임시저장·다시 요청'));
-      await tester.tap(find.text('임시저장·다시 요청'));
+      await tester.ensureVisible(find.text('임시저장 1건'));
+      await tester.tap(find.text('임시저장 1건'));
       await settle(tester);
       await tester.tap(find.text('자동 저장 셔츠'));
       await settle(tester);
@@ -310,71 +310,68 @@ void main() {
     await tester.pumpWidget(const SizedBox());
     await drainClose(tester, f.close());
   });
-  testWidgets(
-    'separate order history retains scroll when returning from request detail',
-    (tester) async {
-      final f = Fixture();
-      await tester.runAsync(() async {
-        await f.start();
-        await f.session.finishOnboarding();
-        for (var i = 0; i < 12; i++) {
-          await f.request();
-        }
-      });
-      final app = AppServices(
-        session: f.session,
-        workspace: f.workspace,
-        attachments: f.attachments,
-      );
-      await tester.pumpWidget(AgentUncleApp(services: app));
-      await settle(tester);
-      final positions = [
-        for (final label in AppRole.retailer.tabs)
-          tester.getCenter(find.widgetWithText(TdsTextButton, label)).dx,
-      ];
-      for (var i = 1; i < positions.length; i++) {
-        expect(positions[i], greaterThan(positions[i - 1]));
+  testWidgets('홈 사입 내역은 요청 상세에서 돌아왔을 때 스크롤 위치를 유지한다', (tester) async {
+    final f = Fixture();
+    await tester.runAsync(() async {
+      await f.start();
+      await f.session.finishOnboarding();
+      for (var i = 0; i < 12; i++) {
+        await f.request();
       }
-      expect(find.byType(TdsLiquidTabBar), findsOneWidget);
-      final scroller = find.byWidgetPredicate(
-        (widget) =>
-            widget is SingleChildScrollView &&
-            widget.scrollDirection == Axis.vertical,
-      );
-      await tester.drag(scroller.first, const Offset(0, -600));
-      await settle(tester);
-      final scrollable = find.descendant(
-        of: scroller.first,
-        matching: find.byType(Scrollable),
-      );
-      final offset = tester
-          .state<ScrollableState>(scrollable.first)
-          .position
-          .pixels;
-      expect(offset, greaterThan(0));
-      final card = find.text('셔츠 · 흰색 M').hitTestable().first;
-      await tester.tap(card);
-      await settle(tester);
-      final requestId = tester
-          .widget<RequestDetailPage>(find.byType(RequestDetailPage))
-          .id;
-      expect(f.workspace.request(requestId)?.s('product'), '셔츠');
-      await tester.tap(find.byType(TdsTopNavigationBackButton));
-      await settle(tester);
-      expect(
-        tester.state<ScrollableState>(scrollable.first).position.pixels,
-        offset,
-      );
-      await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
-      await settle(tester);
-      await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
-      await settle(tester);
-      expect(find.text('내 사입 현황'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-      await tester.pumpWidget(const SizedBox());
-      await drainClose(tester, f.close());
-    },
-  );
+    });
+    final app = AppServices(
+      session: f.session,
+      workspace: f.workspace,
+      attachments: f.attachments,
+    );
+    await tester.pumpWidget(AgentUncleApp(services: app));
+    await settle(tester);
+    final positions = [
+      for (final label in AppRole.retailer.tabs)
+        tester.getCenter(find.widgetWithText(TdsTextButton, label)).dx,
+    ];
+    for (var i = 1; i < positions.length; i++) {
+      expect(positions[i], greaterThan(positions[i - 1]));
+    }
+    expect(find.byType(TdsLiquidTabBar), findsOneWidget);
+    final scroller = find.byWidgetPredicate(
+      (widget) =>
+          widget is SingleChildScrollView &&
+          widget.scrollDirection == Axis.vertical,
+    );
+    await tester.drag(scroller.first, const Offset(0, -600));
+    await settle(tester);
+    final scrollable = find.descendant(
+      of: scroller.first,
+      matching: find.byType(Scrollable),
+    );
+    final offset = tester
+        .state<ScrollableState>(scrollable.first)
+        .position
+        .pixels;
+    expect(offset, greaterThan(0));
+    final card = find.text('셔츠 · 흰색 M').hitTestable().first;
+    await tester.tap(card);
+    await settle(tester);
+    final requestId = tester
+        .widget<RequestDetailPage>(find.byType(RequestDetailPage))
+        .id;
+    expect(f.workspace.request(requestId)?.s('product'), '셔츠');
+    await tester.tap(find.byType(TdsTopNavigationBackButton));
+    await settle(tester);
+    expect(
+      tester.state<ScrollableState>(scrollable.first).position.pixels,
+      offset,
+    );
+    await tester.tap(find.widgetWithText(TdsTextButton, '채팅'));
+    await settle(tester);
+    await tester.tap(find.widgetWithText(TdsTextButton, '홈'));
+    await settle(tester);
+    expect(find.text('내 사입 현황'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
+    await drainClose(tester, f.close());
+  });
 
   testWidgets(
     'login restores a notification and its delivery card follows the latest receipt',

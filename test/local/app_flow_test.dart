@@ -49,7 +49,14 @@ Future<void> settle(WidgetTester tester) async {
 }
 
 Future<void> tapButton(WidgetTester tester, String label) async {
-  final button = find.widgetWithText(TdsButton, label).last;
+  final button = find
+      .ancestor(
+        of: find.text(label),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is TdsButton || widget is TdsTextButton,
+        ),
+      )
+      .last;
   await tester.ensureVisible(button);
   await tester.tap(button);
   await settle(tester);
@@ -65,9 +72,18 @@ Future<void> enter(WidgetTester tester, String label, String text) async {
   await settle(tester);
 }
 
-Future<void> drainClose(WidgetTester tester, Future<void> closing) async {
+Future<void> drainWork(WidgetTester tester, Future<void> work) async {
   var done = false;
-  closing.whenComplete(() => done = true);
+  Object? failure;
+  StackTrace? failureStack;
+  work.then(
+    (_) => done = true,
+    onError: (Object error, StackTrace stack) {
+      failure = error;
+      failureStack = stack;
+      done = true;
+    },
+  );
   for (var i = 0; i < 100 && !done; i++) {
     await tester.pump(const Duration(milliseconds: 20));
     await tester.runAsync(
@@ -77,10 +93,13 @@ Future<void> drainClose(WidgetTester tester, Future<void> closing) async {
   expect(
     done,
     isTrue,
-    reason: 'Database close completes after queued frame work',
+    reason: 'Queued asynchronous work completes while frames advance',
   );
-  await closing;
+  if (failure != null) Error.throwWithStackTrace(failure!, failureStack!);
 }
+
+Future<void> drainClose(WidgetTester tester, Future<void> closing) =>
+    drainWork(tester, closing);
 
 void main() {
   testWidgets('empty install onboarding, local signup, role tabs and relogin', (

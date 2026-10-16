@@ -419,6 +419,9 @@ class LocalSessionRepository extends SessionRepository {
   }
 
   static const profileFields = [
+    'bankName',
+    'bankAccount',
+    'bankHolder',
     'name',
     'contact',
     'phone',
@@ -502,6 +505,7 @@ class LocalSessionRepository extends SessionRepository {
         final errors = profileFieldErrors(
           next,
           role: role,
+          requireBankAccount: !flagOf(old, 'complete'),
           requireSalesChannel:
               role == AppRole.retailer && !flagOf(old, 'complete'),
         );

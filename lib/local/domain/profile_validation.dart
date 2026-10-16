@@ -65,6 +65,7 @@ Map<String, String> profileFieldErrors(
   Data values, {
   required AppRole role,
   bool requireSalesChannel = false,
+  bool requireBankAccount = false,
 }) {
   final errors = <String, String>{};
   String text(String key) => textOf(values, key).trim();
@@ -92,6 +93,30 @@ Map<String, String> profileFieldErrors(
   }
   final nicknameError = validateNickname(text('nickname'));
   if (nicknameError != null) errors['nickname'] = nicknameError;
+  if (requireBankAccount ||
+      [
+        'bankName',
+        'bankAccount',
+        'bankHolder',
+      ].any((key) => text(key).isNotEmpty)) {
+    requireText('bankName', '은행명');
+    requireText('bankAccount', '계좌번호');
+    requireText('bankHolder', '예금주명');
+    final account = text('bankAccount');
+    if (account.isNotEmpty &&
+        (!RegExp(r'^[0-9 -]+$').hasMatch(account) ||
+            !RegExp(
+              r'^\d{8,20}$',
+            ).hasMatch(account.replaceAll(RegExp(r'[ -]'), '')))) {
+      errors['bankAccount'] = '계좌번호는 8~20자리 숫자로 입력해 주세요.';
+    }
+    if (text('bankName').length > 50) {
+      errors['bankName'] = '은행명은 50자 이하로 입력해 주세요.';
+    }
+    if (text('bankHolder').length > 100) {
+      errors['bankHolder'] = '예금주명은 100자 이하로 입력해 주세요.';
+    }
+  }
   final feeError = validateFee(values['fee']);
   if (feeError != null) errors['fee'] = feeError;
   final businessNumber = text('businessNumber');

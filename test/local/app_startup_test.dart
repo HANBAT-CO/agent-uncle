@@ -221,7 +221,7 @@ void main() {
     expect(find.byType(AppSplashScreen), findsNothing);
     expect(find.text('계정 정보를 확인하지 못했어요.'), findsOneWidget);
     expect(find.text('다시 시도'), findsOneWidget);
-    expect(find.text('로그아웃'), findsOneWidget);
+    expect(find.text('로그아웃'), findsNothing);
     expect(tester.takeException(), isNull);
     await close(tester);
   });

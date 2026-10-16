@@ -69,7 +69,6 @@ class AccountLanding extends StatelessWidget {
         children: [
           Info(session.syncError ?? '계정 정보를 확인하지 못했어요.', error: true),
           ActionButton('다시 시도', onPressed: session.retrySync),
-          ActionButton('로그아웃', weak: true, onPressed: session.signOut),
         ],
       );
     }

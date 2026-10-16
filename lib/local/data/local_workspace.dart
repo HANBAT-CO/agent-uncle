@@ -734,7 +734,12 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     }
     if (isWholesalerOnlyRequest(input)) {
       // 상품 수량을 입력받지 않는 주문은 기존 처리 흐름에서 요청 한 건으로 센다.
-      fields.addAll({'product': '', 'option': '', 'photos': <String>[], 'quantity': 1});
+      fields.addAll({
+        'product': '',
+        'option': '',
+        'photos': <String>[],
+        'quantity': 1,
+      });
     }
     return fields;
   }

@@ -153,24 +153,28 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     int offset = 0,
   }) async {
     try {
-      final rows = await store.client.rpc(
-        'saip_search_partners',
-        params: {
-          'query': query,
-          'region': region,
-          'min_fee': minFee,
-          'max_fee': maxFee,
-          'limit_count': limit,
-          'offset_count': offset,
-        },
-      ) as List;
-      return rows.map((row) {
-        final entry = Map<String, Object?>.from(row as Map);
-        return Account(
-          entry['id'] as String,
-          Map<String, Object?>.from(entry['data'] as Map? ?? const {}),
-        );
-      }).toList(growable: false);
+      final rows =
+          await store.client.rpc(
+                'saip_search_partners',
+                params: {
+                  'query': query,
+                  'region': region,
+                  'min_fee': minFee,
+                  'max_fee': maxFee,
+                  'limit_count': limit,
+                  'offset_count': offset,
+                },
+              )
+              as List;
+      return rows
+          .map((row) {
+            final entry = Map<String, Object?>.from(row as Map);
+            return Account(
+              entry['id'] as String,
+              Map<String, Object?>.from(entry['data'] as Map? ?? const {}),
+            );
+          })
+          .toList(growable: false);
     } catch (e) {
       throw AppFailure(friendlyError(e));
     }
@@ -182,11 +186,8 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   }
 
   @override
-  Future<String> connect(String peerId, String operationId) => store.command(
-    'connect',
-    {'peerId': peerId},
-    operationId,
-  );
+  Future<String> connect(String peerId, String operationId) =>
+      store.command('connect', {'peerId': peerId}, operationId);
   @override
   Future<void> respondConnection(
     String id,
@@ -360,8 +361,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     _checkChatAllowed(peerId);
     ChatContentPolicy.validate(body, attachments);
     final existing = store.snapshot.get('messages', messageId);
-    if (existing != null &&
-        (existing.b('deleted') || existing.b('system'))) {
+    if (existing != null && (existing.b('deleted') || existing.b('system'))) {
       throw const AppFailure('이 메시지는 다시 보낼 수 없어요.');
     }
     final data = <String, Object?>{

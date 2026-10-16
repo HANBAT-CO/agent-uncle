@@ -118,14 +118,11 @@ class _RequestEditorState extends State<RequestEditor> {
     }
     photos = stringsOf(initialData, 'photos');
     version = numberOf(initialData, 'version');
-    for (final e in {
-      'product': '',
-      'option': '',
-      'quantity': '1',
-    }.entries) {
+    for (final e in {'product': '', 'option': '', 'quantity': '1'}.entries) {
       fields[e.key] = TextEditingController(
-        text:
-            initialData.containsKey(e.key) ? '${initialData[e.key]}' : e.value,
+        text: initialData.containsKey(e.key)
+            ? '${initialData[e.key]}'
+            : e.value,
       );
     }
     final wholesalers =
@@ -265,7 +262,9 @@ class _RequestEditorState extends State<RequestEditor> {
 
   Data values({bool preserveEmptyWholesalers = true}) {
     final current = AppScope.read(context).session.current!;
-    final wholesalers = wholesalerValues(preserveEmpty: preserveEmptyWholesalers);
+    final wholesalers = wholesalerValues(
+      preserveEmpty: preserveEmptyWholesalers,
+    );
     final first = wholesalers.firstOrNull ?? <String, Object?>{};
     final destinationOverride = initialData['destinationOverride'] == true;
     final payload = <String, Object?>{
@@ -305,7 +304,9 @@ class _RequestEditorState extends State<RequestEditor> {
   }
 
   void changed() {
-    if (!editing) saver!.change(values());
+    if (!editing) {
+      saver!.change(values());
+    }
     setState(() {});
   }
 
@@ -732,9 +733,7 @@ class RequestDetailPage extends StatelessWidget {
               if (await confirm(
                 context,
                 '요청을 수락할까요?',
-                wholesalerOnly
-                    ? '도매처와 담당 정보를 확인했어요.'
-                    : '상품·수량·도매처·배송지를 확인했어요.',
+                wholesalerOnly ? '도매처와 담당 정보를 확인했어요.' : '상품·수량·도매처·배송지를 확인했어요.',
               )) {
                 await app.workspace.act(id, 'accept', {}, r.version, newId());
               }
@@ -859,39 +858,39 @@ class RequestDetailPage extends StatelessWidget {
           FigmaSurface(
             children: [
               LayoutBuilder(
-              builder: (context, constraints) => Wrap(
-                children: [
-                  for (final metric in {
-                    '누적 확보': r.acquired,
-                    '전달 대기': r.available,
-                    '누적 전달': r.delivered,
-                    r.b('resultShared') ? '남은 미송' : '미확인 수량': r.remaining,
-                  }.entries)
-                    SizedBox(
-                      width: constraints.maxWidth / 2,
-                      child: TdsListRow(
-                        contents: TdsListRowTexts(
-                          type: TdsListRowTextType.row2TypeD,
-                          top: Text(metric.key),
-                          bottom: Text('${metric.value}장'),
-                          topProps: const TdsListRowTextStyle(
-                            typography: TdsTypography.t7,
-                          ),
-                          bottomProps: TdsListRowTextStyle(
-                            typography: TdsTypography.t3,
-                            fontWeight: TdsFontWeight.bold,
-                            color: TdsTheme.of(context).color('grey900'),
+                builder: (context, constraints) => Wrap(
+                  children: [
+                    for (final metric in {
+                      '누적 확보': r.acquired,
+                      '전달 대기': r.available,
+                      '누적 전달': r.delivered,
+                      r.b('resultShared') ? '남은 미송' : '미확인 수량': r.remaining,
+                    }.entries)
+                      SizedBox(
+                        width: constraints.maxWidth / 2,
+                        child: TdsListRow(
+                          contents: TdsListRowTexts(
+                            type: TdsListRowTextType.row2TypeD,
+                            top: Text(metric.key),
+                            bottom: Text('${metric.value}장'),
+                            topProps: const TdsListRowTextStyle(
+                              typography: TdsTypography.t7,
+                            ),
+                            bottomProps: TdsListRowTextStyle(
+                              typography: TdsTypography.t3,
+                              fontWeight: TdsFontWeight.bold,
+                              color: TdsTheme.of(context).color('grey900'),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            if (r.cancelled > 0) QuantityRow('취소', '${r.cancelled}장'),
-            if (r.n('held') > 0) QuantityRow('처리 보류', '${r.n('held')}장'),
-          ],
-        ),
+              if (r.cancelled > 0) QuantityRow('취소', '${r.cancelled}장'),
+              if (r.n('held') > 0) QuantityRow('처리 보류', '${r.n('held')}장'),
+            ],
+          ),
         if (r.s('recheck').isNotEmpty && r.backorder > 0)
           FigmaSurface(
             tinted: true,

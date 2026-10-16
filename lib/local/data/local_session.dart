@@ -307,7 +307,8 @@ class LocalSessionRepository extends SessionRepository {
       throw const AppFailure(_publicCodeExhaustedMessage);
     }
     for (var attempt = 0; attempt < 32; attempt++) {
-      final code = '#${_publicCodeRandom.nextInt(_publicCodeCapacity).toString().padLeft(4, '0')}';
+      final code =
+          '#${_publicCodeRandom.nextInt(_publicCodeCapacity).toString().padLeft(4, '0')}';
       if (!used.contains(code)) return code;
     }
     final start = _publicCodeRandom.nextInt(_publicCodeCapacity);
@@ -329,12 +330,16 @@ class LocalSessionRepository extends SessionRepository {
       s.all('accounts'),
       exceptAccountId: accountId,
     );
-    if (_publicCodePattern.hasMatch(currentCode) && !usedByOther.contains(currentCode)) {
+    if (_publicCodePattern.hasMatch(currentCode) &&
+        !usedByOther.contains(currentCode)) {
       return {...account, 'publicCode': currentCode};
     }
     return {
       ...account,
-      'publicCode': _newPublicCode(s.all('accounts'), exceptAccountId: accountId),
+      'publicCode': _newPublicCode(
+        s.all('accounts'),
+        exceptAccountId: accountId,
+      ),
     };
   }
 

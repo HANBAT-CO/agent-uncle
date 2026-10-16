@@ -51,7 +51,8 @@ class LocalStore extends ChangeNotifier {
       throw const AppFailure(_publicCodeExhaustedMessage);
     }
     for (var attempt = 0; attempt < 32; attempt++) {
-      final code = '#${_publicCodeRandom.nextInt(_publicCodeCapacity).toString().padLeft(4, '0')}';
+      final code =
+          '#${_publicCodeRandom.nextInt(_publicCodeCapacity).toString().padLeft(4, '0')}';
       if (!used.contains(code)) return code;
     }
     final start = _publicCodeRandom.nextInt(_publicCodeCapacity);
@@ -71,7 +72,9 @@ class LocalStore extends ChangeNotifier {
       // 나중에 읽을 계정의 기존 코드도 먼저 예약해 백필이 빼앗지 않게 한다.
       final used = {
         for (final record in records)
-          if (_publicCodePattern.hasMatch(textOf(record.value, 'publicCode').trim()))
+          if (_publicCodePattern.hasMatch(
+            textOf(record.value, 'publicCode').trim(),
+          ))
             textOf(record.value, 'publicCode').trim(),
       };
       final retained = <String>{};
@@ -84,10 +87,9 @@ class LocalStore extends ChangeNotifier {
             : _nextPublicCode(used);
         used.add(nextCode);
         if (textOf(data, 'publicCode') != nextCode) {
-          await table('accounts').record(record.key).put(txn, {
-            ...data,
-            'publicCode': nextCode,
-          });
+          await table(
+            'accounts',
+          ).record(record.key).put(txn, {...data, 'publicCode': nextCode});
         }
       }
     });
@@ -119,8 +121,9 @@ class LocalStore extends ChangeNotifier {
   Future<String> write(
     String actor,
     String operationId,
-    String Function(MutableWorkspace state) mutate,
-  ) async {
+    String Function(MutableWorkspace state) mutate, {
+    String? payload,
+  }) async {
     final result = await database.transaction((txn) async {
       final operations = table('operations');
       final previous = operationId.isEmpty
@@ -129,6 +132,9 @@ class LocalStore extends ChangeNotifier {
       if (previous != null) {
         if (previous['actor'] != actor) {
           throw const AppFailure('다른 계정의 작업을 재사용할 수 없어요.');
+        }
+        if (payload != null && previous['payload'] != payload) {
+          throw const AppFailure('같은 작업 번호로 다른 내용을 전송할 수 없어요.');
         }
         return textOf(previous, 'result');
       }
@@ -161,6 +167,7 @@ class LocalStore extends ChangeNotifier {
         await operations.record(operationId).put(txn, {
           'actor': actor,
           'result': result,
+          'payload': ?payload,
         });
       }
       return result;

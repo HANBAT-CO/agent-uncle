@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'billing_models.dart';
+import 'team_models.dart';
+import 'convenience_models.dart';
 
 typedef Data = Map<String, Object?>;
 
@@ -222,6 +225,12 @@ String displayTime(String value) {
   return '${date.month}월 ${date.day}일 ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
 }
 
+const workflowCollections = [
+  ...billingCollections,
+  ...teamCollections,
+  ...convenienceCollections,
+];
+
 const collections = [
   'accounts',
   'signupProgress',
@@ -237,6 +246,8 @@ const collections = [
   'notices',
   'attachments',
   'settings',
+  'workflowInputs',
+  ...workflowCollections,
 ];
 
 class WorkspaceSnapshot {

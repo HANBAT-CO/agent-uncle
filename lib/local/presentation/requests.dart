@@ -501,6 +501,7 @@ class _RequestEditorState extends State<RequestEditor> {
             ),
           ProfileInputTheme(
             child: FigmaSurface(
+              padding: const EdgeInsets.symmetric(vertical: 8),
               children: [
                 const Section(
                   '도매처',
@@ -515,7 +516,10 @@ class _RequestEditorState extends State<RequestEditor> {
                 for (var i = 0; i < wholesalerFields.length; i++) ...[
                   if (i > 0)
                     const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 4,
+                      ),
                       child: TdsBorder(),
                     ),
                   Item(
@@ -537,6 +541,7 @@ class _RequestEditorState extends State<RequestEditor> {
                     '위치',
                     key: ValueKey(wholesalerFields[i].location),
                     controller: wholesalerFields[i].location,
+                    verticalPadding: 4,
                     placeholder: '예: 디오트 2층 A-18',
                     onChanged: (_) {
                       wholesalerFields[i].clearFavorite();
@@ -574,6 +579,10 @@ class _RequestEditorState extends State<RequestEditor> {
                   ),
                   if (wholesalerFields.length > 1)
                     Inset(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 4,
+                      ),
                       child: TdsTextButton(
                         size: TdsTextButtonSize.small,
                         colorToken: 'red400',
@@ -582,7 +591,6 @@ class _RequestEditorState extends State<RequestEditor> {
                       ),
                     ),
                 ],
-                const TdsSpacing(8),
               ],
             ),
           ),

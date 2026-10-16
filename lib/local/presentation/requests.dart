@@ -345,10 +345,27 @@ class _RequestEditorState extends State<RequestEditor> {
       child: PageFrame(
         title: editing ? '요청 내용 수정' : '새 사입 요청',
         showHeaderDivider: false,
-        bottom: ActionButton(
-          editing ? '수정 내용 확인' : '요청 내용 확인',
-          bottom: true,
-          onPressed: () => submit(app, selected),
+        bottom: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ActionButton(
+              editing ? '수정 내용 확인' : '요청 내용 확인',
+              bottom: true,
+              hasPaddingBottom: false,
+              onPressed: () => submit(app, selected),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: TdsTextButton(
+                size: TdsTextButtonSize.small,
+                colorToken: 'grey700',
+                onPressed: leave,
+                child: Text(
+                  editing || !_hasDraftContent(values()) ? '닫기' : '초안 저장 후 닫기',
+                ),
+              ),
+            ),
+          ],
         ),
         children: [
           const Section('담당 사입삼촌'),
@@ -404,6 +421,7 @@ class _RequestEditorState extends State<RequestEditor> {
                     Inset(
                       child: TdsTextButton(
                         size: TdsTextButtonSize.small,
+                        colorToken: 'red400',
                         onPressed: () => removeWholesaler(i),
                         child: const Text('이 도매처 삭제'),
                       ),
@@ -430,11 +448,6 @@ class _RequestEditorState extends State<RequestEditor> {
               weak: true,
               onPressed: () => saver!.flush(),
             ),
-          ActionButton(
-            editing ? '닫기' : '초안 저장 후 닫기',
-            weak: true,
-            onPressed: leave,
-          ),
         ],
       ),
     );
@@ -468,18 +481,23 @@ class RequestHub extends StatelessWidget {
             subtitle: displayTime(d.s('updatedAt')),
             onTap: () => openPage(context, RequestEditor(draftId: d.id)),
           ),
-          ActionButton(
-            '초안 삭제',
-            weak: true,
-            onPressed: () async {
-              if (await confirm(
-                context,
-                '초안을 삭제할까요?',
-                '아직 전송하지 않은 요청이에요. 상대방에게는 영향이 없어요.',
-              )) {
-                await app.workspace.deleteDraft(d.id);
-              }
-            },
+          TdsTheme(
+            data: TdsTheme.of(
+              context,
+            ).copyWith(primary: TdsTheme.of(context).color('red400')),
+            child: ActionButton(
+              '초안 삭제',
+              weak: true,
+              onPressed: () async {
+                if (await confirm(
+                  context,
+                  '초안을 삭제할까요?',
+                  '아직 전송하지 않은 요청이에요. 상대방에게는 영향이 없어요.',
+                )) {
+                  await app.workspace.deleteDraft(d.id);
+                }
+              },
+            ),
           ),
         ],
         const Section('최근 요청'),

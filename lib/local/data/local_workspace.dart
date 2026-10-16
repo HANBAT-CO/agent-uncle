@@ -2,6 +2,13 @@ import 'dart:math';
 
 import '../domain/chat_content_policy.dart';
 import '../domain/models.dart';
+import '../domain/workflow_payload.dart';
+import '../domain/billing_models.dart';
+import '../domain/team_models.dart';
+import '../domain/convenience_models.dart';
+import 'billing_commands.dart';
+import 'team_commands.dart';
+import 'convenience_commands.dart';
 import 'local_store.dart';
 
 class LocalWorkspaceRepository extends WorkspaceRepository {
@@ -14,6 +21,82 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
       session.current?.id ?? (throw const AppFailure('로그인이 필요해요.'));
   @override
   WorkspaceSnapshot get snapshot => store.snapshot;
+
+  @override
+  Future<String> workflow(String command, Data args, String operationId) async {
+    final user = actor;
+    if (!command.startsWith('wf.') ||
+        operationId.isEmpty ||
+        operationId.length > 200) {
+      throw const AppFailure('작업 정보를 확인해 주세요.');
+    }
+    return store.write(user, operationId, (s) {
+      final account = s.require('accounts', user);
+      if (!flagOf(account, 'complete') || flagOf(account, 'deletionPending')) {
+        throw const AppFailure('가입을 완료한 계정으로 이용해 주세요.');
+      }
+      final name = command.substring(3);
+      if (billingCommands.contains(command) || billingCommands.contains(name)) {
+        return applyBilling(s, user, name, args);
+      }
+      if (teamCommands.contains(command) || teamCommands.contains(name)) {
+        return applyTeam(s, user, name, args);
+      }
+      if (convenienceCommands.contains(command) ||
+          convenienceCommands.contains(name)) {
+        return applyConvenience(s, user, name, args);
+      }
+      throw const AppFailure('지원하지 않는 업무예요. 앱을 업데이트해 주세요.');
+    }, payload: workflowPayload(command, args));
+  }
+
+  @override
+  Future<void> saveWorkflowInput(String key, Data values) async {
+    final user = actor;
+    await store.write(user, '', (s) {
+      s.require('accounts', user);
+      s.put('workflowInputs', '$user:$key', {
+        'ownerId': user,
+        'values': values,
+      });
+      return key;
+    });
+  }
+
+  @override
+  Data workflowInput(String key) => mapOf(
+    snapshot.get('workflowInputs', '${session.current?.id}:$key')?.data ?? {},
+    'values',
+  );
+
+  @override
+  Future<void> discardRejectedWorkflow(String operationId) async {
+    final user = actor;
+    if (operationId.trim().isEmpty) {
+      throw const AppFailure('작업 정보를 다시 확인해 주세요.');
+    }
+    await store.write(user, '', (s) {
+      s.require('accounts', user);
+      for (final entry in s.all('workflowInputs').toList()) {
+        if (!entry.key.startsWith('$user:')) continue;
+        final values = mapOf(entry.value, 'values');
+        if (textOf(values, 'operationId') != operationId) continue;
+        final submitted = mapOf(values, 'submitted');
+        if (submitted.isEmpty) return operationId;
+        s.put('workflowInputs', entry.key, {
+          ...entry.value,
+          'values': {
+            ...values,
+            'operationId': operationId,
+            'submitted': <String, Object?>{},
+          },
+        });
+        return operationId;
+      }
+      return operationId;
+    });
+  }
+
   static const _directoryFields = [
     'name',
     'nickname',
@@ -65,7 +148,9 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
                   (r.s('recipientId') == user && r.s('status') == 'sent'),
             'notices' => r.s('ownerId') == user,
             'attachments' => r.s('ownerId') == user,
-            _ => false,
+            _ =>
+              workflowCollections.contains(table) &&
+                  r.list('readers').contains(user),
           },
         )
         .toList();

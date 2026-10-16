@@ -10,10 +10,26 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   final RemoteStore store;
   @override
   WorkspaceSnapshot get snapshot => store.snapshot;
+
+  @override
+  Future<String> workflow(String command, Data args, String operationId) =>
+      store.workflow(command, args, operationId);
+  @override
+  Future<void> saveWorkflowInput(String key, Data values) =>
+      store.saveWorkflowInput(key, values);
+  @override
+  Data workflowInput(String key) => store.workflowInput(key);
+
+  @override
+  Future<void> discardRejectedWorkflow(String operationId) =>
+      store.discardRejectedWorkflow(operationId);
+
   @override
   List<Record> records(String table) {
     if (store.userId == null) return [];
-    final rows = snapshot.all(table);
+    final rows = table == 'workflowPending'
+        ? store.pendingWorkflows
+        : snapshot.all(table);
     rows.sort((a, b) => b.s('createdAt').compareTo(a.s('createdAt')));
     return rows;
   }

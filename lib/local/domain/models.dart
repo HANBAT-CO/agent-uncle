@@ -289,6 +289,10 @@ abstract class SessionRepository extends ChangeNotifier {
 }
 
 abstract class WorkspaceRepository extends ChangeNotifier {
+  Future<String> workflow(String command, Data args, String operationId);
+  Future<void> saveWorkflowInput(String key, Data values);
+  Data workflowInput(String key);
+  Future<void> discardRejectedWorkflow(String operationId);
   WorkspaceSnapshot get snapshot;
   List<Account> get partners;
   List<Record> records(String table);

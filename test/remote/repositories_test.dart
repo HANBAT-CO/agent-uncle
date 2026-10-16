@@ -24,11 +24,15 @@ http.Response reply(String body, int status) => http.Response(
 const peer = '22222222-2222-4222-8222-222222222222';
 
 class Harness {
+  Future<http.Response?> Function(http.Request)? onRequest;
   late SupabaseClient client;
   late RemoteStore store;
   late RemoteSessionRepository session;
   late RemoteWorkspaceRepository workspace;
   bool failRead = false, failWrite = false;
+  String authUserId = actor;
+  Completer<http.Response>? pendingWorkflow;
+  http.Response? workflowResponse;
   bool phoneAvailable = true;
   http.Response? phoneResponse;
   Completer<http.Response>? pendingRead;
@@ -70,13 +74,15 @@ class Harness {
       'https://example.supabase.co',
       'public-test-key',
       httpClient: MockClient((request) async {
+        final intercepted = await onRequest?.call(request);
+        if (intercepted != null) return intercepted;
         final data = request.body.isEmpty
             ? <String, dynamic>{}
             : (jsonDecode(request.body) as Map<String, dynamic>? ??
                   <String, dynamic>{});
         if (request.url.path == '/auth/v1/token') {
           final jwt =
-              'e30.${base64Url.encode(utf8.encode(jsonEncode({'sub': actor, 'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600})))}.signature';
+              'e30.${base64Url.encode(utf8.encode(jsonEncode({'sub': authUserId, 'exp': DateTime.now().millisecondsSinceEpoch ~/ 1000 + 3600})))}.signature';
           return reply(
             jsonEncode({
               'access_token': jwt,
@@ -84,7 +90,7 @@ class Harness {
               'token_type': 'bearer',
               'expires_in': 3600,
               'user': {
-                'id': actor,
+                'id': authUserId,
                 'aud': 'authenticated',
                 'email': 'test@example.test',
                 'app_metadata': {},
@@ -97,6 +103,10 @@ class Harness {
         }
         if (request.url.path.endsWith('saip_command')) {
           commands.add(data);
+          if ((data['command'] as String).startsWith('wf.')) {
+            if (pendingWorkflow != null) return pendingWorkflow!.future;
+            if (workflowResponse != null) return workflowResponse!;
+          }
           if (failWrite) {
             return reply('{"code":"P0001","message":"전송 실패"}', 400);
           }

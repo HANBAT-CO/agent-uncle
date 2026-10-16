@@ -280,6 +280,9 @@ abstract class SessionRepository extends ChangeNotifier {
   bool get onboardingSeen;
   Record? get pendingDestination;
   Future<void> finishOnboarding();
+  bool get roleOnboardingPending;
+  Future<void> prepareRoleOnboarding();
+  Future<void> finishRoleOnboarding();
   Future<void> signIn(String id);
   Future<void> signOut();
   Future<void> deleteAccount();

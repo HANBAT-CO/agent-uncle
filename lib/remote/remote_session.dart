@@ -63,6 +63,25 @@ class RemoteSessionRepository extends SessionRepository {
 
   @override
   Future<void> finishOnboarding() => store.setSetting('onboardingSeen', true);
+
+  @override
+  bool get roleOnboardingPending =>
+      current?.complete == true &&
+      store.settings['roleOnboarding:${current!.id}'] == true;
+
+  @override
+  Future<void> prepareRoleOnboarding() async {
+    final account = current ?? (throw const AppFailure('로그인이 필요해요.'));
+    if (account.complete) return;
+    await store.setSetting('roleOnboarding:${account.id}', true);
+  }
+
+  @override
+  Future<void> finishRoleOnboarding() async {
+    final account = current ?? (throw const AppFailure('로그인이 필요해요.'));
+    await store.setSetting('roleOnboarding:${account.id}', false);
+  }
+
   @override
   Future<void> setDestination(Data? destination) =>
       store.setSetting('destination', destination);

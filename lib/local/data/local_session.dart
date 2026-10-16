@@ -40,6 +40,34 @@ class LocalSessionRepository extends SessionRepository {
   }
 
   @override
+  bool get roleOnboardingPending =>
+      current?.complete == true &&
+      (store.snapshot
+              .get('settings', 'roleOnboarding:${current!.id}')
+              ?.b('pending') ??
+          false);
+
+  @override
+  Future<void> prepareRoleOnboarding() async {
+    final account = current ?? (throw const AppFailure('로그인이 필요해요.'));
+    if (account.complete) return;
+    // 가입 완료 저장 전에 기록하여 앱이 종료되어도 안내를 이어갈 수 있다.
+    await store.write(account.id, '', (s) {
+      s.put('settings', 'roleOnboarding:${account.id}', {'pending': true});
+      return account.id;
+    });
+  }
+
+  @override
+  Future<void> finishRoleOnboarding() async {
+    final account = current ?? (throw const AppFailure('로그인이 필요해요.'));
+    await store.write(account.id, '', (s) {
+      s.remove('settings', 'roleOnboarding:${account.id}');
+      return account.id;
+    });
+  }
+
+  @override
   Future<void> signIn(String id) async {
     await store.write(id, '', (s) {
       s.require('accounts', id);

@@ -139,6 +139,7 @@ class _RequestEditorState extends State<RequestEditor> {
     final current = AppScope.read(context).session.current!;
     final wholesalers = wholesalerValues(preserveEmpty: preserveEmptyWholesalers);
     final first = wholesalers.firstOrNull ?? <String, Object?>{};
+    final destinationOverride = initialData['destinationOverride'] == true;
     final payload = <String, Object?>{
       'wholesalers': wholesalers,
       'wholesaler': textOf(first, 'wholesaler').trim(),
@@ -148,10 +149,23 @@ class _RequestEditorState extends State<RequestEditor> {
       'quantity': int.tryParse(fields['quantity']!.text) ?? 1,
       'uncleId': peer,
       'photos': photos,
-      'address': current.s('address'),
-      'addressDetail': current.s('addressDetail'),
+      'address': destinationOverride
+          ? textOf(initialData, 'address', current.s('address'))
+          : current.s('address'),
+      'addressDetail': destinationOverride
+          ? textOf(initialData, 'addressDetail', current.s('addressDetail'))
+          : current.s('addressDetail'),
       'note': current.s('deliveryNote'),
     };
+    for (final key in const [
+      'receivingShop',
+      'destinationOverride',
+      'roundLabel',
+    ]) {
+      if (initialData.containsKey(key)) {
+        payload[key] = initialData[key];
+      }
+    }
     if (editing && !isWholesalerOnlyRequest(initialData)) {
       if (initialData.containsKey('requestType')) {
         payload['requestType'] = initialData['requestType'];
@@ -658,6 +672,12 @@ class RequestDetailPage extends StatelessWidget {
               '이번 요청 수령지',
               subtitle: '${r.s('address')} ${r.s('addressDetail')}',
             ),
+            if (r.s('receivingShop').isNotEmpty)
+              Item('수령 상호', subtitle: r.s('receivingShop')),
+            if (r.b('destinationOverride'))
+              const Item('수령지 변경', subtitle: '기본 배송지 대신 요청서에 입력한 수령지를 사용해요.'),
+            if (r.s('roundLabel').isNotEmpty)
+              Item('영업 회차', subtitle: r.s('roundLabel')),
             if (r.s('note').isNotEmpty) Item('요청사항', subtitle: r.s('note')),
           ],
         ),

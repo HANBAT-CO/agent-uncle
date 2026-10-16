@@ -658,6 +658,9 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     'addressDetail',
     'note',
     'photos',
+    'receivingShop',
+    'destinationOverride',
+    'roundLabel',
   ];
   Data _fields(Data input) {
     final fields = <String, Object?>{
@@ -689,6 +692,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
 
   Data _savedDestination(MutableWorkspace s, Data fields, String user) {
     if (!isWholesalerOnlyRequest(fields)) return fields;
+    if (flagOf(fields, 'destinationOverride')) return fields;
     final account = s.require('accounts', user);
     return {
       ...fields,

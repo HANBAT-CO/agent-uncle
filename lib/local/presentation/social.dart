@@ -10,6 +10,7 @@ import 'delivery.dart';
 import 'profile_avatar.dart';
 import 'connection_search.dart';
 import 'chat_message_actions.dart';
+import 'billing.dart';
 import 'team_work.dart';
 
 export 'connection_search.dart' show AddConnectionPage;
@@ -1032,8 +1033,15 @@ class _ChatPageState extends State<ChatPage> {
                         fontWeight: TdsFontWeight.medium,
                       ),
                     ),
-                    withArrow: m.s('requestId').isNotEmpty,
-                    onPressed: m.s('requestId').isEmpty
+                    withArrow:
+                        m.s('invoiceId').isNotEmpty ||
+                        m.s('requestId').isNotEmpty,
+                    onPressed: m.s('invoiceId').isNotEmpty
+                        ? () => openPage(
+                            context,
+                            InvoiceDetailPage(invoiceId: m.s('invoiceId')),
+                          )
+                        : m.s('requestId').isEmpty
                         ? null
                         : () => openPage(
                             context,
@@ -1342,6 +1350,8 @@ Future<void> openDestination(BuildContext context) async {
   }
   Widget page;
   switch (target.s('kind')) {
+    case 'invoice':
+      page = InvoiceDetailPage(invoiceId: target.s('targetId'));
     case 'chat':
       page = ChatPage(target.s('targetId'));
     case 'connection':

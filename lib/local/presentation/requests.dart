@@ -7,6 +7,8 @@ import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
 import '../domain/convenience_models.dart';
 import '../domain/models.dart';
+import '../domain/order_payment.dart';
+import 'billing.dart';
 import 'common.dart';
 import 'address_search.dart';
 import 'social.dart';
@@ -706,6 +708,10 @@ class RequestDetailPage extends StatelessWidget {
     final title = requestTitle(r.data);
     final retailer = app.session.current!.id == r.s('retailerId'),
         peer = r.s(retailer ? 'uncleId' : 'retailerId');
+    final stageLabel = r.stageLabelFor(
+      retailer ? AppRole.retailer : AppRole.uncle,
+    );
+    final invoiceIds = r.list('paymentInvoiceIds');
     final deliveries = app.workspace
         .records('deliveries')
         .where((d) => d.s('requestId') == id);
@@ -758,7 +764,7 @@ class RequestDetailPage extends StatelessWidget {
         : null;
     return PageFrame(
       title: '사입 요청 상세',
-      navigationSubtitle: '$title · ${r.statusLabel}',
+      navigationSubtitle: '$title · $stageLabel',
       bottom: primary,
       children: [
         FigmaSurface(
@@ -770,7 +776,7 @@ class RequestDetailPage extends StatelessWidget {
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   StatusBadge(
-                    r.statusLabel,
+                    stageLabel,
                     attention: r.needsReply || r.n('openIssues') > 0,
                   ),
                   TdsText(
@@ -805,10 +811,43 @@ class RequestDetailPage extends StatelessWidget {
               ? (retailer ? '사입삼촌의 확인을 기다려요' : '새 사입 요청을 확인해 주세요')
               : r.delivered > r.received
               ? '받은 상품을 확인해 주세요'
+              : r.receiptComplete
+              ? (r.paymentComplete
+                    ? r.paymentLabel
+                    : '수령 확인을 마쳤어요. 운영 계좌 입금이 남아 있어요.')
               : r.ended
               ? '요청 처리를 마쳤어요'
               : '사입 진행 상황을 확인해요',
         ),
+        if (r.receiptComplete) ...[
+          const Section('입금·정산'),
+          FigmaSurface(
+            children: [
+              const QuantityRow('입금 은행', platformBankName),
+              const QuantityRow('계좌번호', platformBankAccount),
+              const QuantityRow('예금주', platformBankHolder),
+              Info(
+                r.b('platformPayoutComplete')
+                    ? '사입삼촌 지급 완료'
+                    : r.b('paymentConfirmed')
+                    ? '운영 입금 확인 · 사입삼촌 지급 대기'
+                    : r.paymentComplete
+                    ? '송금 신고 완료 · 운영 확인 대기'
+                    : invoiceIds.isEmpty
+                    ? '청구서 발행을 기다리고 있어요. 청구 금액 확인 후 입금해 주세요.'
+                    : '청구서에서 금액을 확인하고 입금 후 송금 알림을 남겨 주세요.',
+              ),
+              for (final invoiceId in invoiceIds)
+                Item(
+                  retailer ? '청구 금액 확인·입금하기' : '청구·입금 현황 보기',
+                  onTap: () => openPage(
+                    context,
+                    InvoiceDetailPage(invoiceId: invoiceId),
+                  ),
+                ),
+            ],
+          ),
+        ],
         if (!wholesalerOnly)
           FigmaSurface(
             children: [
@@ -973,6 +1012,14 @@ class RequestDetailPage extends StatelessWidget {
                 leading: const FigmaIcon('truck'),
                 subtitle: '실제로 전달한 수량을 기록해요',
                 onTap: () => openPage(context, DeliveryBatchPage([id])),
+              ),
+            if (!retailer &&
+                !['pending', 'rejected', 'cancelled'].contains(r.s('status')))
+              Item(
+                '현장 지급 기록',
+                leading: const FigmaIcon('refresh'),
+                subtitle: '도매처별 실제 지급과 고객 부담액을 이어서 기록해요.',
+                onTap: () => openPage(context, FieldPaymentPage(requestId: id)),
               ),
             if (!retailer &&
                 !['pending', 'rejected', 'cancelled'].contains(r.s('status')))
@@ -1448,7 +1495,7 @@ class _RequestActionPageState extends State<RequestActionPage> {
             Item(
               wholesalerOnly ? '전달 내용을 확인해 주세요' : '상품·옵션·수량을 비교해 주세요',
               subtitle: completes
-                  ? '수령 확인 후 7일이 지나면 완료 내역으로 이동해요.'
+                  ? '수령 확인 후 운영 계좌에 입금하고 송금 알림을 남겨 주세요.'
                   : '이번 전달분만 확인해요. 남은 미송과 다른 전달분은 계속 확인할 수 있어요.',
             ),
           ],

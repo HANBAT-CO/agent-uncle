@@ -5,26 +5,38 @@ import '../../core/address/address_models.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/navigation/app_page_route.dart';
 import '../app_services.dart';
+import '../domain/convenience_models.dart';
 import '../domain/models.dart';
 import 'common.dart';
 import 'address_search.dart';
 import 'social.dart';
 import 'delivery.dart';
+import 'favorite_wholesaler_picker.dart';
 import 'request_partner_picker.dart';
 import 'team_work.dart';
 
 class _WholesalerFields {
-  _WholesalerFields({String wholesaler = '', String location = ''})
-    : wholesaler = TextEditingController(text: wholesaler),
-      location = TextEditingController(text: location);
+  _WholesalerFields({
+    String wholesaler = '',
+    String location = '',
+    this.paymentMode = convenienceDefaultPaymentMode,
+    this.favoriteId = '',
+  }) : wholesaler = TextEditingController(text: wholesaler),
+       location = TextEditingController(text: location);
 
   final TextEditingController wholesaler;
   final TextEditingController location;
+  String paymentMode;
+  String favoriteId;
 
   Data toData() => {
     'wholesaler': wholesaler.text.trim(),
     'location': location.text.trim(),
+    'paymentMode': normalizeConveniencePaymentMode(paymentMode),
+    if (favoriteId.trim().isNotEmpty) 'favoriteId': favoriteId.trim(),
   };
+
+  void clearFavorite() => favoriteId = '';
 
   void dispose() {
     wholesaler.dispose();
@@ -54,6 +66,12 @@ String _wholesalerLabel(Data row, {String fallback = '도매처 요청'}) {
   if (wholesaler.isNotEmpty) return wholesaler;
   if (location.isNotEmpty) return location;
   return fallback;
+}
+
+String _wholesalerSubtitle(Data row) {
+  final location = textOf(row, 'location').trim();
+  final payment = conveniencePaymentModeLabel(textOf(row, 'paymentMode'));
+  return location.isEmpty ? '결제 방식 · $payment' : '$location · 결제 방식 $payment';
 }
 
 class RequestEditor extends StatefulWidget {
@@ -108,9 +126,12 @@ class _RequestEditorState extends State<RequestEditor> {
             initialData.containsKey(e.key) ? '${initialData[e.key]}' : e.value,
       );
     }
-    final wholesalers = requestWholesalers(initialData)
-        .take(maxRequestWholesalers)
-        .toList();
+    final wholesalers =
+        (editing
+                ? resolvedRequestWholesalers(app.workspace, id, initialData)
+                : resolvedDraftWholesalers(app.workspace, id, initialData))
+            .take(maxRequestWholesalers)
+            .toList();
     if (wholesalers.isEmpty) {
       wholesalerFields.add(_WholesalerFields());
     } else {
@@ -119,6 +140,10 @@ class _RequestEditorState extends State<RequestEditor> {
           _WholesalerFields(
             wholesaler: textOf(row, 'wholesaler'),
             location: textOf(row, 'location'),
+            paymentMode: normalizeConveniencePaymentMode(
+              textOf(row, 'paymentMode'),
+            ),
+            favoriteId: textOf(row, 'favoriteId'),
           ),
         );
       }
@@ -142,6 +167,85 @@ class _RequestEditorState extends State<RequestEditor> {
   }
 
   void refresh() {
+    if (mounted) setState(() {});
+  }
+
+  FavoriteWholesalerRecord? favoriteForIndex(int index) {
+    final app = AppScope.read(context);
+    final favoriteId = wholesalerFields[index].favoriteId.trim();
+    if (favoriteId.isNotEmpty) {
+      return app.workspace.favoriteWholesalers
+          .where((favorite) => favorite.id == favoriteId)
+          .firstOrNull;
+    }
+    return app.workspace.favoriteWholesalerFor(
+      wholesalerFields[index].toData(),
+    );
+  }
+
+  void replaceWholesalerFields(List<Data> rows) {
+    final previous = [...wholesalerFields];
+    wholesalerFields
+      ..clear()
+      ..addAll(
+        rows.isEmpty
+            ? [_WholesalerFields()]
+            : [
+                for (final row in rows.take(maxRequestWholesalers))
+                  _WholesalerFields(
+                    wholesaler: textOf(row, 'wholesaler'),
+                    location: textOf(row, 'location'),
+                    paymentMode: normalizeConveniencePaymentMode(
+                      textOf(row, 'paymentMode'),
+                    ),
+                    favoriteId: textOf(row, 'favoriteId'),
+                  ),
+              ],
+      );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (final row in previous) {
+        row.dispose();
+      }
+    });
+  }
+
+  Future<void> chooseFavoriteWholesalers() async {
+    final result = await openPage<List<Data>>(
+      context,
+      FavoriteWholesalerPicker(
+        initialRows: wholesalerValues(preserveEmpty: false),
+      ),
+    );
+    if (result == null || !mounted) return;
+    final merged = dedupeConvenienceWholesalers([
+      ...wholesalerValues(preserveEmpty: false),
+      ...result,
+    ]).take(maxRequestWholesalers).toList(growable: false);
+    setState(() => replaceWholesalerFields(merged));
+    changed();
+  }
+
+  Future<void> toggleFavorite(AppServices app, int index) async {
+    final row = wholesalerFields[index];
+    final data = row.toData();
+    if (textOf(data, 'wholesaler').trim().isEmpty ||
+        textOf(data, 'location').trim().isEmpty) {
+      throw const AppFailure('도매처 이름과 위치를 먼저 입력해 주세요.');
+    }
+    final existing = favoriteForIndex(index);
+    if (existing != null) {
+      await app.workspace.deleteFavoriteWholesaler(existing.id);
+      row.clearFavorite();
+    } else {
+      row.favoriteId = await app.workspace.upsertFavoriteWholesaler(data);
+    }
+    await app.workspace.saveFavoriteWholesalerCache(
+      convenienceFavoriteCachePayload(
+        app.workspace.favoriteWholesalers.map(
+          (favorite) => favorite.toWholesalerData(),
+        ),
+      ),
+    );
     if (mounted) setState(() {});
   }
 
@@ -264,7 +368,9 @@ class _RequestEditorState extends State<RequestEditor> {
       preserveEmpty: false,
     ).where(_hasWholesalerValue).toList();
     for (var i = 0; i < wholesalers.length; i++) {
-      lines.add('도매처 ${i + 1}: ${_wholesalerLabel(wholesalers[i], fallback: '미입력')}');
+      lines.add(
+        '도매처 ${i + 1}: ${_wholesalerLabel(wholesalers[i], fallback: '미입력')} (${conveniencePaymentModeLabel(textOf(wholesalers[i], 'paymentMode'))})',
+      );
     }
     return lines.join('\n');
   }
@@ -396,26 +502,75 @@ class _RequestEditorState extends State<RequestEditor> {
           ProfileInputTheme(
             child: FigmaSurface(
               children: [
-                const Section('도매처'),
+                const Section(
+                  '도매처',
+                  padding: EdgeInsets.fromLTRB(24, 8, 24, 4),
+                ),
+                Item(
+                  '즐겨찾기 도매처 불러오기',
+                  leading: const FigmaIcon('store'),
+                  subtitle: '자주 가는 도매처를 여러 곳 한 번에 추가해요.',
+                  onTap: chooseFavoriteWholesalers,
+                ),
                 for (var i = 0; i < wholesalerFields.length; i++) ...[
                   if (i > 0)
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                       child: TdsBorder(),
                     ),
-                  Item('도매처 ${i + 1}'),
+                  Item(
+                    '도매처 ${i + 1}',
+                    subtitle: favoriteForIndex(i) == null ? null : '즐겨찾기 저장됨',
+                    verticalPadding: TdsListRowVerticalPadding.small,
+                  ),
                   Field(
                     '도매처 이름',
                     key: ValueKey(wholesalerFields[i].wholesaler),
                     controller: wholesalerFields[i].wholesaler,
-                    onChanged: (_) => changed(),
+                    verticalPadding: 4,
+                    onChanged: (_) {
+                      wholesalerFields[i].clearFavorite();
+                      changed();
+                    },
                   ),
                   Field(
                     '위치',
                     key: ValueKey(wholesalerFields[i].location),
                     controller: wholesalerFields[i].location,
                     placeholder: '예: 디오트 2층 A-18',
-                    onChanged: (_) => changed(),
+                    onChanged: (_) {
+                      wholesalerFields[i].clearFavorite();
+                      changed();
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24, 8, 24, 0),
+                    child: const TdsText(
+                      '도매처별 결제 방식',
+                      typography: TdsTypography.t7,
+                      color: TdsPalette.grey600,
+                    ),
+                  ),
+                  Choices(
+                    options: const ['대납 요청', '직접 결제', '확인 필요'],
+                    value: conveniencePaymentModeLabel(
+                      wholesalerFields[i].paymentMode,
+                    ),
+                    onChanged: (next) {
+                      wholesalerFields[i]
+                        ..paymentMode = conveniencePaymentModeValueFromLabel(
+                          next,
+                        )
+                        ..clearFavorite();
+                      changed();
+                    },
+                    padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+                  ),
+                  ActionButton(
+                    favoriteForIndex(i) == null ? '이 도매처 즐겨찾기 저장' : '즐겨찾기에서 삭제',
+                    key: ValueKey(wholesalerFields[i]),
+                    weak: true,
+                    onPressed: () => toggleFavorite(app, i),
                   ),
                   if (wholesalerFields.length > 1)
                     Inset(
@@ -535,7 +690,11 @@ class RequestDetailPage extends StatelessWidget {
       );
     }
     final wholesalerOnly = isWholesalerOnlyRequest(r.data);
-    final wholesalers = requestWholesalers(r.data).where(_hasWholesalerValue).toList();
+    final wholesalers = resolvedRequestWholesalers(
+      app.workspace,
+      id,
+      r.data,
+    ).where(_hasWholesalerValue).toList();
     final title = requestTitle(r.data);
     final retailer = app.session.current!.id == r.s('retailerId'),
         peer = r.s(retailer ? 'uncleId' : 'retailerId');
@@ -700,9 +859,7 @@ class RequestDetailPage extends StatelessWidget {
                   textOf(wholesalers[i], 'wholesaler').trim().isEmpty
                       ? '도매처 ${i + 1}'
                       : textOf(wholesalers[i], 'wholesaler').trim(),
-                  subtitle: textOf(wholesalers[i], 'location').trim().isEmpty
-                      ? null
-                      : textOf(wholesalers[i], 'location').trim(),
+                  subtitle: _wholesalerSubtitle(wholesalers[i]),
                 )
             else
               Item(

@@ -4,6 +4,10 @@
 # working directory name when running `supabase init`.
 project_id = "lisbon"
 
+# 함수 내부에서 Auth getUser로 검증. 비대칭 서명 키도 지원한다.
+[functions.delete-account]
+verify_jwt = false
+
 [api]
 enabled = true
 # Port to use for the API URL.

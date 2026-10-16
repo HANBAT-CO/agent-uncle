@@ -24,6 +24,8 @@ class RemoteSessionRepository extends SessionRepository {
   final RemoteStore store;
   StreamSubscription<AuthState>? _subscription;
   String? _authUser;
+  Future<void> Function()? beforeSignOut;
+  void Function()? afterSignOut;
   Future<void> initialize() async {
     _authUser = store.userId;
     await store.changeUser();
@@ -90,10 +92,49 @@ class RemoteSessionRepository extends SessionRepository {
 
   @override
   Future<void> signOut() async {
+    await beforeSignOut?.call();
     // Local scope clears this device only, including when offline.
-    await store.client.auth.signOut(scope: SignOutScope.local);
-    _authUser = null;
-    await store.changeUser();
+    try {
+      await store.client.auth.signOut(scope: SignOutScope.local);
+      _authUser = null;
+      await store.changeUser();
+    } finally {
+      afterSignOut?.call();
+    }
+  }
+
+  Future<void>? _deletion;
+
+  @override
+  Future<void> deleteAccount() =>
+      _deletion ??= _deleteAccount().whenComplete(() {
+        _deletion = null;
+      });
+
+  Future<void> _deleteAccount() async {
+    final id = store.userId ?? (throw const AppFailure('로그인이 필요해요.'));
+    try {
+      final response = await store.client.functions.invoke(
+        'delete-account',
+        body: {'confirm': true},
+      );
+      if (response.status != 200 ||
+          response.data is! Map ||
+          response.data['deleted'] != true) {
+        throw const AppFailure('탈퇴 완료를 확인하지 못했어요. 다시 시도해 주세요.');
+      }
+    } on FunctionException catch (e) {
+      await store.refresh().catchError((Object _) {});
+      if (e.status == 404) {
+        throw const AppFailure('서버의 탈퇴 기능이 아직 준비되지 않았어요. 잠시 후 다시 시도해 주세요.');
+      }
+      throw const AppFailure('탈퇴 처리를 완료하지 못했어요. 다시 시도해 주세요.');
+    } catch (e) {
+      await store.refresh().catchError((Object _) {});
+      throw AppFailure(friendlyError(e));
+    }
+    await store.clearDeletedAccount(id);
+    if (store.userId == id) await signOut();
   }
 
   @override

@@ -282,6 +282,7 @@ abstract class SessionRepository extends ChangeNotifier {
   Future<void> finishOnboarding();
   Future<void> signIn(String id);
   Future<void> signOut();
+  Future<void> deleteAccount();
   Future<String> createAccount(String label);
   Future<void> chooseRole(AppRole role);
   Future<void> saveProfile(Data fields, {bool complete = false});

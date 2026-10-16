@@ -35,6 +35,9 @@ class Harness {
   http.Response? workflowResponse;
   bool phoneAvailable = true;
   http.Response? phoneResponse;
+  http.Response? deletionResponse;
+  Completer<http.Response>? pendingDeletion;
+  int deletionCalls = 0;
   Completer<http.Response>? pendingRead;
   Map<String, dynamic> lookupCodeRow = {
     'id': peer,
@@ -111,6 +114,13 @@ class Harness {
             return reply('{"code":"P0001","message":"전송 실패"}', 400);
           }
           return reply(jsonEncode((data['args'] as Map)['id'] ?? actor), 200);
+        }
+        if (request.url.path.endsWith('/delete-account')) {
+          deletionCalls++;
+          expect(data, {'confirm': true});
+          return pendingDeletion?.future ??
+              deletionResponse ??
+              reply('{"deleted":true}', 200);
         }
         if (request.url.path.endsWith('saip_snapshot')) {
           if (pendingRead != null) return pendingRead!.future;

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:sembast/sembast.dart';
 
 import '../domain/models.dart';
 import '../domain/profile_validation.dart';
@@ -53,6 +54,209 @@ class LocalSessionRepository extends SessionRepository {
       s.remove('settings', 'session');
       return '';
     });
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    final id = current?.id ?? (throw const AppFailure('로그인이 필요해요.'));
+    await store.database.transaction((txn) async {
+      if (store.failNextWrite) {
+        store.failNextWrite = false;
+        throw const AppFailure('탈퇴하지 못했어요. 다시 시도해 주세요.');
+      }
+      for (final collection in ['accounts', 'signupProgress']) {
+        await store.table(collection).record(id).delete(txn);
+      }
+      await store.table('settings').record('roleOnboarding:$id').delete(txn);
+      for (final collection in [
+        'drafts',
+        'notices',
+        'attachments',
+        'workflowInputs',
+        'favoriteWholesalers',
+      ]) {
+        final owned = await store
+            .table(collection)
+            .find(txn, finder: Finder(filter: Filter.equals('ownerId', id)));
+        for (final row in owned) {
+          if (collection == 'attachments') {
+            await store.table('attachmentPayloads').record(row.key).delete(txn);
+          }
+          await store.table(collection).record(row.key).delete(txn);
+        }
+      }
+      await store
+          .table('connections')
+          .delete(
+            txn,
+            finder: Finder(
+              filter: Filter.or([
+                Filter.equals('from', id),
+                Filter.equals('to', id),
+              ]),
+            ),
+          );
+      final messages = await store
+          .table('messages')
+          .find(txn, finder: Finder(filter: Filter.equals('senderId', id)));
+      await store
+          .table('chatBlocks')
+          .delete(
+            txn,
+            finder: Finder(
+              filter: Filter.or([
+                Filter.equals('ownerId', id),
+                Filter.equals('peerId', id),
+              ]),
+            ),
+          );
+      for (final row in messages) {
+        if (flagOf(row.value, 'system') || flagOf(row.value, 'deleted')) {
+          continue;
+        }
+        await store.table('messages').record(row.key).put(txn, {
+          ...row.value,
+          'body': '',
+          'attachments': <String>[],
+          'requestId': '',
+          'deleted': true,
+          'deletedAt': DateTime.now().toIso8601String(),
+          'version': numberOf(row.value, 'version') + 1,
+        });
+      }
+      final remaining = (await store.table('accounts').find(txn))
+          .map((row) => row.key)
+          .toSet();
+      for (final collection in workflowCollections) {
+        for (final row in await store.table(collection).find(txn)) {
+          final data = Map<String, Object?>.from(row.value);
+          final readers = stringsOf(data, 'readers');
+          if (!readers.contains(id)) continue;
+          final nextReaders = readers.where(remaining.contains).toList();
+          if (nextReaders.isEmpty ||
+              collection == 'colleagueConnections' ||
+              (collection == 'teamInvites' &&
+                  [
+                    textOf(data, 'fromId'),
+                    textOf(data, 'toId'),
+                    textOf(data, 'inviterId'),
+                    textOf(data, 'inviteeId'),
+                  ].contains(id))) {
+            await store.table(collection).record(row.key).delete(txn);
+            continue;
+          }
+          data['readers'] = nextReaders;
+          data['version'] = numberOf(data, 'version') + 1;
+          if (collection == 'teams') {
+            final members = stringsOf(
+              data,
+              'memberIds',
+            ).where(remaining.contains).toList();
+            final admins = stringsOf(
+              data,
+              'adminIds',
+            ).where(members.contains).toList();
+            data.addAll({
+              'memberIds': members,
+              'adminIds': admins,
+              'departedMemberIds': {
+                ...stringsOf(data, 'departedMemberIds'),
+                id,
+              }.toList(),
+              'managementRequired': admins.isEmpty,
+              if (textOf(data, 'ownerId') == id) 'ownerId': '',
+            });
+          }
+          if (collection == 'teamChats' &&
+              textOf(data, 'senderId') == id &&
+              !flagOf(data, 'system') &&
+              textOf(data, 'kind') != 'system') {
+            data.addAll({
+              'body': '',
+              'attachments': <String>[],
+              'deleted': true,
+            });
+          }
+          if ([
+                'teamJobs',
+                'teamPackages',
+                'teamHandoffs',
+              ].contains(collection) &&
+              [
+                'pickupAssigneeId',
+                'finalAssigneeId',
+                'currentHolderId',
+                'fromId',
+                'toId',
+              ].any((key) => textOf(data, key) == id)) {
+            // 실제 보관자와 처리 상태를 추정해서 바꾸지 않는다.
+            data['requiresReconciliation'] = true;
+            data['reconciliationReason'] = 'account_deleted';
+          }
+          if ([
+                'fieldPayments',
+                'supplierPaymentAllocations',
+                'supplierRefunds',
+                'invoices',
+                'invoiceReceipts',
+                'reimbursements',
+              ].contains(collection) &&
+              [
+                'retailerId',
+                'uncleId',
+                'payerId',
+                'payeeId',
+                'paidToId',
+                'recipientId',
+              ].any((key) => textOf(data, key) == id)) {
+            // 탈퇴로 지급·회수·반환 책임이나 잔액을 없애지 않는다.
+            data['requiresReconciliation'] = true;
+            data['reconciliationReason'] = 'account_deleted';
+          }
+          await store.table(collection).record(row.key).put(txn, data);
+        }
+      }
+      final requests = await store.table('requests').find(txn);
+      final removedRequests = <String>{};
+      for (final row in requests) {
+        final participants = [
+          textOf(row.value, 'retailerId'),
+          textOf(row.value, 'uncleId'),
+        ];
+        if (participants.contains(id) &&
+            !participants.any(remaining.contains)) {
+          removedRequests.add(row.key);
+          await store.table('requests').record(row.key).delete(txn);
+        }
+      }
+      for (final collection in [
+        'deliveries',
+        'receipts',
+        'events',
+        'proposals',
+        'issues',
+        'messages',
+      ]) {
+        for (final row in await store.table(collection).find(txn)) {
+          final participants = [
+            textOf(row.value, 'senderId'),
+            textOf(row.value, 'recipientId'),
+          ];
+          if (removedRequests.contains(textOf(row.value, 'requestId')) ||
+              (collection == 'messages' &&
+                  participants.contains(id) &&
+                  !participants.any(remaining.contains))) {
+            await store.table(collection).record(row.key).delete(txn);
+          }
+        }
+      }
+      await store
+          .table('operations')
+          .delete(txn, finder: Finder(filter: Filter.equals('actor', id)));
+      await store.table('settings').record('destination').delete(txn);
+      await store.table('settings').record('session').delete(txn);
+    });
+    await store.reload();
   }
 
   Set<String> _usedPublicCodes(

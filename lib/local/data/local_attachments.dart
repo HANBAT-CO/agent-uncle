@@ -65,6 +65,9 @@ class LocalAttachmentRepository implements AttachmentRepository {
     }
     final id = newId();
     await store.database.transaction((txn) async {
+      if (await store.table('accounts').record(owner).get(txn) == null) {
+        throw const AppFailure('탈퇴한 계정에는 첨부파일을 저장할 수 없어요.');
+      }
       if (store.failNextWrite) {
         store.failNextWrite = false;
         throw const AppFailure('첨부를 저장하지 못했어요. 다시 시도해 주세요.');

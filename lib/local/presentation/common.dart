@@ -24,6 +24,21 @@ class TabSaveScope extends InheritedWidget {
 Future<T?> openPage<T>(BuildContext context, Widget page) =>
     Navigator.of(context).push<T>(appPageRoute<T>(builder: (context) => page));
 
+void scrollToSection(GlobalKey key) {
+  FocusManager.instance.primaryFocus?.unfocus();
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final context = key.currentContext;
+    if (context == null || !context.mounted) return;
+    Scrollable.ensureVisible(
+      context,
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : TdsMotion.quick.duration,
+      curve: TdsMotion.quick,
+    );
+  });
+}
+
 class PageFrame extends StatelessWidget {
   const PageFrame({
     required this.title,
@@ -170,27 +185,34 @@ class PageFrame extends StatelessWidget {
 }
 
 class Section extends StatelessWidget {
-  const Section(this.title, {super.key});
+  const Section(
+    this.title, {
+    this.padding = const EdgeInsets.fromLTRB(24, 24, 24, 8),
+    this.typography = TdsTypography.t5,
+    this.fontWeight = TdsFontWeight.semibold,
+    super.key,
+  });
   final String title;
+  final EdgeInsetsGeometry padding;
+  final TdsTypography typography;
+  final TdsFontWeight fontWeight;
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(24, 24, 24, 8),
-    child: TdsText(
-      title,
-      typography: TdsTypography.t5,
-      fontWeight: TdsFontWeight.semibold,
-    ),
+    padding: padding,
+    child: TdsText(title, typography: typography, fontWeight: fontWeight),
   );
 }
 
 class Inset extends StatelessWidget {
-  const Inset({required this.child, super.key});
+  const Inset({
+    required this.child,
+    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+    super.key,
+  });
   final Widget child;
+  final EdgeInsetsGeometry padding;
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-    child: child,
-  );
+  Widget build(BuildContext context) => Padding(padding: padding, child: child);
 }
 
 /// TDS 기본 형태와 여백에 앱 공통 색상·글꼴을 적용한다.
@@ -198,14 +220,17 @@ class AppSearchField extends StatelessWidget {
   const AppSearchField({
     required this.placeholder,
     required this.onChanged,
+    this.value,
     super.key,
   });
   final String placeholder;
   final ValueChanged<String> onChanged;
+  final String? value;
 
   @override
   Widget build(BuildContext context) => TdsSearchField(
     placeholder: placeholder,
+    value: value,
     onChanged: onChanged,
     onSubmitted: (_) => FocusScope.of(context).unfocus(),
   );
@@ -237,14 +262,17 @@ class Item extends StatelessWidget {
     this.leading,
     this.trailing,
     this.onTap,
+    this.verticalPadding = TdsListRowVerticalPadding.medium,
     super.key,
   });
   final String title;
   final String? subtitle;
   final Widget? leading, trailing;
   final VoidCallback? onTap;
+  final TdsListRowVerticalPadding verticalPadding;
   @override
   Widget build(BuildContext context) => TdsListRow(
+    verticalPadding: verticalPadding,
     left: leading,
     contents: TdsListRowTexts(
       type: subtitle == null
@@ -386,7 +414,16 @@ class EmptyState extends StatelessWidget {
     this.icon = 'bag',
     super.key,
   });
-  final String title, description;
+  const EmptyState.titleOnly(
+    this.title, {
+    this.action,
+    this.onAction,
+    this.icon = 'bag',
+    super.key,
+  }) : description = null;
+
+  final String title;
+  final String? description;
   final String? action;
   final String icon;
   final VoidCallback? onAction;
@@ -394,7 +431,7 @@ class EmptyState extends StatelessWidget {
   Widget build(BuildContext context) => TdsResult(
     figure: ExcludeSemantics(child: FigmaIcon(icon, size: 60)),
     title: Text(title),
-    description: Text(description),
+    description: description == null ? null : Text(description!),
     button: action == null
         ? null
         : TdsResultButton(onPressed: onAction, child: Text(action!)),
@@ -413,6 +450,7 @@ class Field extends StatelessWidget {
     this.format,
     this.keyboardType,
     this.placeholder,
+    this.verticalPadding = 10,
     super.key,
   });
   final String label;
@@ -424,11 +462,12 @@ class Field extends StatelessWidget {
   final TdsTextFieldFormat? format;
   final TextInputType? keyboardType;
   final String? placeholder;
+  final double verticalPadding;
   @override
   Widget build(BuildContext context) => TdsTextField(
     variant: TdsTextFieldVariant.box,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: verticalPadding,
+    paddingBottom: verticalPadding,
     label: label,
     labelOption: TdsTextFieldLabelOption.sustain,
     controller: controller,
@@ -455,13 +494,16 @@ class Choices extends StatelessWidget {
     required this.options,
     required this.value,
     required this.onChanged,
+    this.padding = const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
     super.key,
   });
   final List<String> options;
   final String value;
   final ValueChanged<String> onChanged;
+  final EdgeInsetsGeometry padding;
   @override
   Widget build(BuildContext context) => Inset(
+    padding: padding,
     child: TdsTheme.of(context).platform.fontScale > 130
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -725,7 +767,9 @@ class RequestCard extends StatelessWidget {
             runSpacing: 8,
             children: [
               StatusBadge(
-                request.statusLabel,
+                request.stageLabelFor(
+                  app.session.current?.role ?? AppRole.retailer,
+                ),
                 attention: request.needsReply || request.n('openIssues') > 0,
               ),
               if (!isWholesalerOnlyRequest(request.data))

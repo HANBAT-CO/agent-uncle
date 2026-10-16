@@ -827,6 +827,7 @@ TDS를 조합해 이미 만든 앱 위젯이다. 같은 역할의 위젯을 새�
 | `TabSaveGuard` | class |  |
 | `TabSaveScope` | class extends InheritedWidget |  |
 | `openPage` | function |  |
+| `scrollToSection` | function |  |
 | `PageFrame` | class extends StatelessWidget |  |
 | `Section` | class extends StatelessWidget |  |
 | `Inset` | class extends StatelessWidget |  |

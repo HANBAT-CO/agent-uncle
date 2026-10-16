@@ -25,12 +25,14 @@ class FigmaSurface extends StatelessWidget {
     this.tinted = false,
     this.style = FigmaSurfaceStyle.solid,
     this.grouped = false,
+    this.padding = const EdgeInsets.symmetric(vertical: 12),
     super.key,
   });
   final List<Widget> children;
   final double margin;
   final bool tinted;
   final FigmaSurfaceStyle style;
+  final EdgeInsetsGeometry padding;
 
   /// Only non-overlapping surfaces in the same BackdropGroup may share input.
   final bool grouped;
@@ -42,7 +44,7 @@ class FigmaSurface extends StatelessWidget {
     final glass = style == FigmaSurfaceStyle.glass && !highContrast;
     final theme = TdsTheme.of(context);
     Widget surface = Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: children,

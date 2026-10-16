@@ -100,6 +100,54 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     });
   }
 
+  @override
+  bool hasBlockedUser(String peerId) => records('chatBlocks').any(
+    (r) =>
+        r.s('ownerId') == session.current?.id &&
+        r.s('peerId') == peerId &&
+        r.b('blocked'),
+  );
+
+  @override
+  bool isChatBlocked(String peerId) => records('chatBlocks').any(
+    (r) =>
+        r.b('blocked') && (r.s('ownerId') == peerId || r.s('peerId') == peerId),
+  );
+
+  void _checkChatAllowed(MutableWorkspace s, String user, String peerId) {
+    if (s.all('chatBlocks').any((entry) {
+      final r = entry.value;
+      return flagOf(r, 'blocked') &&
+          ((textOf(r, 'ownerId') == user && textOf(r, 'peerId') == peerId) ||
+              (textOf(r, 'ownerId') == peerId && textOf(r, 'peerId') == user));
+    })) {
+      throw const AppFailure('차단된 대화에서는 메시지를 보내거나 수정할 수 없어요.');
+    }
+  }
+
+  @override
+  Future<void> setChatBlocked(
+    String peerId,
+    bool blocked,
+    String operationId,
+  ) async {
+    final user = actor;
+    await store.write(user, operationId, (s) {
+      if (peerId == user) throw const AppFailure('본인은 차단할 수 없어요.');
+      s.require('accounts', peerId);
+      final id = '$user:$peerId';
+      // 연결 해제 이후에도 본인의 기존 차단은 해제할 수 있다.
+      if (!s.tables['chatBlocks']!.containsKey(id)) _connected(s, user, peerId);
+      s.put('chatBlocks', id, {
+        'ownerId': user,
+        'peerId': peerId,
+        'blocked': blocked,
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+      return id;
+    });
+  }
+
   static const _directoryFields = [
     'name',
     'nickname',
@@ -159,6 +207,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
         .where(
           (r) => switch (table) {
             'connections' => _connection(r.data),
+            'chatBlocks' => r.s('ownerId') == user || r.s('peerId') == user,
             'drafts' => r.s('ownerId') == user,
             'requests' => _belongs(r.data),
             'deliveries' ||
@@ -1434,6 +1483,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     bool validated = false;
     try {
       await store.write(user, messageId, (s) {
+        _checkChatAllowed(s, user, peerId);
         _connected(s, user, peerId);
         final existing = s.tables['messages']![messageId];
         if (existing != null &&
@@ -1519,6 +1569,7 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     await store.write(user, operationId, (s) {
       final message = _editableMessage(s, messageId, user, version);
       final text = body.trim();
+      _checkChatAllowed(s, user, textOf(message, 'recipientId'));
       ChatContentPolicy.validate(text, stringsOf(message, 'attachments'));
       s.put('messages', messageId, {
         ...message,

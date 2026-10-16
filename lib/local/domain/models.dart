@@ -268,6 +268,7 @@ const collections = [
   'proposals',
   'issues',
   'messages',
+  'chatBlocks',
   'notices',
   'attachments',
   'settings',
@@ -323,6 +324,9 @@ abstract class WorkspaceRepository extends ChangeNotifier {
   Future<void> saveWorkflowInput(String key, Data values);
   Data workflowInput(String key);
   Future<void> discardRejectedWorkflow(String operationId);
+  bool hasBlockedUser(String peerId);
+  bool isChatBlocked(String peerId);
+  Future<void> setChatBlocked(String peerId, bool blocked, String operationId);
   WorkspaceSnapshot get snapshot;
   List<Account> get partners;
   List<Record> records(String table);

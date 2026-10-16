@@ -26,6 +26,40 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
       store.discardRejectedWorkflow(operationId);
 
   @override
+  bool hasBlockedUser(String peerId) => records('chatBlocks').any(
+    (r) =>
+        r.s('ownerId') == store.userId &&
+        r.s('peerId') == peerId &&
+        r.b('blocked'),
+  );
+
+  @override
+  bool isChatBlocked(String peerId) => records('chatBlocks').any(
+    (r) =>
+        r.b('blocked') &&
+        ((r.s('ownerId') == store.userId && r.s('peerId') == peerId) ||
+            (r.s('ownerId') == peerId && r.s('peerId') == store.userId)),
+  );
+
+  @override
+  Future<void> setChatBlocked(
+    String peerId,
+    bool blocked,
+    String operationId,
+  ) async {
+    await store.command('setChatBlocked', {
+      'peerId': peerId,
+      'blocked': blocked,
+    }, operationId);
+  }
+
+  void _checkChatAllowed(String peerId) {
+    if (isChatBlocked(peerId)) {
+      throw const AppFailure('차단된 대화에서는 메시지를 보내거나 수정할 수 없어요.');
+    }
+  }
+
+  @override
   List<Record> records(String table) {
     if (store.userId == null) return [];
     final rows = table == 'workflowPending'
@@ -323,6 +357,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
   }) async {
     final owner = store.userId;
     if (owner == null) throw const AppFailure('로그인이 필요해요.');
+    _checkChatAllowed(peerId);
     ChatContentPolicy.validate(body, attachments);
     final existing = store.snapshot.get('messages', messageId);
     if (existing != null &&
@@ -379,6 +414,7 @@ class RemoteWorkspaceRepository extends WorkspaceRepository {
     String operationId,
   ) async {
     final message = store.snapshot.get('messages', messageId);
+    if (message != null) _checkChatAllowed(message.s('recipientId'));
     ChatContentPolicy.validate(body.trim(), message?.list('attachments') ?? []);
     await store.command('editMessage', {
       'id': messageId,

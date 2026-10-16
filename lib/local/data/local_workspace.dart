@@ -5,6 +5,7 @@ import '../domain/models.dart';
 import '../domain/order_payment.dart';
 import '../domain/workflow_payload.dart';
 import '../domain/pickup_progress.dart';
+import '../domain/release_visibility.dart';
 import '../domain/billing_models.dart';
 import '../domain/team_models.dart';
 import '../domain/convenience_models.dart';
@@ -135,6 +136,13 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
     if (user == null) return [];
     if (table == 'pickupProgress') {
       return projectRetailerPickups(snapshot, user);
+    }
+    if (table == 'appReleases') {
+      return [
+        for (final record in snapshot.all(table))
+          if (projectAppRelease(record.data, session.current) case final data?)
+            Record(record.id, data),
+      ];
     }
     final rows = snapshot
         .all(table)

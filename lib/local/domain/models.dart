@@ -247,6 +247,7 @@ const collections = [
   'attachments',
   'settings',
   'workflowInputs',
+  'pickupProgress',
   ...workflowCollections,
 ];
 

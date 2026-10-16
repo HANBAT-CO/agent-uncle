@@ -4,6 +4,7 @@ import '../domain/chat_content_policy.dart';
 import '../domain/models.dart';
 import '../domain/order_payment.dart';
 import '../domain/workflow_payload.dart';
+import '../domain/pickup_progress.dart';
 import '../domain/billing_models.dart';
 import '../domain/team_models.dart';
 import '../domain/convenience_models.dart';
@@ -132,6 +133,9 @@ class LocalWorkspaceRepository extends WorkspaceRepository {
   List<Record> records(String table) {
     final user = session.current?.id;
     if (user == null) return [];
+    if (table == 'pickupProgress') {
+      return projectRetailerPickups(snapshot, user);
+    }
     final rows = snapshot
         .all(table)
         .where(

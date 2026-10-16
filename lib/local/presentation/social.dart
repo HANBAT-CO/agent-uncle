@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
 import '../../core/media/native_media_picker.dart';
@@ -1313,12 +1314,17 @@ class _NoticesPageState extends State<NoticesPage> {
   }
 }
 
-Future<void> openDestination(BuildContext context) async {
+Future<void> openDestination(
+  BuildContext context, {
+  bool waitForPop = true,
+}) async {
   final app = AppScope.read(context),
       target = app.session.pendingDestination,
       me = app.session.current;
   if (target == null || me == null) return;
   if (target.s('ownerId') != me.id) {
+    await app.session.setDestination(null);
+    if (!context.mounted) return;
     await confirm(context, '다른 계정의 알림이에요', '알림을 받은 계정으로 로그인하면 이어서 확인할 수 있어요.');
     return;
   }
@@ -1326,6 +1332,12 @@ Future<void> openDestination(BuildContext context) async {
   switch (target.s('kind')) {
     case 'invoice':
       page = InvoiceDetailPage(invoiceId: target.s('targetId'));
+    case 'team':
+    case 'handoff':
+    case 'colleague':
+      page = me.role == AppRole.uncle
+          ? const TeamWorkPage()
+          : const PageFrame(title: '업무 알림', children: [Info('접근할 수 없는 업무예요.')]);
     case 'chat':
       page = ChatPage(target.s('targetId'));
     case 'connection':
@@ -1360,6 +1372,15 @@ Future<void> openDestination(BuildContext context) async {
   if (target.s('noticeId').isNotEmpty) {
     await app.workspace.readNotice(target.s('noticeId'));
   }
+  // 읽음 처리를 기다리는 사이 들어온 새 알림이나 바뀐 계정은 덮어쓰지 않는다.
+  if (app.session.current?.id != me.id ||
+      jsonEncode(app.session.pendingDestination?.data) !=
+          jsonEncode(target.data)) {
+    return;
+  }
   await app.session.setDestination(null);
-  if (context.mounted) await openPage(context, page);
+  if (context.mounted && app.session.current?.id == me.id) {
+    final route = openPage(context, page);
+    if (waitForPop) await route;
+  }
 }

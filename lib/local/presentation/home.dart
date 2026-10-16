@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/scheduler.dart' show SchedulerPhase;
 import 'package:tds_mobile_flutter/tds_mobile_flutter.dart';
@@ -25,6 +26,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   bool changingTab = false;
   bool handlingSystemBack = false;
   bool ready = false;
+  bool openingPush = false;
   Timer? timer;
   final navigators = List.generate(5, (_) => GlobalKey<NavigatorState>());
   final uncleOrdersKey = GlobalKey<UncleOrdersSectionState>();
@@ -75,31 +77,53 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    final pending = AppScope.of(context).session.pendingDestination;
+    if (ready && pending?.b('fromPush') == true && !openingPush) {
+      openingPush = true;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => openPendingDestinations(),
+      );
+    }
     if (ready) return;
     ready = true;
+    openingPush = true;
     WidgetsBinding.instance.addObserver(this);
     timer = Timer.periodic(const Duration(minutes: 1), (_) => refresh());
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await refresh();
-      if (mounted &&
-          AppScope.read(context).session.pendingDestination != null) {
-        final destinationContext =
-            navigators[selected].currentState?.overlay?.context;
-        if (destinationContext != null && destinationContext.mounted) {
-          try {
-            await openDestination(destinationContext);
-          } catch (error) {
-            if (destinationContext.mounted) {
-              await confirm(
-                destinationContext,
-                '알림을 열지 못했어요',
-                error.toString(),
-              );
-            }
-          }
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => openPendingDestinations(initial: true),
+    );
+  }
+
+  Future<void> openPendingDestinations({bool initial = false}) async {
+    try {
+      if (initial) await refresh();
+      while (true) {
+        if (!mounted) return;
+        final pending = AppScope.read(context).session.pendingDestination;
+        if (pending == null || (!initial && !pending.b('fromPush'))) break;
+        final attempted = jsonEncode(pending.data);
+        try {
+          if (!initial) await guards[selected].save?.call();
+          if (!mounted) return;
+          final target = navigators[selected].currentState?.overlay?.context;
+          if (target == null || !target.mounted) break;
+          await openDestination(target, waitForPop: false);
+        } catch (error) {
+          if (mounted) await confirm(context, '알림을 열지 못했어요', error.toString());
         }
+        if (!mounted) return;
+        // 처리 중 도착한 다음 알림도 연다. 실패한 같은 목적지는 자동 반복하지 않는다.
+        if (jsonEncode(
+              AppScope.read(context).session.pendingDestination?.data,
+            ) ==
+            attempted) {
+          break;
+        }
+        initial = false;
       }
-    });
+    } finally {
+      openingPush = false;
+    }
   }
 
   Future<void> refresh() async {
